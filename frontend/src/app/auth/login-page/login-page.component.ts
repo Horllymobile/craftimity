@@ -13,7 +13,6 @@ export class LoginPageComponent {
   constructor(private router: ActivatedRoute) {}
 
   toogle() {
-    console.log(this.router.snapshot.url);
     if (this.router.snapshot.url.find((value) => value.path !== "/login")) {
       this.openLoginWithEmail = !this.openLoginWithEmail;
       this.openLoginWithPhone = !this.openLoginWithPhone;
