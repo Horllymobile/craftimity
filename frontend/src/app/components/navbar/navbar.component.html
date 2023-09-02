@@ -1,7 +1,7 @@
-<nav class="p-3 cursor-pointer" style="z-index: 50; border-bottom: 0.1pt solid gray;" *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Large)) 
+<nav class="p-3" style="z-index: 50; border-bottom: 0.1pt solid gray;" *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Large)) 
 || layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Medium))">
     <section class="w-[90%] mx-auto flex justify-between align-middle">
-        <div class="self-center">
+        <div class="self-center cursor-pointer" routerLink="/home">
             <img src="assets/conhect.png">
         </div>
 
@@ -38,10 +38,10 @@
     </section>
 </nav>
 
-<nav class="p-3 cursor-pointer" style="z-index: 50; border-bottom: 0.1pt solid gray;"
+<nav class="p-3" style="z-index: 50; border-bottom: 0.1pt solid gray;"
     *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XLarge))">
     <section class="xl:w-[60%] mx-auto flex justify-between align-middle">
-        <div class="self-center">
+        <div class="self-center cursor-pointer" routerLink="/home">
             <img src="assets/conhect.png">
         </div>
 
@@ -81,12 +81,12 @@
 <nav class="w-full p-3 absolute bottom-0 border-t border-t-black" *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XSmall)) 
     || layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Small))">
     <section class="flex justify-between gap-5 align-middle w-[60%] mx-auto">
-        <a href="" class="flex flex-col justify-center align-middle">
+        <a routerLink="/home" class="flex flex-col justify-center align-middle">
             <i class="fa-solid fa-magnifying-glass text-gray-400 self-center text-lg"></i>
             <span class="text-xs text-gray-400">Explore</span>
         </a>
 
-        <a href="" class="flex flex-col justify-center align-middle">
+        <a routerLink="/wishlists" class="flex flex-col justify-center align-middle">
             <i class="fa-regular fa-heart text-gray-400 self-center text-lg"></i>
             <span class="text-xs text-gray-400">Wishlists</span>
         </a>

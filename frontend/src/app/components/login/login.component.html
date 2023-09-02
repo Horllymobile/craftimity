@@ -5,7 +5,7 @@
         <span></span>
     </section>
     <mat-divider></mat-divider>
-    <section class="p-8">
+    <section class="mt-8 px-8">
         <h2 class="text-lg text-gray-800">Welcome to Conhect</h2>
         <div class="w-full mb-5">
             <input class="w-full p-3 border-[0.4pt] rounded-lg border-[#878484]" type="text" placeholder="Email">
@@ -31,7 +31,7 @@
             </button>
         </div>
 
-        <div class="w-full mb-5">
+        <div class="w-full">
             <button type="button" (click)="toogle()"
                 class="border-[0.3pt] border-[#878484] w-full p-4 flex gap-5 justify-center rounded-lg text-[#878484]">
                 <i class="fa-solid fa-phone text-lg"></i>
@@ -40,14 +40,15 @@
         </div>
     </section>
 </section>
+
 <section *ngIf="openLoginWithPhone">
-    <section class="w-full p-8 text-center border-b border-b-[#878484] flex justify-between">
+    <section class="w-full p-8 text-center flex justify-between">
         <span (click)="closeDialog()"><i class="fa-solid fa-xmark text-lg"></i></span>
         <span class="text-center float-right">Log in or Sign up</span>
         <span></span>
     </section>
-
-    <section class="p-8">
+    <mat-divider></mat-divider>
+    <section class="mt-8 px-8">
         <h2 class="text-lg text-gray-800">Welcome to Conhect</h2>
         <div class="w-full">
             <select style="border-top-left-radius: 0.5em; border-top-right-radius: 0.5em;"
@@ -86,7 +87,7 @@
             </button>
         </div>
 
-        <div class="w-full mb-5">
+        <div class="w-full">
             <button type="button" (click)="toogle()"
                 class="border-[0.3pt] border-[#878484] w-full p-4 flex gap-5 justify-center rounded-lg text-[#878484]">
                 <i class="fa-solid fa-phone text-lg"></i>
