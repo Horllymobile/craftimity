@@ -1,0 +1,100 @@
+<nav class="p-3 cursor-pointer" style="z-index: 50; border-bottom: 0.1pt solid gray;" *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Large)) 
+|| layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Medium))">
+    <section class="w-[90%] mx-auto flex justify-between align-middle">
+        <div class="self-center">
+            <img src="assets/conhect.png">
+        </div>
+
+        <section class="flex justify-between z-20 align-middle gap-5" style="z-index: 100;" (click)="toogleMenu()">
+            <a href="" class="self-center text-gray-500">Render your service</a>
+            <div class="flex justify-between align-middle rounded-full p-2 gap-3" style="border: 0.1pt solid gray;">
+                <i class="fa-solid fa-bars self-center"></i>
+                <img src="https://picsum.photos/200" class="w-8 rounded-full">
+            </div>
+        </section>
+
+        <ng-container *ngIf="isMenuOpen">
+            <div style="z-index: 200;" class="absolute xl:right-[50px] overflow-visible rounded-md xl:top-16 shadow">
+                <div class="w-full flex flex-col gap-3 justify-start">
+                    <button class="hover:bg-gray-300 p-2" (click)="openModal()">
+                        Login
+                    </button>
+                    <button class="hover:bg-gray-300 p-2" (click)="openModal()">
+                        Sign up
+                    </button>
+                </div>
+                <hr class="w-full p-0">
+                <div class="w-full flex flex-col gap-3 justify-start">
+                    <button class="hover:bg-gray-300 p-2">
+                        Conhect your service
+                    </button>
+                    <button class="hover:bg-gray-300 p-2">
+                        Help Center
+                    </button>
+                </div>
+            </div>
+        </ng-container>
+
+    </section>
+</nav>
+
+<nav class="p-3 cursor-pointer" style="z-index: 50; border-bottom: 0.1pt solid gray;"
+    *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XLarge))">
+    <section class="xl:w-[60%] mx-auto flex justify-between align-middle">
+        <div class="self-center">
+            <img src="assets/conhect.png">
+        </div>
+
+        <section class="flex justify-between z-20 align-middle gap-5" style="z-index: 100;" (click)="toogleMenu()">
+            <a href="" class="self-center text-gray-500">Render your service</a>
+            <div class="flex justify-between align-middle rounded-full p-2 gap-3" style="border: 0.1pt solid gray;">
+                <i class="fa-solid fa-bars self-center"></i>
+                <img src="https://picsum.photos/200" class="w-8 rounded-full">
+            </div>
+        </section>
+
+        <ng-container *ngIf="isMenuOpen">
+            <div style="z-index: 200;" class="absolute xl:right-[650px] overflow-visible rounded-md xl:top-16 shadow">
+                <div class="w-full flex flex-col gap-3 justify-start">
+                    <button class="hover:bg-gray-300 p-2" (click)="openModal()">
+                        Login
+                    </button>
+                    <button class="hover:bg-gray-300 p-2" (click)="openModal()">
+                        Sign up
+                    </button>
+                </div>
+                <hr class="w-full p-0">
+                <div class="w-full flex flex-col gap-3 justify-start">
+                    <button class="hover:bg-gray-300 p-2">
+                        Conhect your service
+                    </button>
+                    <button class="hover:bg-gray-300 p-2">
+                        Help Center
+                    </button>
+                </div>
+            </div>
+        </ng-container>
+
+    </section>
+</nav>
+
+<nav class="w-full p-3 absolute bottom-0 border-t border-t-black" *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XSmall)) 
+    || layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Small))">
+    <section class="flex justify-between gap-5 align-middle w-[60%] mx-auto">
+        <a href="" class="flex flex-col justify-center align-middle">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 self-center text-lg"></i>
+            <span class="text-xs text-gray-400">Explore</span>
+        </a>
+
+        <a href="" class="flex flex-col justify-center align-middle">
+            <i class="fa-regular fa-heart text-gray-400 self-center text-lg"></i>
+            <span class="text-xs text-gray-400">Wishlists</span>
+        </a>
+
+        <button type="button" (click)="navigateToLogin()" class="flex flex-col justify-center align-middle">
+            <i class="fa-regular fa-user text-gray-400 self-center text-lg"></i>
+            <span class="text-xs text-gray-400">Login</span>
+        </button>
+
+    </section>
+</nav>

@@ -5,18 +5,22 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { SharedModule } from "./core/shared/shared.module";
 import { ComponentsModule } from "./components/components.module";
-import { LandingPageModule } from "./landing-page/landing-page.module";
-import { AdminModule } from "./admin/admin.module";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { MaterialModule } from "./core/shared/material.module";
+import { HomeModule } from "./home/home.module";
+import { AuthModule } from "./auth/auth.module";
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    LandingPageModule,
-    AdminModule,
+    HomeModule,
+    AuthModule,
     AppRoutingModule,
     SharedModule,
+    MaterialModule,
     ComponentsModule,
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

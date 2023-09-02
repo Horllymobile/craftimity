@@ -1,0 +1,97 @@
+<section *ngIf="openLoginWithEmail">
+    <section class="w-full p-8 text-center flex justify-between">
+        <span class="cursor-pointer" (click)="closeDialog()"><i class="fa-solid fa-xmark text-lg"></i></span>
+        <span class="text-center float-right">Log in or Sign up</span>
+        <span></span>
+    </section>
+    <mat-divider></mat-divider>
+    <section class="p-8">
+        <h2 class="text-lg text-gray-800">Welcome to Conhect</h2>
+        <div class="w-full mb-5">
+            <input class="w-full p-3 border-[0.4pt] rounded-lg border-[#878484]" type="text" placeholder="Email">
+        </div>
+
+        <div class="w-full mb-5">
+            <button type="submit" class="bg-[#E78614] w-full p-4 rounded-lg text-white">Continue</button>
+        </div>
+
+        <div class="w-full mb-5">
+            <button type="button"
+                class="border-[0.3pt] border-[#878484] w-full p-4 rounded-lg flex gap-5 justify-center text-[#878484]">
+                <i class="fa-brands fa-google text-lg text-red-600"></i>
+                <span class="text-lg">Continue with Google</span>
+            </button>
+        </div>
+
+        <div class="w-full mb-5">
+            <button type="button"
+                class="border-[0.3pt] border-[#878484] w-full p-4 flex gap-5 justify-center rounded-lg text-[#878484]">
+                <i class="fa-brands fa-facebook text-lg text-blue-700"></i>
+                <span class="text-lg">Continue with Facebook</span>
+            </button>
+        </div>
+
+        <div class="w-full mb-5">
+            <button type="button" (click)="toogle()"
+                class="border-[0.3pt] border-[#878484] w-full p-4 flex gap-5 justify-center rounded-lg text-[#878484]">
+                <i class="fa-solid fa-phone text-lg"></i>
+                <span class="text-lg">Continue with Phone</span>
+            </button>
+        </div>
+    </section>
+</section>
+<section *ngIf="openLoginWithPhone">
+    <section class="w-full p-8 text-center border-b border-b-[#878484] flex justify-between">
+        <span (click)="closeDialog()"><i class="fa-solid fa-xmark text-lg"></i></span>
+        <span class="text-center float-right">Log in or Sign up</span>
+        <span></span>
+    </section>
+
+    <section class="p-8">
+        <h2 class="text-lg text-gray-800">Welcome to Conhect</h2>
+        <div class="w-full">
+            <select style="border-top-left-radius: 0.5em; border-top-right-radius: 0.5em;"
+                class="w-full p-4 border-[0.4pt] border-[#878484] focus:outline-none" type="text">
+                <option value="+234">Nigeria (+234)</option>
+                <option value="+234">Ghana (+233)</option>
+            </select>
+        </div>
+        <div class="w-full mb-5">
+            <input style="border-bottom-left-radius: 0.5em; border-bottom-right-radius: 0.5em;"
+                class="w-full p-4 border-[0.4pt] border-[#878484] mb-3 focus:outline-none" type="text"
+                placeholder="Email">
+            <p class="text-gray-500 w-[85%]">We'll call or text you to confirm your number. Standard message and
+                data rates
+                apply. <a href="/" class="underline">Privacy
+                    Policy</a></p>
+        </div>
+
+        <div class="w-full mb-5">
+            <button type="submit" class="bg-[#E78614] w-full p-4 rounded-lg text-white">Continue</button>
+        </div>
+
+        <div class="w-full mb-5">
+            <button type="button"
+                class="border-[0.3pt] border-[#878484] w-full p-4 rounded-lg flex gap-5 justify-center text-[#878484]">
+                <i class="fa-brands fa-google text-lg"></i>
+                <span class="text-lg">Continue with Google</span>
+            </button>
+        </div>
+
+        <div class="w-full mb-5">
+            <button type="button"
+                class="border-[0.3pt] border-[#878484] w-full p-4 flex gap-5 justify-center rounded-lg text-[#878484]">
+                <i class="fa-brands fa-facebook text-lg"></i>
+                <span class="text-lg">Continue with Facebook</span>
+            </button>
+        </div>
+
+        <div class="w-full mb-5">
+            <button type="button" (click)="toogle()"
+                class="border-[0.3pt] border-[#878484] w-full p-4 flex gap-5 justify-center rounded-lg text-[#878484]">
+                <i class="fa-solid fa-phone text-lg"></i>
+                <span class="text-lg">Continue with Email</span>
+            </button>
+        </div>
+    </section>
+</section>
