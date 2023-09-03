@@ -32,6 +32,11 @@
                 "glob": "_redirects",
                 "input": "src",
                 "output": "/"
+              },
+              {
+                "glob": "site.webmanifest",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": [
