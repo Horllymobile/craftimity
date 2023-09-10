@@ -13,7 +13,7 @@ const routes: Routes = [
   },
   {
     path: "",
-    redirectTo: "login-email",
+    redirectTo: "login",
     pathMatch: "full",
   },
 ];

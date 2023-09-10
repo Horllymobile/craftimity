@@ -10,14 +10,15 @@ import { MaterialModule } from "./core/shared/material.module";
 import { HomeModule } from "./home/home.module";
 import { AuthModule } from "./auth/auth.module";
 import { WishlistsModule } from "./wishlists/wishlists.module";
+import { CommingSoonComponent } from "./comming-soon/comming-soon.component";
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, CommingSoonComponent],
   imports: [
     BrowserModule,
-    WishlistsModule,
-    HomeModule,
-    AuthModule,
+    // WishlistsModule,
+    // HomeModule,
+    // AuthModule,
     AppRoutingModule,
     SharedModule,
     MaterialModule,

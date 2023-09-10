@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
+import { CommingSoonComponent } from "./comming-soon/comming-soon.component";
 
 const routes: Routes = [
   {
@@ -16,13 +17,18 @@ const routes: Routes = [
     loadChildren: () => import("./home/home.module").then((m) => m.HomeModule),
   },
   {
+    path: "comming-soon",
+    component: CommingSoonComponent,
+  },
+  {
     path: "",
-    redirectTo: "home",
+    redirectTo: "comming-soon",
     pathMatch: "full",
   },
 ];
 
 @NgModule({
+  declarations: [],
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
