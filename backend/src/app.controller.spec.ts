@@ -1,22 +1,30 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
-describe('AppController', () => {
+describe("AppController", () => {
   let appController: AppController;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot({ isGlobal: true })],
       controllers: [AppController],
-      providers: [AppService],
+      providers: [AppService, ConfigService],
     }).compile();
 
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe("root", () => {
+    it("should return app details", () => {
+      console.log(appController.getApp());
+      expect(appController.getApp()).toStrictEqual({
+        name: "Xabiwork",
+        status: "OKAY",
+        version: 1,
+        environment: "local",
+      });
     });
   });
 });

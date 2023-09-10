@@ -1,0 +1,16 @@
+<div class="relative shadow rounded-full mt-4 w-[80%] mx-auto" *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XSmall)) 
+|| layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Small))">
+    <input type="text" class="px-5 py-3 w-full text-sm rounded-full focus:outline-none"
+        placeholder="Search for services, stores etc...">
+    <button class="rounded-full bg-[#E78614] p-2 absolute top-[0.50em] right-2 h-8 w-8"><i
+            class="fa fa-search text-white text-sm" aria-hidden="true"></i></button>
+</div>
+
+<div class="relative shadow rounded-full w-[350px]" *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Large)) 
+|| layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Medium)) ||
+    layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XLarge))">
+    <input type="text" class="px-5 py-3 w-full text-sm rounded-full focus:outline-none"
+        placeholder="Search for services, stores etc...">
+    <button class="rounded-full bg-[#E78614] p-2 absolute top-[0.50em] right-2 h-8 w-8"><i
+            class="fa fa-search text-white text-sm" aria-hidden="true"></i></button>
+</div>

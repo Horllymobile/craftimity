@@ -9,11 +9,13 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MaterialModule } from "./core/shared/material.module";
 import { HomeModule } from "./home/home.module";
 import { AuthModule } from "./auth/auth.module";
+import { WishlistsModule } from "./wishlists/wishlists.module";
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
+    WishlistsModule,
     HomeModule,
     AuthModule,
     AppRoutingModule,

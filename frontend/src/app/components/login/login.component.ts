@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { MatDialogRef } from "@angular/material/dialog";
 
 @Component({
-  selector: "con-login",
+  selector: "craft-login",
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.scss"],
 })

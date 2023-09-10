@@ -1,1 +1,2 @@
-<con-navbar></con-navbar>
+<craft-search *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XSmall)) 
+|| layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Small))"></craft-search>
