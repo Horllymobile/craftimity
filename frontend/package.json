@@ -7,10 +7,10 @@
     "build": "ng build && ng run craftimity:server",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "dev:ssr": "ng run hiserfice:serve-ssr",
-    "serve:ssr": "node dist/hiserfice/server/main.js",
-    "build:ssr": "ng build && ng run hiserfice:server",
-    "prerender": "ng run hiserfice:prerender"
+    "dev:ssr": "ng run craftimity:serve-ssr",
+    "serve:ssr": "node dist/server/main.js",
+    "build:ssr": "ng build && ng run craftimity:server",
+    "prerender": "ng run craftimity:prerender"
   },
   "private": true,
   "dependencies": {
