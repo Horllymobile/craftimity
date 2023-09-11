@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "hiserfice": {
+    "craftimity": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist",
+            "outputPath": "dist/craftimity/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -81,10 +81,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "hiserfice:build:production"
+              "browserTarget": "craftimity:build:production"
             },
             "development": {
-              "browserTarget": "hiserfice:build:development"
+              "browserTarget": "craftimity:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -92,7 +92,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "hiserfice:build"
+            "browserTarget": "craftimity:build"
           }
         },
         "test": {
@@ -114,6 +114,61 @@
             ],
             "scripts": []
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/craftimity/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json",
+            "inlineStyleLanguage": "scss"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "vendorChunk": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "craftimity:build:development",
+              "serverTarget": "craftimity:server:development"
+            },
+            "production": {
+              "browserTarget": "craftimity:build:production",
+              "serverTarget": "craftimity:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "craftimity:build:production",
+              "serverTarget": "craftimity:server:production"
+            },
+            "development": {
+              "browserTarget": "craftimity:build:development",
+              "serverTarget": "craftimity:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
