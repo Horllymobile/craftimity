@@ -99,20 +99,22 @@ export class CountryService implements ICountryService {
   }
 
   async findCountries(
-    page: number,
-    size: number,
+    page: number = 1,
+    size: number = 20,
     name?: string
   ): Promise<ICountry[]> {
     let countries: CountryEntity[];
+    page = page <= 1 ? 0 : page;
+    console.log(page);
     if (!name) {
       countries = await this.countryRepository.findAll({
         limit: size,
-        offset: page <= 0 ? 1 : page,
+        offset: page,
       });
     } else {
       countries = await this.countryRepository.findAll({
         limit: size,
-        offset: page <= 0 ? 1 : page,
+        offset: page,
         where: {
           ...(name && {
             [Op.or]: [

@@ -18,7 +18,6 @@ const country_service_1 = require("../service/country.service");
 const create_country_dto_1 = require("../dto/create-country.dto");
 const update_country_dto_1 = require("../dto/update-country.dto");
 const ResponseStatus_1 = require("../../../core/enums/ResponseStatus");
-console.log(process.env.VERSION);
 let CountryController = class CountryController {
     constructor(countryService) {
         this.countryService = countryService;
@@ -54,10 +53,18 @@ let CountryController = class CountryController {
         };
     }
     async updateCountry(id, updateCountryDto) {
-        return null;
+        await this.countryService.updateCountry(id, updateCountryDto);
+        return {
+            message: "Country updated successfully",
+            status: ResponseStatus_1.EResponseStatus.SUCCESS,
+        };
     }
     async deleteCountry(id) {
-        return null;
+        await this.countryService.deleteCountry(id);
+        return {
+            message: "Country deleted successfully",
+            status: ResponseStatus_1.EResponseStatus.SUCCESS,
+        };
     }
 };
 __decorate([

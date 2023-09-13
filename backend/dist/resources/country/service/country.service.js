@@ -93,18 +93,20 @@ let CountryService = class CountryService {
             active: newCountry.active,
         };
     }
-    async findCountries(page, size, name) {
+    async findCountries(page = 1, size = 20, name) {
         let countries;
+        page = page <= 1 ? 0 : page;
+        console.log(page);
         if (!name) {
             countries = await this.countryRepository.findAll({
                 limit: size,
-                offset: page <= 0 ? 1 : page,
+                offset: page,
             });
         }
         else {
             countries = await this.countryRepository.findAll({
                 limit: size,
-                offset: page <= 0 ? 1 : page,
+                offset: page,
                 where: Object.assign({}, (name && {
                     [sequelize_2.Op.or]: [
                         {

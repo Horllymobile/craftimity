@@ -16,11 +16,12 @@ import { IResponse } from "src/core/interfaces/IResponse";
 import { ICountry } from "src/core/interfaces/ICountry";
 import { IPagination } from "src/core/interfaces/IPagination";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
-console.log(process.env.VERSION);
+// import { ApiBody } from "@nestjs/swagger";
 @Controller(`api/v1/countries`)
 export class CountryController implements ICountryController {
   constructor(private readonly countryService: CountryService) {}
 
+  // @ApiBody({ type: [CreateCountryDto] })
   @Post()
   async createCountry(
     @Body() payload: CreateCountryDto
@@ -68,11 +69,19 @@ export class CountryController implements ICountryController {
     @Param("id") id: number,
     @Body() updateCountryDto: UpdateCountryDto
   ): Promise<IResponse<ICountry>> {
-    return null;
+    await this.countryService.updateCountry(id, updateCountryDto);
+    return {
+      message: "Country updated successfully",
+      status: EResponseStatus.SUCCESS,
+    };
   }
 
   @Delete(":id")
   async deleteCountry(@Param("id") id: number): Promise<IResponse<ICountry>> {
-    return null;
+    await this.countryService.deleteCountry(id);
+    return {
+      message: "Country deleted successfully",
+      status: EResponseStatus.SUCCESS,
+    };
   }
 }

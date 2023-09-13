@@ -7,7 +7,7 @@ export declare class CountryService implements ICountryService {
     private countryRepository;
     constructor(countryRepository: typeof CountryEntity);
     createCountry(payload: CreateCountryDto): Promise<ICountry>;
-    findCountries(page: number, size: number, name?: string): Promise<ICountry[]>;
+    findCountries(page?: number, size?: number, name?: string): Promise<ICountry[]>;
     countCountries(): Promise<number>;
     findCountryById(id: number): Promise<ICountry>;
     updateCountry(id: number, updateCountryDto: UpdateCountryDto): Promise<ICountry>;
