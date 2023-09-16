@@ -4,4 +4,5 @@ export declare class CreateCountryDto {
     phoneCode: string;
     currency: string;
     currencyCode: string;
+    currencySymbol: string;
 }

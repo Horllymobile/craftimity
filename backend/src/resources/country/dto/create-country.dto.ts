@@ -29,4 +29,10 @@ export class CreateCountryDto {
   @IsNotEmpty()
   @Length(2, 3)
   currencyCode: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @Length(1, 3)
+  currencySymbol: string;
 }

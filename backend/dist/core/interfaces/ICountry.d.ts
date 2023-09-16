@@ -2,10 +2,11 @@ export interface ICountry {
     id?: number;
     name: string;
     code: string;
-    phoneCode: string;
+    phone_code: string;
     currency: string;
-    currencyCode: string;
+    currency_code: string;
+    symbol?: string;
     active: boolean;
-    createdAt?: string;
-    updatedAt?: string;
+    created_at?: string;
+    updated_at?: string;
 }

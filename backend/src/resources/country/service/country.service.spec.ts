@@ -3,19 +3,14 @@ import { CountryService } from "./country.service";
 import { ICountry } from "src/core/interfaces/ICountry";
 import { UpdateCountryDto } from "../dto/update-country.dto";
 import { CreateCountryDto } from "../dto/create-country.dto";
+import { SuperbaseService } from "src/core/services/superbase/superbase.service";
 
 describe("CountryService", () => {
   let service: CountryService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
-      providers: [
-        CountryService,
-        {
-          provide: "CountryEntityRepository",
-          useValue: {},
-        },
-      ],
+      providers: [CountryService, SuperbaseService],
     }).compile();
 
     service = module.get<CountryService>(CountryService);
@@ -32,10 +27,10 @@ describe("CountryService", () => {
         name: "Nigeria",
         code: "NG",
         currency: "Naira",
-        currencyCode: "NGN",
-        phoneCode: "234",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        currency_code: "NGN",
+        phone_code: "234",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         active: true,
       },
     ];
@@ -54,10 +49,10 @@ describe("CountryService", () => {
       name: "Nigeria",
       code: "NG",
       currency: "Naira",
-      currencyCode: "NGN",
-      phoneCode: "234",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      currency_code: "NGN",
+      phone_code: "234",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       active: true,
     };
     jest.spyOn(service, "findCountryById").mockImplementation(
@@ -77,16 +72,17 @@ describe("CountryService", () => {
       currency: "Naira",
       currencyCode: "NGN",
       phoneCode: "234",
+      currencySymbol: "N",
     };
     const result: ICountry = {
       id: 1,
       name: "Nigeria",
       code: "NG",
       currency: "Naira",
-      currencyCode: "NGN",
-      phoneCode: "234",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      currency_code: "NGN",
+      phone_code: "234",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       active: true,
     };
     jest.spyOn(service, "updateCountry").mockImplementation(
@@ -105,16 +101,17 @@ describe("CountryService", () => {
       currency: "Naira",
       currencyCode: "NGN",
       phoneCode: "234",
+      currencySymbol: "N",
     };
     const result: ICountry = {
       id: 1,
       name: "Nigeria",
       code: "NG",
       currency: "Naira",
-      currencyCode: "NGN",
-      phoneCode: "234",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      currency_code: "NGN",
+      phone_code: "234",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       active: true,
     };
     const countries = [];
@@ -159,10 +156,10 @@ describe("CountryService", () => {
       name: "Nigeria",
       code: "NG",
       currency: "Naira",
-      currencyCode: "NGN",
-      phoneCode: "234",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      currency_code: "NGN",
+      phone_code: "234",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       active: true,
     };
     const countries: ICountry[] = [
@@ -171,10 +168,10 @@ describe("CountryService", () => {
         name: "Nigeria",
         code: "NG",
         currency: "Naira",
-        currencyCode: "NGN",
-        phoneCode: "234",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        currency_code: "NGN",
+        phone_code: "234",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         active: true,
       },
     ];

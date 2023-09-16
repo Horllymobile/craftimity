@@ -10,12 +10,15 @@ exports.StateModule = void 0;
 const common_1 = require("@nestjs/common");
 const state_service_1 = require("./state.service");
 const state_controller_1 = require("./state.controller");
+const sequelize_1 = require("@nestjs/sequelize");
+const state_entity_1 = require("./entities/state.entity");
 let StateModule = class StateModule {
 };
 StateModule = __decorate([
     (0, common_1.Module)({
+        imports: [sequelize_1.SequelizeModule.forFeature([state_entity_1.StateEntity])],
         controllers: [state_controller_1.StateController],
-        providers: [state_service_1.StateService]
+        providers: [state_service_1.StateService],
     })
 ], StateModule);
 exports.StateModule = StateModule;

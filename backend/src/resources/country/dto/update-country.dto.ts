@@ -24,4 +24,9 @@ export class UpdateCountryDto {
   @IsString()
   @Length(2, 3)
   currencyCode: string;
+
+  @ApiProperty()
+  @IsString()
+  @Length(1, 3)
+  currencySymbol: string;
 }

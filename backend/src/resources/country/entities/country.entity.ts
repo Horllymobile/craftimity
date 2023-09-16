@@ -7,7 +7,9 @@ import {
   AutoIncrement,
   CreatedAt,
   UpdatedAt,
+  HasMany,
 } from "sequelize-typescript";
+import { StateEntity } from "src/resources/state/entities/state.entity";
 
 @Table
 export class CountryEntity extends Model {
@@ -35,11 +37,14 @@ export class CountryEntity extends Model {
   currencyCode: string;
 
   @CreatedAt
-  createdAt?: any;
+  createdAt?: string;
 
   @UpdatedAt
-  updatedAt?: any;
+  updatedAt?: string;
 
   @Column({ defaultValue: false })
   active: boolean;
+
+  @HasMany(() => StateEntity)
+  states: StateEntity[];
 }

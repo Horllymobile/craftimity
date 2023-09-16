@@ -42,5 +42,11 @@ __decorate([
     (0, class_validator_1.Length)(2, 3),
     __metadata("design:type", String)
 ], UpdateCountryDto.prototype, "currencyCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 3),
+    __metadata("design:type", String)
+], UpdateCountryDto.prototype, "currencySymbol", void 0);
 exports.UpdateCountryDto = UpdateCountryDto;
 //# sourceMappingURL=update-country.dto.js.map

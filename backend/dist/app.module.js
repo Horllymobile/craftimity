@@ -13,11 +13,21 @@ const app_service_1 = require("./app.service");
 const config_1 = require("@nestjs/config");
 const country_module_1 = require("./resources/country/country.module");
 const sequelize_1 = require("@nestjs/sequelize");
+const state_module_1 = require("./resources/state/state.module");
+const city_module_1 = require("./resources/city/city.module");
+const superbase_service_1 = require("./core/services/superbase/superbase.service");
+const throttler_1 = require("@nestjs/throttler");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            throttler_1.ThrottlerModule.forRoot([
+                {
+                    ttl: 60000,
+                    limit: 10,
+                },
+            ]),
             config_1.ConfigModule.forRoot({ isGlobal: true }),
             sequelize_1.SequelizeModule.forRoot({
                 dialect: "postgres",
@@ -31,10 +41,12 @@ AppModule = __decorate([
                 synchronize: true,
                 models: [],
             }),
+            city_module_1.CityModule,
+            state_module_1.StateModule,
             country_module_1.CountryModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [app_service_1.AppService, superbase_service_1.SuperbaseService],
     })
 ], AppModule);
 exports.AppModule = AppModule;

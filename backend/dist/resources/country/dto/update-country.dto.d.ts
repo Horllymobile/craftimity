@@ -4,4 +4,5 @@ export declare class UpdateCountryDto {
     phoneCode: string;
     currency: string;
     currencyCode: string;
+    currencySymbol: string;
 }

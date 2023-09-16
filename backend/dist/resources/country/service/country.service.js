@@ -8,156 +8,205 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
+var CountryService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CountryService = void 0;
 const common_1 = require("@nestjs/common");
-const sequelize_1 = require("@nestjs/sequelize");
-const country_entity_1 = require("../entities/country.entity");
-const sequelize_2 = require("sequelize");
-let CountryService = class CountryService {
-    constructor(countryRepository) {
-        this.countryRepository = countryRepository;
+const superbase_service_1 = require("../../../core/services/superbase/superbase.service");
+const ResponseStatus_1 = require("../../../core/enums/ResponseStatus");
+let CountryService = CountryService_1 = class CountryService {
+    constructor(superBaseService) {
+        this.superBaseService = superBaseService;
+        this.logger = new common_1.Logger(CountryService_1.name);
     }
     async createCountry(payload) {
-        let country = await this.countryRepository.findOne({
-            where: { name: payload.name },
-        });
-        if (country)
+        let res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("name", payload.name)
+            .single();
+        if (res.data)
             throw new common_1.ConflictException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
                 message: "Country already exist",
-                statusCode: common_1.HttpStatus.CONFLICT,
             });
-        country = await this.countryRepository.findOne({
-            where: { code: payload.code },
-        });
-        if (country)
+        res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("code", payload.code)
+            .single();
+        if (res.data)
             throw new common_1.ConflictException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
                 message: "Country already exist",
-                statusCode: common_1.HttpStatus.CONFLICT,
             });
-        country = await this.countryRepository.findOne({
-            where: { currency: payload.currency },
-        });
-        if (country)
+        res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("currency", payload.currency)
+            .single();
+        if (res.data)
             throw new common_1.ConflictException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
                 message: "Country already exist",
-                statusCode: common_1.HttpStatus.CONFLICT,
             });
-        country = await this.countryRepository.findOne({
-            where: { currencyCode: payload.currencyCode },
-        });
-        if (country)
+        res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("currency_code", payload.currencyCode)
+            .single();
+        if (res.data)
             throw new common_1.ConflictException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
                 message: "Country already exist",
-                statusCode: common_1.HttpStatus.CONFLICT,
             });
-        country = await this.countryRepository.findOne({
-            where: { phoneCode: payload.phoneCode },
-        });
-        if (country)
+        res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("phone_code", payload.phoneCode)
+            .single();
+        if (res.data)
             throw new common_1.ConflictException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
                 message: "Country already exist",
-                statusCode: common_1.HttpStatus.CONFLICT,
             });
-        let newCountry;
-        if (payload.name === "Nigeria" ||
-            payload.name === "United State of America") {
-            newCountry = await this.countryRepository.create({
-                name: payload.name,
-                code: payload.code,
-                currency: payload.currency,
-                currencyCode: payload.currencyCode,
-                phoneCode: payload.phoneCode,
-                active: true,
+        res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("symbol", payload.currencySymbol)
+            .single();
+        if (res.data)
+            throw new common_1.ConflictException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
+                message: "Country already exist",
             });
+        res = await this.superBaseService.connect().from("Country").insert({
+            name: payload.name,
+            code: payload.code,
+            phone_code: payload.phoneCode,
+            currency: payload.currency,
+            currency_code: payload.currencyCode,
+            symbol: payload.currencySymbol,
+        });
+        if (res.error) {
+            this.logger.error(res.error);
         }
-        else {
-            newCountry = await this.countryRepository.create({
-                name: payload.name,
-                code: payload.code,
-                currency: payload.currency,
-                currencyCode: payload.currencyCode,
-                phoneCode: payload.phoneCode,
-            });
-        }
-        newCountry.save();
-        return {
-            name: newCountry.name,
-            code: newCountry.code,
-            currency: newCountry.currency,
-            currencyCode: newCountry.currencyCode,
-            phoneCode: newCountry.phoneCode,
-            active: newCountry.active,
-        };
+        return res.data;
     }
     async findCountries(page = 1, size = 20, name) {
-        let countries;
         page = page <= 1 ? 0 : page;
-        console.log(page);
-        if (!name) {
-            countries = await this.countryRepository.findAll({
-                limit: size,
-                offset: page,
-            });
+        if (name) {
+            let { data, error } = await this.superBaseService
+                .connect()
+                .from("Country")
+                .select("id, name, code, currency, currency_code, phone_code, active, created_at, updated_at, symbol")
+                .ilike("name", `%${name}%`)
+                .limit(size)
+                .order("id", { ascending: true })
+                .range(page, size);
+            if (error) {
+                console.log(error);
+            }
+            return data;
         }
-        else {
-            countries = await this.countryRepository.findAll({
-                limit: size,
-                offset: page,
-                where: Object.assign({}, (name && {
-                    [sequelize_2.Op.or]: [
-                        {
-                            name: {
-                                [sequelize_2.Op.like]: `%${name ? name : ""}%`,
-                            },
-                        },
-                    ],
-                })),
-            });
+        let { data, error } = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("id, name, code, currency, currency_code, phone_code, active, created_at, updated_at, symbol")
+            .limit(size)
+            .order("id", { ascending: true })
+            .range(page, size);
+        if (error) {
+            console.log(error);
         }
-        return countries.map((country) => ({
-            id: country.id,
-            name: country.name,
-            code: country.code,
-            phoneCode: country.phoneCode,
-            currency: country.currency,
-            currencyCode: country.currencyCode,
-            createdAt: country.createdAt,
-            updatedAt: country.updatedAt,
-            active: country.active,
-        }));
+        return data;
     }
-    countCountries() {
-        return this.countryRepository.count();
+    async countCountries() {
+        let { data, count } = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*", { count: "exact", head: true });
+        return count;
     }
     async findCountryById(id) {
-        const country = await this.countryRepository.findOne({ where: { id } });
-        return {
-            id: country.id,
-            name: country.name,
-            code: country.code,
-            currency: country.currency,
-            currencyCode: country.currencyCode,
-            active: country.active,
-            phoneCode: country.phoneCode,
-            createdAt: country.createdAt,
-            updatedAt: country.updatedAt,
-        };
+        let res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("id", id)
+            .single();
+        if (!res.data)
+            throw new common_1.NotFoundException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
+                message: "Country not found",
+            });
+        return res.data;
     }
-    updateCountry(id, updateCountryDto) {
-        return null;
+    async updateCountry(id, payload) {
+        let res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("id", id)
+            .single();
+        if (!res.data)
+            throw new common_1.NotFoundException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
+                message: "Country not found",
+            });
+        res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .update({
+            name: payload.name,
+            code: payload.code,
+            phone_code: payload.phoneCode,
+            currency: payload.currency,
+            currency_code: payload.currencyCode,
+            symbol: payload.currencySymbol,
+        })
+            .eq("id", id);
+        if (res.error) {
+            this.logger.error(res.error);
+        }
+        return res.data;
     }
-    deleteCountry(id) {
-        return null;
+    async deleteCountry(id) {
+        let res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("id", id)
+            .single();
+        if (!res.data)
+            throw new common_1.NotFoundException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
+                message: "Country not found",
+            });
+        let { data, error } = await this.superBaseService
+            .connect()
+            .from("Country")
+            .delete()
+            .eq("id", id);
+        if (res.error) {
+            console.log(res.error);
+            throw new common_1.BadRequestException({
+                message: error.message,
+                status: ResponseStatus_1.EResponseStatus.ERROR,
+            });
+        }
+        return data;
     }
 };
-CountryService = __decorate([
+CountryService = CountryService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, sequelize_1.InjectModel)(country_entity_1.CountryEntity)),
-    __metadata("design:paramtypes", [Object])
+    __metadata("design:paramtypes", [superbase_service_1.SuperbaseService])
 ], CountryService);
 exports.CountryService = CountryService;
 //# sourceMappingURL=country.service.js.map

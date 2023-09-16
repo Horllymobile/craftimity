@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Put,
 } from "@nestjs/common";
 import { CountryService } from "../service/country.service";
 import { CreateCountryDto } from "../dto/create-country.dto";
@@ -16,12 +17,10 @@ import { IResponse } from "src/core/interfaces/IResponse";
 import { ICountry } from "src/core/interfaces/ICountry";
 import { IPagination } from "src/core/interfaces/IPagination";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
-// import { ApiBody } from "@nestjs/swagger";
 @Controller(`api/v1/countries`)
 export class CountryController implements ICountryController {
   constructor(private readonly countryService: CountryService) {}
 
-  // @ApiBody({ type: [CreateCountryDto] })
   @Post()
   async createCountry(
     @Body() payload: CreateCountryDto
@@ -64,12 +63,12 @@ export class CountryController implements ICountryController {
     };
   }
 
-  @Patch(":id")
+  @Put(":id")
   async updateCountry(
     @Param("id") id: number,
-    @Body() updateCountryDto: UpdateCountryDto
+    @Body() payload: UpdateCountryDto
   ): Promise<IResponse<ICountry>> {
-    await this.countryService.updateCountry(id, updateCountryDto);
+    await this.countryService.updateCountry(id, payload);
     return {
       message: "Country updated successfully",
       status: EResponseStatus.SUCCESS,

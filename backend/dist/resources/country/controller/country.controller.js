@@ -52,8 +52,8 @@ let CountryController = class CountryController {
             data: country,
         };
     }
-    async updateCountry(id, updateCountryDto) {
-        await this.countryService.updateCountry(id, updateCountryDto);
+    async updateCountry(id, payload) {
+        await this.countryService.updateCountry(id, payload);
         return {
             message: "Country updated successfully",
             status: ResponseStatus_1.EResponseStatus.SUCCESS,
@@ -91,7 +91,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CountryController.prototype, "findCountryById", null);
 __decorate([
-    (0, common_1.Patch)(":id"),
+    (0, common_1.Put)(":id"),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CountryEntity = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
+const state_entity_1 = require("../../state/entities/state.entity");
 let CountryEntity = class CountryEntity extends sequelize_typescript_1.Model {
 };
 __decorate([
@@ -44,16 +45,20 @@ __decorate([
 ], CountryEntity.prototype, "currencyCode", void 0);
 __decorate([
     sequelize_typescript_1.CreatedAt,
-    __metadata("design:type", Object)
+    __metadata("design:type", String)
 ], CountryEntity.prototype, "createdAt", void 0);
 __decorate([
     sequelize_typescript_1.UpdatedAt,
-    __metadata("design:type", Object)
+    __metadata("design:type", String)
 ], CountryEntity.prototype, "updatedAt", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ defaultValue: false }),
     __metadata("design:type", Boolean)
 ], CountryEntity.prototype, "active", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => state_entity_1.StateEntity),
+    __metadata("design:type", Array)
+], CountryEntity.prototype, "states", void 0);
 CountryEntity = __decorate([
     sequelize_typescript_1.Table
 ], CountryEntity);

@@ -1,4 +1,5 @@
 import { Model } from "sequelize-typescript";
+import { StateEntity } from "src/resources/state/entities/state.entity";
 export declare class CountryEntity extends Model {
     id: number;
     name: string;
@@ -6,7 +7,8 @@ export declare class CountryEntity extends Model {
     phoneCode: string;
     currency: string;
     currencyCode: string;
-    createdAt?: any;
-    updatedAt?: any;
+    createdAt?: string;
+    updatedAt?: string;
     active: boolean;
+    states: StateEntity[];
 }
