@@ -16,7 +16,7 @@ export class CreateCountryDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @Length(1, 3)
+  @Length(1, 4)
   phoneCode: string;
 
   @ApiProperty()

@@ -1,12 +1,11 @@
 import { Module } from "@nestjs/common";
-import { StateService } from "./state.service";
-import { StateController } from "./state.controller";
-import { SequelizeModule } from "@nestjs/sequelize";
-import { StateEntity } from "./entities/state.entity";
+import { StateService } from "./service/state.service";
+import { StateController } from "./controller/state.controller";
+import { SuperbaseService } from "src/core/services/superbase/superbase.service";
 
 @Module({
-  imports: [SequelizeModule.forFeature([StateEntity])],
+  imports: [],
   controllers: [StateController],
-  providers: [StateService],
+  providers: [StateService, SuperbaseService],
 })
 export class StateModule {}

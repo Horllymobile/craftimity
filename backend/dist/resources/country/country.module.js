@@ -10,14 +10,12 @@ exports.CountryModule = void 0;
 const common_1 = require("@nestjs/common");
 const country_service_1 = require("./service/country.service");
 const country_controller_1 = require("./controller/country.controller");
-const sequelize_1 = require("@nestjs/sequelize");
-const country_entity_1 = require("./entities/country.entity");
 const superbase_service_1 = require("../../core/services/superbase/superbase.service");
 let CountryModule = class CountryModule {
 };
 CountryModule = __decorate([
     (0, common_1.Module)({
-        imports: [sequelize_1.SequelizeModule.forFeature([country_entity_1.CountryEntity])],
+        imports: [],
         controllers: [country_controller_1.CountryController],
         providers: [country_service_1.CountryService, superbase_service_1.SuperbaseService],
     })

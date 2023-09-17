@@ -8,11 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StateEntity = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const city_entity_1 = require("../../city/entities/city.entity");
-const country_entity_1 = require("../../country/entities/country.entity");
+const country_entity_1 = require("src/resources/country/entities/country.entity");
 let StateEntity = class StateEntity extends sequelize_typescript_1.Model {
 };
 __decorate([
@@ -44,7 +45,7 @@ __decorate([
 ], StateEntity.prototype, "countryId", void 0);
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => country_entity_1.CountryEntity),
-    __metadata("design:type", country_entity_1.CountryEntity)
+    __metadata("design:type", typeof (_a = typeof country_entity_1.CountryEntity !== "undefined" && country_entity_1.CountryEntity) === "function" ? _a : Object)
 ], StateEntity.prototype, "country", void 0);
 __decorate([
     (0, sequelize_typescript_1.HasMany)(() => city_entity_1.CityEntity),

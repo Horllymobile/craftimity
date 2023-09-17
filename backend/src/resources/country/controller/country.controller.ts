@@ -17,6 +17,7 @@ import { IResponse } from "src/core/interfaces/IResponse";
 import { ICountry } from "src/core/interfaces/ICountry";
 import { IPagination } from "src/core/interfaces/IPagination";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
+import { ToogleActiveDto } from "../../../core/dto/dto";
 @Controller(`api/v1/countries`)
 export class CountryController implements ICountryController {
   constructor(private readonly countryService: CountryService) {}
@@ -71,6 +72,30 @@ export class CountryController implements ICountryController {
     await this.countryService.updateCountry(id, payload);
     return {
       message: "Country updated successfully",
+      status: EResponseStatus.SUCCESS,
+    };
+  }
+
+  @Patch(":id/activate")
+  async activateCity(
+    @Param("id") id: number,
+    @Body() payload: ToogleActiveDto
+  ): Promise<IResponse<ICountry>> {
+    await this.countryService.toggleActiveICountry(id, payload);
+    return {
+      message: "Country activated successfully",
+      status: EResponseStatus.SUCCESS,
+    };
+  }
+
+  @Patch(":id/deactivate")
+  async deactivateCity(
+    @Param("id") id: number,
+    @Body() payload: ToogleActiveDto
+  ): Promise<IResponse<ICountry>> {
+    await this.countryService.toggleActiveICountry(id, payload);
+    return {
+      message: "Country deactivated successfully",
       status: EResponseStatus.SUCCESS,
     };
   }

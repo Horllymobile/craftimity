@@ -12,7 +12,6 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const config_1 = require("@nestjs/config");
 const country_module_1 = require("./resources/country/country.module");
-const sequelize_1 = require("@nestjs/sequelize");
 const state_module_1 = require("./resources/state/state.module");
 const city_module_1 = require("./resources/city/city.module");
 const superbase_service_1 = require("./core/services/superbase/superbase.service");
@@ -29,18 +28,6 @@ AppModule = __decorate([
                 },
             ]),
             config_1.ConfigModule.forRoot({ isGlobal: true }),
-            sequelize_1.SequelizeModule.forRoot({
-                dialect: "postgres",
-                host: "localhost",
-                port: 5432,
-                username: process.env.DB_USER,
-                password: process.env.DB_PASSWORD,
-                database: process.env.DB_NAME,
-                logging: true,
-                autoLoadModels: true,
-                synchronize: true,
-                models: [],
-            }),
             city_module_1.CityModule,
             state_module_1.StateModule,
             country_module_1.CountryModule,

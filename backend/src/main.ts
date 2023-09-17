@@ -15,8 +15,6 @@ async function bootstrap() {
       you to find the right professionals for your projects, from plumbing and carpentry to electrical work and more.`
     )
     .setVersion("1.0")
-    .addTag("crats")
-    .addTag("tradesmen")
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {});

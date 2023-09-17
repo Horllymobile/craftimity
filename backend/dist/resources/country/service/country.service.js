@@ -111,9 +111,9 @@ let CountryService = CountryService_1 = class CountryService {
                 .order("id", { ascending: true })
                 .range(page, size);
             if (error) {
-                console.log(error);
+                this.logger.error(error);
             }
-            return data;
+            return data !== null && data !== void 0 ? data : [];
         }
         let { data, error } = await this.superBaseService
             .connect()
@@ -123,7 +123,7 @@ let CountryService = CountryService_1 = class CountryService {
             .order("id", { ascending: true })
             .range(page, size);
         if (error) {
-            console.log(error);
+            this.logger.error(error);
         }
         return data;
     }
@@ -177,6 +177,28 @@ let CountryService = CountryService_1 = class CountryService {
         }
         return res.data;
     }
+    async toggleActiveICountry(id, payload) {
+        let res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .select("*")
+            .eq("id", id)
+            .single();
+        if (!res.data)
+            throw new common_1.NotFoundException({
+                status: ResponseStatus_1.EResponseStatus.ERROR,
+                message: "Country not found",
+            });
+        res = await this.superBaseService
+            .connect()
+            .from("Country")
+            .update({ active: payload.activate })
+            .eq("id", id);
+        if (res.error) {
+            this.logger.error(res.error);
+        }
+        return res.data;
+    }
     async deleteCountry(id) {
         let res = await this.superBaseService
             .connect()
@@ -195,7 +217,7 @@ let CountryService = CountryService_1 = class CountryService {
             .delete()
             .eq("id", id);
         if (res.error) {
-            console.log(res.error);
+            this.logger.error(error);
             throw new common_1.BadRequestException({
                 message: error.message,
                 status: ResponseStatus_1.EResponseStatus.ERROR,

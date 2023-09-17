@@ -31,7 +31,7 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Length)(1, 3),
+    (0, class_validator_1.Length)(1, 4),
     __metadata("design:type", String)
 ], CreateCountryDto.prototype, "phoneCode", void 0);
 __decorate([

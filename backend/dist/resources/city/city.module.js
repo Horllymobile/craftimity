@@ -8,17 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CityModule = void 0;
 const common_1 = require("@nestjs/common");
-const city_service_1 = require("./city.service");
-const city_controller_1 = require("./city.controller");
-const sequelize_1 = require("@nestjs/sequelize");
-const city_entity_1 = require("./entities/city.entity");
+const city_service_1 = require("./service/city.service");
+const city_controller_1 = require("./controller/city.controller");
+const superbase_service_1 = require("../../core/services/superbase/superbase.service");
 let CityModule = class CityModule {
 };
 CityModule = __decorate([
     (0, common_1.Module)({
-        imports: [sequelize_1.SequelizeModule.forFeature([city_entity_1.CityEntity])],
+        imports: [],
         controllers: [city_controller_1.CityController],
-        providers: [city_service_1.CityService],
+        providers: [city_service_1.CityService, superbase_service_1.SuperbaseService],
     })
 ], CityModule);
 exports.CityModule = CityModule;

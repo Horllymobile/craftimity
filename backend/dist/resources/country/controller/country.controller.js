@@ -18,6 +18,7 @@ const country_service_1 = require("../service/country.service");
 const create_country_dto_1 = require("../dto/create-country.dto");
 const update_country_dto_1 = require("../dto/update-country.dto");
 const ResponseStatus_1 = require("../../../core/enums/ResponseStatus");
+const dto_1 = require("../../../core/dto/dto");
 let CountryController = class CountryController {
     constructor(countryService) {
         this.countryService = countryService;
@@ -56,6 +57,20 @@ let CountryController = class CountryController {
         await this.countryService.updateCountry(id, payload);
         return {
             message: "Country updated successfully",
+            status: ResponseStatus_1.EResponseStatus.SUCCESS,
+        };
+    }
+    async activateCity(id, payload) {
+        await this.countryService.toggleActiveICountry(id, payload);
+        return {
+            message: "Country activated successfully",
+            status: ResponseStatus_1.EResponseStatus.SUCCESS,
+        };
+    }
+    async deactivateCity(id, payload) {
+        await this.countryService.toggleActiveICountry(id, payload);
+        return {
+            message: "Country deactivated successfully",
             status: ResponseStatus_1.EResponseStatus.SUCCESS,
         };
     }
@@ -98,6 +113,22 @@ __decorate([
     __metadata("design:paramtypes", [Number, update_country_dto_1.UpdateCountryDto]),
     __metadata("design:returntype", Promise)
 ], CountryController.prototype, "updateCountry", null);
+__decorate([
+    (0, common_1.Patch)(":id/activate"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, dto_1.ToogleActiveDto]),
+    __metadata("design:returntype", Promise)
+], CountryController.prototype, "activateCity", null);
+__decorate([
+    (0, common_1.Patch)(":id/deactivate"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, dto_1.ToogleActiveDto]),
+    __metadata("design:returntype", Promise)
+], CountryController.prototype, "deactivateCity", null);
 __decorate([
     (0, common_1.Delete)(":id"),
     __param(0, (0, common_1.Param)("id")),

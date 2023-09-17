@@ -11,6 +11,7 @@ import { ICountry } from "src/core/interfaces/ICountry";
 import { ICountryService } from "src/core/interfaces/services/ICountryService";
 import { SuperbaseService } from "src/core/services/superbase/superbase.service";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
+import { IResponse } from "src/core/interfaces/IResponse";
 
 @Injectable()
 export class CountryService implements ICountryService {
@@ -132,9 +133,9 @@ export class CountryService implements ICountryService {
           .range(page, size);
 
       if (error) {
-        console.log(error);
+        this.logger.error(error);
       }
-      return data;
+      return data ?? [];
     }
     let { data, error }: { data: ICountry[]; error: any } =
       await this.superBaseService
@@ -148,7 +149,7 @@ export class CountryService implements ICountryService {
         .range(page, size);
 
     if (error) {
-      console.log(error);
+      this.logger.error(error);
     }
     return data;
   }
@@ -214,6 +215,35 @@ export class CountryService implements ICountryService {
     return res.data;
   }
 
+  async toggleActiveICountry(
+    id: number,
+    payload: { activate: boolean }
+  ): Promise<IResponse<ICountry>> {
+    let res = await this.superBaseService
+      .connect()
+      .from("Country")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (!res.data)
+      throw new NotFoundException({
+        status: EResponseStatus.ERROR,
+        message: "Country not found",
+      });
+
+    res = await this.superBaseService
+      .connect()
+      .from("Country")
+      .update({ active: payload.activate })
+      .eq("id", id);
+
+    if (res.error) {
+      this.logger.error(res.error);
+    }
+
+    return res.data;
+  }
+
   async deleteCountry(id: number): Promise<ICountry> {
     let res = await this.superBaseService
       .connect()
@@ -234,7 +264,7 @@ export class CountryService implements ICountryService {
       .delete()
       .eq("id", id);
     if (res.error) {
-      console.log(res.error);
+      this.logger.error(error);
       throw new BadRequestException({
         message: error.message,
         status: EResponseStatus.ERROR,
