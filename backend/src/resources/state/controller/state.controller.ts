@@ -18,7 +18,9 @@ import { IResponse } from "src/core/interfaces/IResponse";
 import { IState } from "src/core/interfaces/IState";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { ToogleActiveDto } from "src/core/dto/dto";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("State")
 @Controller("api/v1/states")
 export class StateController implements IStateController {
   constructor(private readonly stateService: StateService) {}

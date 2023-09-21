@@ -146,6 +146,7 @@ export class StateService implements IStateService {
       .from("State")
       .update({
         name: payload.name,
+        updated_at: new Date(),
       })
       .eq("id", id);
 

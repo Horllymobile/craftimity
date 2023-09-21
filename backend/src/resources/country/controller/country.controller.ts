@@ -18,6 +18,9 @@ import { ICountry } from "src/core/interfaces/ICountry";
 import { IPagination } from "src/core/interfaces/IPagination";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { ToogleActiveDto } from "../../../core/dto/dto";
+import { ApiTags } from "@nestjs/swagger";
+
+@ApiTags("Country")
 @Controller(`api/v1/countries`)
 export class CountryController implements ICountryController {
   constructor(private readonly countryService: CountryService) {}

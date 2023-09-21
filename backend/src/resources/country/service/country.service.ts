@@ -205,6 +205,7 @@ export class CountryService implements ICountryService {
         currency: payload.currency,
         currency_code: payload.currencyCode,
         symbol: payload.currencySymbol,
+        updated_at: new Date(),
       })
       .eq("id", id);
 

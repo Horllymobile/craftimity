@@ -4,21 +4,24 @@ import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 // import * as csurf from "csurf";
 import helmet from "helmet";
+import { CountryModule } from "./resources/country/country.module";
+import { StateModule } from "./resources/state/state.module";
+import { CityModule } from "./resources/city/city.module";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const config = new DocumentBuilder()
-    .setTitle("Craftimity")
-    .setDescription(
-      `Craftimity is your go-to platform for all things craftsmanship and home improvement. We connect skilled artisans, tradespeople, and DIY enthusiasts with homeowners and businesses in need of their services. Our mission is to make it easy for 
-      you to find the right professionals for your projects, from plumbing and carpentry to electrical work and more.`
-    )
+  const countryConfig = new DocumentBuilder()
+    .setTitle("Crafimity")
+    .setDescription("The Country API description")
     .setVersion("1.0")
+    .addTag("Country")
     .build();
 
-  const document = SwaggerModule.createDocument(app, config, {});
-  SwaggerModule.setup("api", app, document);
+  const countryDocument = SwaggerModule.createDocument(app, countryConfig, {
+    include: [CountryModule, StateModule, CityModule],
+  });
+  SwaggerModule.setup("api", app, countryDocument);
 
   app.useGlobalPipes(new ValidationPipe());
   // app.use(csurf());

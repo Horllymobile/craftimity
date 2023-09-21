@@ -7,6 +7,7 @@ export class CreateStateDto {
   @IsNotEmpty()
   name: string;
 
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
   country_id: number;

@@ -4,6 +4,7 @@ import { ICountry } from "src/core/interfaces/ICountry";
 import { UpdateCountryDto } from "../dto/update-country.dto";
 import { CreateCountryDto } from "../dto/create-country.dto";
 import { SuperbaseService } from "src/core/services/superbase/superbase.service";
+import { ToogleActiveDto } from "src/core/dto/dto";
 
 describe("CountryService", () => {
   let service: CountryService;
@@ -147,6 +148,56 @@ describe("CountryService", () => {
         })
     );
     expect(await service.countCountries()).toBe(result);
+  });
+
+  it("should activate a country by id", async () => {
+    const id = 1;
+    const payload: ToogleActiveDto = {
+      activate: true,
+    };
+    const result: ICountry = {
+      id: 1,
+      name: "Nigeria",
+      code: "NG",
+      currency: "Naira",
+      currency_code: "NGN",
+      phone_code: "234",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      active: true,
+    };
+    jest.spyOn(service, "updateCountry").mockImplementation(
+      () =>
+        new Promise((res, rej) => {
+          return res(result);
+        })
+    );
+    expect(await service.toggleActiveICountry(id, payload)).toBe(result);
+  });
+
+  it("should deactivate a country by id", async () => {
+    const id = 1;
+    const payload: ToogleActiveDto = {
+      activate: false,
+    };
+    const result: ICountry = {
+      id: 1,
+      name: "Nigeria",
+      code: "NG",
+      currency: "Naira",
+      currency_code: "NGN",
+      phone_code: "234",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      active: false,
+    };
+    jest.spyOn(service, "updateCountry").mockImplementation(
+      () =>
+        new Promise((res, rej) => {
+          return res(result);
+        })
+    );
+    expect(await service.toggleActiveICountry(id, payload)).toBe(result);
   });
 
   it("should delete a country by id", async () => {
