@@ -1,0 +1,39 @@
+<ion-content>
+  <section class="container">
+    <ion-img src="assets/svg/craftimity-blue.svg" class="w-16 mx-auto my-20"></ion-img>
+    <section class="border border-[#12427A] w-[90%] rounded-2xl mx-auto">
+      <div class="p-8 border-b border-[#12427A]">
+        <h1 *ngIf="type === 'phone'" class="text-[#12427A] text-center">Confirm Phone Number</h1>
+        <h1 *ngIf="type === 'email'" class="text-[#12427A] text-center">Confirm Email Address</h1>
+      </div>
+
+      <div class="p-8">
+        <h2 *ngIf="type === 'phone'" class="mb-4 text-xs text-[#12427A]">Enter the code we sent over SMS to {{ data }}
+        </h2>
+        <h2 *ngIf="type === 'email'" class="mb-4 text-xs text-[#12427A]">Enter the code we sent over Email to {{ data }}
+        </h2>
+        <form [formGroup]="form" (ngSubmit)="verifyOtp(formData)">
+          <div>
+            <input placeholder="----------------" formControlName="code"
+              class="w-full p-3 bg-white text-center text-[#12427A] border border-[#12427A] rounded-lg">
+            <div *ngIf="formControl['code'].errors" class="mt-2">
+              <p *ngIf="formControl['code'].dirty && formControl['code'].hasError('required')"
+                class="text-red-500 text-xs mt-1">Please
+                enter verification code to
+                procced</p>
+              <p class="text-red-500 text-xs mt-1"
+                *ngIf="formControl['code'].dirty && (formControl['code'].hasError('maxlength') || formControl['code'].hasError('minlength'))">
+                Code must be 6 digit long
+              </p>
+            </div>
+          </div>
+          <div class="flex justify-between align-middle">
+            <a class="text-[#12427A] underline self-center" href="#">More Options</a>
+            <ion-button type="submit" expand="medium" [disabled]="form.invalid"
+              class="button-custom mt-5">Continue</ion-button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </section>
+</ion-content>

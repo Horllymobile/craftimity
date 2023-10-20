@@ -14,6 +14,7 @@ import { HomeModule } from "./home/home.module";
 import { AuthModule } from "./auth/auth.module";
 import { WishlistsModule } from "./wishlists/wishlists.module";
 import { CommingSoonComponent } from "./comming-soon/comming-soon.component";
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [AppComponent, CommingSoonComponent],
@@ -27,8 +28,9 @@ import { CommingSoonComponent } from "./comming-soon/comming-soon.component";
     MaterialModule,
     ComponentsModule,
     BrowserAnimationsModule,
+    HttpClientModule,
   ],
-  providers: [provideClientHydration()],
+  // providers: [provideClientHydration()],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,0 +1,294 @@
+<div
+    class="lg:w-[512px] lg:mt-16 mb-16 mx-auto rounded-lg lg:border-[0.4pt] lg:border-gray-500 xl:border-[0.4pt] xl:border-gray-500 md:border-[0.4pt] md:border-gray-500">
+    <section>
+        <section *ngIf="steps !== EOnboardingStep.COMPLETE"
+            class="w-full p-5 text-center border-b border-b-[#878484] flex justify-between">
+            <span class="text-center text-xl font-semibold cursor-pointer" routerLink="/auth/login">&lt;</span>
+            <span class="text-center font-semibold">Create your profile</span>
+            <span></span>
+        </section>
+        <section *ngIf="steps === EOnboardingStep.COMPLETE"
+            class="w-full p-5 text-center border-b border-b-[#878484] flex justify-between">
+            <span class="text-center text-xl font-semibold cursor-pointer" routerLink="/auth/login">&lt;</span>
+            <span class="text-center font-semibold">Finish signing up</span>
+            <span></span>
+        </section>
+
+        <form class="p-8" [formGroup]="phoneForm" (ngSubmit)="onSubmitPhoneNumber(phoneFormData)"
+            *ngIf="steps === EOnboardingStep.PHONE_VERIFICATION">
+            <p class="text-sm text-center font-semibold">Step 1 of 2</p>
+            <p class="text-sm text-center">Confirm your phone number</p>
+            <p class="text-xs text-center">This is so your Hosts, craftman, or Craftimity can reach you.</p>
+            <div class="w-full mt-5">
+                <select formControlName="code" style="border-top-left-radius: 0.5em; border-top-right-radius: 0.5em;"
+                    class="w-full p-3 border-[0.4pt] border-[#878484] focus:outline-none" type="text">
+                    <ng-container *ngFor="let country of countries$ | async">
+                        <option [value]="country?.phone_code">({{ country?.name }}) ({{ country?.phone_code}})</option>
+                    </ng-container>
+                </select>
+            </div>
+            <div class="w-full mb-2">
+                <input formControlName="phone"
+                    style="border-bottom-left-radius: 0.5em; border-bottom-right-radius: 0.5em;"
+                    class="w-full p-3 border-[0.4pt] border-[#878484] mb-3 focus:outline-none" type="text"
+                    placeholder="Phone Number">
+                <p class="text-red-500 mb-3"
+                    *ngIf="phoneFormControl['phone'].dirty && phoneFormControl['phone'].hasError('required')">
+                    Please enter phone number
+                </p>
+                <p class="text-red-500 mb-3" *ngIf="phoneFormControl['phone'].dirty && phoneFormControl['phone'].hasError('minlength') 
+                    || phoneFormControl['phone'].hasError('maxlength')">
+                    Phone digits must be 10
+                </p>
+            </div>
+            <p class="text-xs text-[#878484]">We'll call or text you to confirm your number. Standard message and data
+                rates apply.</p>
+
+            <hr class="my-5">
+
+            <div class="w-full mb-5">
+                <button *ngIf="!isLoadingPhoneVerifcation" type="submit"
+                    class="w-full p-2 bg-[#E78614] text-white rounded-lg text-lg">Continue</button>
+                <mat-spinner *ngIf="isLoadingPhoneVerifcation" class="mx-auto" diameter="24" strokeWidth="3"
+                    color="warn"></mat-spinner>
+            </div>
+            <p class="text-center "><a href="#" class="underline">I'll do this later</a></p>
+        </form>
+
+        <form class="p-8" [formGroup]="emailForm" (ngSubmit)="onSubmitEmail(emailFormData)"
+            *ngIf="steps === EOnboardingStep.EMAIL_VERIFICATION">
+            <p class="text-sm text-center font-semibold">Step 1 of 2</p>
+            <p class="text-sm text-center">Confirm your email address</p>
+            <p class="text-xs text-center">This is so your Hosts, craftman, or Craftimity can reach you.</p>
+            <div class="w-full mb-2">
+                <input formControlName="email"
+                    style="border-bottom-left-radius: 0.5em; border-bottom-right-radius: 0.5em;"
+                    class="w-full p-3 border-[0.4pt] border-[#878484] mb-3 focus:outline-none" type="text"
+                    placeholder="Email Address">
+                <p class="text-red-500 mb-3"
+                    *ngIf="emailFormControl['email'].dirty && emailFormControl['email'].hasError('required')">
+                    Please enter email address
+                </p>
+                <p class="text-red-500 mb-3"
+                    *ngIf="emailFormControl['email'].dirty && emailFormControl['email'].hasError('email')">
+                    Phone enter correct email address
+                </p>
+            </div>
+
+            <hr class="my-5">
+
+            <div class="w-full mb-5">
+                <button *ngIf="!isLoadingEmailVerifcation" type="submit"
+                    class="w-full p-2 bg-[#E78614] text-white rounded-lg text-lg">Continue</button>
+                <mat-spinner *ngIf="isLoadingEmailVerifcation" class="mx-auto" diameter="24" strokeWidth="3"
+                    color="warn"></mat-spinner>
+            </div>
+            <p class="text-center "><a href="#" class="underline">I'll do this later</a></p>
+        </form>
+
+        <form class="p-8" [formGroup]="otpForm" (ngSubmit)="verifyOtpPhone(otpForm.value)"
+            *ngIf="steps === EOnboardingStep.OTP_VERIFICATION_PHONE">
+            <p class="text-sm text-center font-semibold">Step 1 of 2</p>
+            <p class="text-sm text-center">Confirm your phone number</p>
+            <p class="text-xs text-center">Enter the 6-digit code Cratimity just sent to {{
+                phoneFormData['code']+phoneFormData['phone'] }}
+            </p>
+            <div class="w-full mb-5">
+                <input formControlName="code" style="letter-spacing: 1em;"
+                    class="w-full text-center text-xl p-3 border-[0.4pt] rounded-lg border-[#878484]" type="text"
+                    placeholder="-   -   -   -   -">
+            </div>
+
+            <div class="w-full mb-5">
+                <button *ngIf="!isVerifyingOtp" type="submit"
+                    class="bg-[#E78614] w-full p-2 rounded-lg text-lg text-white">Continue</button>
+                <mat-spinner *ngIf="isVerifyingOtp" class="mx-auto" diameter="24" strokeWidth="3"
+                    color="warn"></mat-spinner>
+            </div>
+
+            <p class="text-xs text-[#878484] text-center">Didn't get a text?
+                <a *ngIf="timer < 1" class="font-bold underline cursor-pointer"
+                    (click)="onSubmitPhoneNumber(phoneFormData)">Send
+                    again</a>
+                <span *ngIf="timer > 0">Send again in {{ timer }}</span>
+            </p>
+            <p class="text-center "><a href="#" class="underline">I'll do this later</a></p>
+        </form>
+
+        <form class="p-8" [formGroup]="otpForm" (ngSubmit)="verifyOtpEmail(otpForm.value)"
+            *ngIf="steps === EOnboardingStep.OTP_VERIFICATION_EMAIL">
+            <p class="text-sm text-center font-semibold">Step 1 of 2</p>
+            <p class="text-sm text-center">Confirm your email address</p>
+            <p class="text-xs text-center">Enter the 6-digit code Cratimity just sent to {{
+                emailFormData['email'] }}
+            </p>
+            <div class="w-full mb-5">
+                <input formControlName="code" style="letter-spacing: 1em;"
+                    class="w-full text-center text-xl p-3 border-[0.4pt] rounded-lg border-[#878484]" type="text"
+                    placeholder="-   -   -   -   -">
+            </div>
+
+            <div class="w-full mb-5">
+                <button *ngIf="!isVerifyingOtp" type="submit"
+                    class="bg-[#E78614] w-full p-2 rounded-lg text-lg text-white">Continue</button>
+                <mat-spinner *ngIf="isVerifyingOtp" class="mx-auto" diameter="24" strokeWidth="3"
+                    color="warn"></mat-spinner>
+            </div>
+
+            <p class="text-xs text-[#878484] text-center">Didn't get a text?
+                <a *ngIf="timer < 1" class="font-bold underline cursor-pointer"
+                    (click)="onSubmitEmail(emailFormData)">Send
+                    again</a>
+                <span *ngIf="timer > 0">Send again in {{ timer }}</span>
+            </p>
+            <p class="text-center "><a href="#" class="underline">I'll do this later</a></p>
+        </form>
+
+        <form class="p-8" [formGroup]="imageForm" (ngSubmit)="submitImage()"
+            *ngIf="steps === EOnboardingStep.IMAGE_UPLOAD">
+            <p class="text-sm text-center font-semibold">Step 2 of 2</p>
+            <p class="text-sm text-center">Add a profile photo</p>
+            <p class="text-xs text-center">Pick an image that shows your face. Hosts won't be able to see your profile
+                photo until your service is confirmed.
+            </p>
+
+            <div *ngIf="imageChangedEvent">
+
+                <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                    [containWithinAspectRatio]="containWithinAspectRatio" [aspectRatio]="1 / 1" [resizeToWidth]="256"
+                    [cropperMinWidth]="100" [onlyScaleDown]="true" [roundCropper]="true"
+                    [canvasRotation]="canvasRotation" [transform]="transform" [alignImage]="'left'"
+                    [style.display]="showCropper ? null : 'none'" format="png" (imageCropped)="imageCropped($event)"
+                    (imageLoaded)="imageLoaded()" (cropperReady)="cropperReady($event)"
+                    (loadImageFailed)="loadImageFail()"></image-cropper>
+
+                <mat-icon (click)="deleteImage()" color="danger">delete</mat-icon>
+            </div>
+
+            <div *ngIf="!imageChangedEvent">
+                <label for="image">
+                    <img src="assets/placeholder.png" class="mx-auto cursor-pointer" alt="">
+                </label>
+                <input type="file" id="image" class="hidden" accept="image/*" formControlName="url"
+                    (change)="uploadImage($event)">
+            </div>
+            <!-- <div class="w-full mb-5">
+                <input formControlName="url" style="letter-spacing: 1em;"
+                    class="w-full text-center text-xl p-3 border-[0.4pt] rounded-lg border-[#878484]" type="text"
+                    placeholder="-   -   -   -   -">
+            </div> -->
+
+            <div class="w-full mb-5">
+                <button *ngIf="!isUploadingImage" type="submit"
+                    class="bg-[#E78614] w-full p-2 rounded-lg text-lg text-white">Continue</button>
+                <mat-spinner *ngIf="isUploadingImage" class="mx-auto" diameter="24" strokeWidth="3"
+                    color="warn"></mat-spinner>
+            </div>
+            <p class="text-center "><a href="#" class="underline">I'll do this later</a></p>
+        </form>
+
+        <form class="p-8" [formGroup]="form" (ngSubmit)="updateUser(formData)"
+            *ngIf="steps === EOnboardingStep.COMPLETE">
+
+            <div class="w-full mt-5">
+                <input formControlName="firstName" placeholder="First Name"
+                    style="border-top-left-radius: 0.5em; border-top-right-radius: 0.5em;"
+                    class="w-full p-3 border-[0.4pt] border-[#878484] focus:outline-none" type="text">
+            </div>
+            <div class="w-full mb-2">
+                <input formControlName="lastName"
+                    style="border-bottom-left-radius: 0.5em; border-bottom-right-radius: 0.5em;"
+                    class="w-full p-3 border-[0.4pt] mb-2 border-[#878484] border-t-0 focus:outline-none" type="text"
+                    placeholder="Last Name">
+                <p class="text-xs text-[#878484] mb-2">Make sure it matches the name on your government ID.</p>
+                <p class="text-red-500 mb-3"
+                    *ngIf="formControl['firstName'].dirty && formControl['firstName'].hasError('required')">
+                    Please enter First Name
+                </p>
+                <p class="text-red-500 mb-3"
+                    *ngIf="formControl['lastName'].dirty && formControl['lastName'].hasError('required')">
+                    Please enter Last Name
+                </p>
+            </div>
+
+
+            <div class="w-full mb-2">
+                <input formControlName="birthdate" style="border-radius: 0.5em;"
+                    class="w-full  mt-3 p-3 border-[0.4pt] mb-2 rounded-lg border-[#878484]" type="date">
+                <p class="text-xs text-[#878484] mb-2">To sign up, you need to be at least 18. Your birthday won’t be
+                    shared
+                    with other people who use Craftimity</p>
+                <p class="text-red-500 mb-3"
+                    *ngIf="formControl['birthdate'].dirty && formControl['birthdate'].hasError('required')">
+                    Please enter Date of birth dd/mm/yyyy
+                </p>
+            </div>
+
+            <div class="w-full mb-2">
+                <input formControlName="address" placeholder="Address Line 1" style="border-radius: 0.5em;"
+                    class="w-full  mt-3 p-3 border-[0.4pt] mb-2 rounded-lg border-[#878484]" type="text">
+            </div>
+
+            <div class="w-full mb-2">
+                <input formControlName="address" placeholder="Address Line 2" style="border-radius: 0.5em;"
+                    class="w-full  mt-3 p-3 border-[0.4pt] mb-2 rounded-lg border-[#878484]" type="text">
+            </div>
+
+            <div class="w-full mt-5 flex justify-between gap-5">
+                <select formControlName="country" style="border-radius: 0.5em;"
+                    (ngModelChange)="onSelectCountry($event)"
+                    class="w-full p-3 border-[0.4pt] border-[#878484] focus:outline-none" type="text">
+                    <option value="">Select Country</option>
+                    <ng-container *ngFor="let country of countries$ | async">
+                        <option [value]="country.id">{{ country?.name }}</option>
+                    </ng-container>
+                </select>
+                <select formControlName="state" (ngModelChange)="onSelectState($event)" style="border-radius: 0.5em;"
+                    class="w-full p-3 border-[0.4pt] border-[#878484] focus:outline-none" type="text">
+                    <option value="">Select State</option>
+                    <ng-container *ngFor="let state of states$ | async">
+                        <option [value]="state.id">{{ state?.name }}</option>
+                    </ng-container>
+                </select>
+                <select formControlName="city" style="border-radius: 0.5em;"
+                    class="w-full p-3 border-[0.4pt] border-[#878484] focus:outline-none" type="text">
+                    <option value="">Select City</option>
+                    <ng-container *ngFor="let city of cities$ | async">
+                        <option [value]="city.id">{{ city?.name }}</option>
+                    </ng-container>
+                </select>
+            </div>
+
+            <div class="w-full mb-2">
+                <div class="relative">
+                    <input formControlName="password" style="border-radius: 0.5em;"
+                        class="w-full  mt-3 p-3 border-[0.4pt] mb-2 rounded-lg border-[#878484]"
+                        [type]="showPassword ? 'text' : 'password'" placeholder="Password">
+                    <span (click)="onShowPassword()"
+                        class="text-sm text-[#878484] mb-2 absolute top-6 right-3 cursor-pointer"
+                        [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
+                </div>
+            </div>
+
+            <div class="w-full my-3 flex gap-2">
+                <input formControlName="accept" type="checkbox" id="checkbox" style="width: 40px;"
+                    class="text-[#E78614] mb-2 rounded-lg">
+                <label for="checkbox" class="text-xs">By selecting Agree and Continue, I agree to Craftimity's Terms of
+                    Service, Payments
+                    Terms of
+                    Service, and Nondiscrimination Policy. and acknowledge the Privacy Policy.</label>
+            </div>
+
+
+            <!--  -->
+            <div class="w-full mb-5">
+                <button [disabled]="!isFormValid(form)" *ngIf="!isUpdatingUser" type="submit"
+                    class="w-full p-2 rounded-lg text-lg"
+                    [ngClass]="isFormValid(form) ? 'bg-[#E78614] text-white' : 'bg-[#e8e5e1] text-black'">Continue</button>
+                <mat-spinner *ngIf="isUpdatingUser" class="mx-auto" diameter="24" strokeWidth="3"
+                    color="warn"></mat-spinner>
+            </div>
+            <p class="text-center "><a href="#" class="underline">I'll do this later</a></p>
+        </form>
+    </section>
+</div>

@@ -1,0 +1,36 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title *ngIf="userData" class="text-xl">Hi, {{ userData.first_name }}</ion-title>
+    <!-- <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="notifications-outline"></ion-icon>
+      </ion-button>
+      <ion-button>
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons> -->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large" *ngIf="userData" class="text-xl">Hi, {{ userData.first_name }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon name="notifications-outline" color="dark"></ion-icon>
+        </ion-button>
+        <ion-button>
+          <ion-icon name="search-outline" color="dark"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <section class="p-1 mt-4 flex justify-start gap-4 overflow-x-scroll border-b">
+    <div *ngFor="let category of categories">
+      <ion-img [src]="category.icon" class="w-8 mx-auto"></ion-img>
+      <p class="text-[0.70em]">{{ category.name }}</p>
+    </div>
+  </section>
+</ion-content>

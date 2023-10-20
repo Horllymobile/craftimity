@@ -1,0 +1,25 @@
+<div
+    class="lg:w-[512px] lg:mt-16 mb-16 mx-auto rounded-lg lg:border-[0.4pt] lg:border-gray-500 xl:border-[0.4pt] xl:border-gray-500 md:border-[0.4pt] md:border-gray-500">
+    <section>
+        <section class="w-full p-5 text-center border-b border-b-[#878484] flex justify-between">
+            <span class="text-center text-lg font-semibold cursor-pointer" routerLink="/auth/login">&lt;</span>
+            <span class="text-center font-semibold">Confirm your email</span>
+            <span></span>
+        </section>
+
+        <form class="p-8" [formGroup]="form" (ngSubmit)="verifyOtp(form.value)">
+            <p class="text-sm mb-8">Enter the code we sent over email to: {{ email$ | async }}</p>
+            <div class="w-full mb-5">
+                <input formControlName="code" style="letter-spacing: 1em;"
+                    class="w-full text-center text-xl p-3 border-[0.4pt] rounded-lg border-[#878484]" type="text"
+                    placeholder="-   -   -   -   -">
+            </div>
+
+            <div class="w-full mb-5">
+                <button *ngIf="!isLoading" type="submit"
+                    class="bg-[#E78614] w-full p-2 rounded-lg text-lg text-white">Continue</button>
+                <mat-spinner *ngIf="isLoading" class="mx-auto" diameter="24" strokeWidth="3" color="warn"></mat-spinner>
+            </div>
+        </form>
+    </section>
+</div>

@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
+import { NgModule, inject } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { ExploreComponent } from './page/explore/explore.component';
 import { WishlistsComponent } from './page/wishlists/wishlists.component';
-import { LoginComponent } from './page/login/login.component';
 import { PagePage } from './page/page.page';
+import { AuthGuard } from './core/guards/auth/auth.guard';
+import { SessionGuard } from './core/guards/session/session.guard';
 
 const routes: Routes = [
   {
@@ -16,8 +17,9 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'login',
-        component: LoginComponent,
+        path: 'auth',
+        loadChildren: () =>
+          import('./page/auth/auth.module').then((m) => m.AuthModule),
       },
       {
         path: 'explore',
@@ -28,6 +30,13 @@ const routes: Routes = [
         component: WishlistsComponent,
       },
     ],
+    canActivate: [SessionGuard],
+  },
+  {
+    path: 'admin',
+    loadChildren: () =>
+      import('./admin/admin.module').then((m) => m.HomePageModule),
+    canActivate: [AuthGuard],
   },
 ];
 

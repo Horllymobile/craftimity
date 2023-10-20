@@ -7,6 +7,8 @@ import { StateModule } from "./resources/state/state.module";
 import { CityModule } from "./resources/city/city.module";
 import { SuperbaseService } from "./core/services/superbase/superbase.service";
 import { ThrottlerModule } from "@nestjs/throttler";
+import { UserModule } from './resources/user/user.module';
+import { AuthModule } from './resources/auth/auth.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot([
@@ -19,6 +21,8 @@ import { ThrottlerModule } from "@nestjs/throttler";
     CityModule,
     StateModule,
     CountryModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, SuperbaseService],

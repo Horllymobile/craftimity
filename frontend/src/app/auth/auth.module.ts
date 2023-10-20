@@ -5,8 +5,25 @@ import { ComponentsModule } from "../components/components.module";
 import { MaterialModule } from "../core/shared/material.module";
 import { SharedModule } from "../core/shared/shared.module";
 import { LoginPageComponent } from "./login-page/login-page.component";
+import { ReactiveFormsModule } from "@angular/forms";
+import { PhoneVerificationComponent } from "./phone-verification/phone-verification.component";
+import { EmailVerificationComponent } from "./email-verification/email-verification.component";
+import { ToastrService } from "ngx-toastr";
+import { OnboardingComponent } from "./onboarding/onboarding.component";
 
 const routes: Routes = [
+  {
+    path: "onboarding",
+    component: OnboardingComponent,
+  },
+  {
+    path: "verify-phone/:phone",
+    component: PhoneVerificationComponent,
+  },
+  {
+    path: "verify-email/:email",
+    component: EmailVerificationComponent,
+  },
   {
     path: "login",
     component: LoginPageComponent,
@@ -19,13 +36,20 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [LoginPageComponent],
+  declarations: [
+    LoginPageComponent,
+    PhoneVerificationComponent,
+    EmailVerificationComponent,
+    OnboardingComponent,
+  ],
   imports: [
     CommonModule,
     ComponentsModule,
     RouterModule.forChild(routes),
     MaterialModule,
     SharedModule,
+    ReactiveFormsModule,
   ],
+  providers: [ToastrService],
 })
 export class AuthModule {}

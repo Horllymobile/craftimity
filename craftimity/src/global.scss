@@ -29,3 +29,9 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
+.loader {
+  --background: linear-gradient( rgba(253, 252, 252, 0.5) 100%, rgba(0, 0, 0, 0.5)100%)
+  ,url(assets/svg/craftimity-blue.svg) no-repeat center;
+  --width: 50%;
+}
