@@ -30,8 +30,8 @@ export class UserController implements IUserController {
 
   @Get()
   async findUsers(
-    @Query("page") page: number,
-    @Query("size") size: number,
+    @Query("page") page: number = 1,
+    @Query("size") size: number = 20,
     @Query("name") name?: string
   ): Promise<IResponse<IPagination<IUser[]>>> {
     const user = await this.userService.findUsers(page, size, name);

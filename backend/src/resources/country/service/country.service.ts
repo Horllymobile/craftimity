@@ -115,7 +115,7 @@ export class CountryService implements ICountryService {
 
   async findCountries(
     page: number = 1,
-    size: number = 20,
+    size: number = 10,
     name?: string
   ): Promise<ICountry[]> {
     page = page <= 1 ? 0 : page;

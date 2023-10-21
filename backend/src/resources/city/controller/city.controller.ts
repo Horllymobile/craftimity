@@ -38,7 +38,7 @@ export class CityController implements ICityController {
   @Get("")
   async findCities(
     @Query("page") page: number = 1,
-    @Query("size") size: number = 10,
+    @Query("size") size: number = 20,
     @Query("name") name?: string,
     @Query("state") state_id?: number
   ): Promise<IResponse<IPagination<ICity[]>>> {

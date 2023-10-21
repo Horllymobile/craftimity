@@ -40,7 +40,7 @@ export class StateController implements IStateController {
   @Get("")
   async findStates(
     @Query("page") page: number = 1,
-    @Query("size") size: number = 10,
+    @Query("size") size: number = 20,
     @Query("name") name?: string,
     @Query("country") country_id?: number
   ): Promise<IResponse<IPagination<IState[]>>> {

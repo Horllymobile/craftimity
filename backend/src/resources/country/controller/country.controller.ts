@@ -39,8 +39,8 @@ export class CountryController implements ICountryController {
 
   @Get()
   async findCountries(
-    @Query("page") page: number,
-    @Query("size") size: number,
+    @Query("page") page: number = 1,
+    @Query("size") size: number = 10,
     @Query("name") name?: string
   ): Promise<IResponse<IPagination<ICountry[]>>> {
     const countries = await this.countryService.findCountries(page, size, name);
