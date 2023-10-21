@@ -27,10 +27,11 @@
     </ion-toolbar>
   </ion-header>
 
-  <section class="p-1 mt-4 flex justify-start gap-4 overflow-x-scroll border-b">
+  <section class="p-1 mt-4 flex justify-start gap-4 overflow-x-scroll border-b"
+    *ngIf="categories$ | async as categories">
     <div *ngFor="let category of categories">
-      <ion-img [src]="category.icon" class="w-8 mx-auto"></ion-img>
-      <p class="text-[0.70em]">{{ category.name }}</p>
+      <ion-img [src]="category.icon" class="w-12 mx-auto"></ion-img>
+      <p class="text-[0.75em]">{{ category.name }}</p>
     </div>
   </section>
 </ion-content>
