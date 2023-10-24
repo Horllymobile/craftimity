@@ -42,13 +42,15 @@ export class StateController implements IStateController {
     @Query("page") page: number = 1,
     @Query("size") size: number = 20,
     @Query("name") name?: string,
-    @Query("country") country_id?: number
+    @Query("country") country_id?: number,
+    @Query("status") status?: boolean
   ): Promise<IResponse<IPagination<IState[]>>> {
     const states = await this.stateService.findStates(
       page,
       size,
       name,
-      country_id
+      country_id,
+      status
     );
     const total = await this.stateService.countStates();
     return {

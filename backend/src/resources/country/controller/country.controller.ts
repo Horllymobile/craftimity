@@ -41,9 +41,15 @@ export class CountryController implements ICountryController {
   async findCountries(
     @Query("page") page: number = 1,
     @Query("size") size: number = 10,
-    @Query("name") name?: string
+    @Query("name") name?: string,
+    @Query("status") status?: boolean
   ): Promise<IResponse<IPagination<ICountry[]>>> {
-    const countries = await this.countryService.findCountries(page, size, name);
+    const countries = await this.countryService.findCountries(
+      page,
+      size,
+      name,
+      status
+    );
     const total = await this.countryService.countCountries();
     return {
       message: "Countries fetched successfully",

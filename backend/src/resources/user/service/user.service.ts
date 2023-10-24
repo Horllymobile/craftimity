@@ -14,11 +14,15 @@ import { generateVerifcationCode } from "src/core/utils/verification-code";
 import { VerifyPhoneOtpDto, VerifyUserDto } from "../dto/verify-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { ERole } from "src/core/enums/Role";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class UserService implements IUserService {
   private readonly logger = new Logger(UserService.name);
-  constructor(private readonly superBaseService: SuperbaseService) {}
+  constructor(
+    private readonly superBaseService: SuperbaseService,
+    private jwtService: JwtService
+  ) {}
 
   async checkUser(payload: UserCheckDto): Promise<any> {
     let user: IUser;
@@ -65,6 +69,7 @@ export class UserService implements IUserService {
         .ilike("idx_user_name", `%${name}%`)
         .limit(size)
         .order("id", { ascending: true })
+        .eq("active", true)
         .range(page, size);
     } else {
       res = await this.superBaseService
@@ -77,6 +82,7 @@ export class UserService implements IUserService {
         updated_at, country_id, state_id, city_id`
         )
         .limit(size)
+        .eq("active", true)
         .range(page, size);
     }
 
@@ -303,10 +309,8 @@ export class UserService implements IUserService {
 
     if (payload.type === "email") {
       user = await this.updateEmail(payload);
-      console.log(user);
     } else {
       user = await this.updatePhone(payload);
-      console.log(user);
     }
 
     await this.superBaseService
@@ -314,10 +318,23 @@ export class UserService implements IUserService {
       .from("verification_code")
       .delete()
       .eq("code", payload.code);
+
+    const jwtPayload = {
+      sub: user.id,
+      ...(user.email && { email: user.email }),
+      ...(user.phone_number && { phone: user.phone_number }),
+      type: payload.type,
+    };
+
+    const token = await this.jwtService.signAsync(jwtPayload);
+
     return {
       message: "Verification successfull",
       status: EResponseStatus.SUCCESS,
-      data: user,
+      data: {
+        user,
+        token: token,
+      },
     };
   }
 

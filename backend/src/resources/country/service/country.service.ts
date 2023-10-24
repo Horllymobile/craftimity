@@ -116,7 +116,8 @@ export class CountryService implements ICountryService {
   async findCountries(
     page: number = 1,
     size: number = 10,
-    name?: string
+    name?: string,
+    status?: boolean
   ): Promise<ICountry[]> {
     page = page <= 1 ? 0 : page;
     if (name) {
@@ -130,6 +131,7 @@ export class CountryService implements ICountryService {
           .ilike("name", `%${name}%`)
           .limit(size)
           .order("id", { ascending: true })
+          .eq("active", status ?? true)
           .range(page, size);
 
       if (error) {
@@ -146,6 +148,7 @@ export class CountryService implements ICountryService {
         )
         .limit(size)
         .order("id", { ascending: true })
+        .eq("active", status ?? true)
         .range(page, size);
 
     if (error) {

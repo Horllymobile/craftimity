@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { UserService } from "../service/user.service";
 import { IUserController } from "src/core/interfaces/controllers/IUserController";
@@ -22,6 +23,8 @@ import {
 import { IUser } from "src/core/interfaces/IUser";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { IPagination } from "src/core/interfaces/IPagination";
+import { AuthGuard } from "src/core/guards/auth.guard";
+import { Public } from "src/core/decorators/public-route";
 
 @ApiTags("User")
 @Controller("api/v1/users")
@@ -57,6 +60,7 @@ export class UserController implements IUserController {
     };
   }
 
+  @Public()
   @Post("/check")
   async checkUser(
     @Body() payload: UserCheckDto
@@ -73,6 +77,7 @@ export class UserController implements IUserController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Put(":id")
   async updateUser(
     @Param("id") id: string,

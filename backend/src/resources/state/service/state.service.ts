@@ -48,7 +48,8 @@ export class StateService implements IStateService {
     page: number,
     size: number,
     name?: string,
-    country_id?: number
+    country_id?: number,
+    status?: boolean
   ): Promise<IState[]> {
     page = page <= 1 ? 0 : page;
     let res: { data: IState[]; error: any };
@@ -62,6 +63,7 @@ export class StateService implements IStateService {
         .ilike("name", `%${name}%`)
         .limit(size)
         .eq("country_id", country_id)
+        .eq("active", status ?? true)
         .order("id", { ascending: true })
         .range(page, size);
     } else if (name) {
@@ -75,6 +77,7 @@ export class StateService implements IStateService {
         .limit(size)
         .eq("country_id", country_id)
         .order("id", { ascending: true })
+        .eq("active", status ?? true)
         .range(page, size);
     } else if (country_id) {
       res = await this.superBaseService
@@ -86,6 +89,7 @@ export class StateService implements IStateService {
         .eq("country_id", country_id)
         .limit(size)
         .order("id", { ascending: true })
+        .eq("active", status ?? true)
         .range(page, size);
     } else {
       res = await this.superBaseService
@@ -96,6 +100,7 @@ export class StateService implements IStateService {
         )
         .limit(size)
         .order("id", { ascending: true })
+        .eq("active", status ?? true)
         .range(page, size);
     }
 

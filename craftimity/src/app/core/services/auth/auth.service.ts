@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -20,6 +20,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private baseUrl = environment.BASE_URL;
+  headers = new HttpHeaders();
   constructor(
     private http: HttpClient,
     private jwtHelperService: JwtHelperService,
@@ -53,10 +54,13 @@ export class AuthService {
       .pipe(map((res) => res.data));
   }
 
-  verifyOtp(payload: IVerifyOtp): Observable<IAPICallResponse<IUser>> {
+  verifyOtp(payload: IVerifyOtp): Observable<{ user: IUser; token: string }> {
     return this.http
-      .patch<IAPICallResponse<IUser>>(`${this.baseUrl}/users/verify`, payload)
-      .pipe(map((res) => res));
+      .patch<IAPICallResponse<{ user: IUser; token: string }>>(
+        `${this.baseUrl}/users/verify`,
+        payload
+      )
+      .pipe(map((res) => res.data));
   }
 
   verifyPhoneOtp(payload: IVerifyPhoneOtp): Observable<IAPIResponse> {
@@ -78,18 +82,36 @@ export class AuthService {
   }
 
   updateImageUrl(id: string, payload: { profile_image: string }) {
+    const token = localStorage.getItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);
+    let tok: string = '';
+    if (token) {
+      tok = `Bearer ${token}`;
+    }
     return this.http
-      .put<IAPIResponse>(`${this.baseUrl}/users/${id}`, payload)
+      .put<IAPIResponse>(`${this.baseUrl}/users/${id}`, payload, {
+        headers: { Authorization: tok },
+      })
       .pipe(map((res) => res.message));
   }
 
   updateUser(id: string, payload: IUpdateUser) {
+    const token = localStorage.getItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);
+    let tok: string = '';
+    if (token) {
+      tok = `Bearer ${token}`;
+    }
     return this.http
-      .put<IAPIResponse>(`${this.baseUrl}/users/${id}`, payload)
+      .put<IAPIResponse>(`${this.baseUrl}/users/${id}`, payload, {
+        headers: { Authorization: tok },
+      })
       .pipe(map((res) => res.message));
   }
 
   getUserById(id: string) {
+    // const token = localStorage.getItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);
+    // if (token) {
+    //   this.headers.append('Authorization', token);
+    // }
     return this.http
       .get<IAPICallResponse<IUser>>(`${this.baseUrl}/users/${id}`)
       .pipe(map((res) => res.data));

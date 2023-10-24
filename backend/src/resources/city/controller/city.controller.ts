@@ -40,13 +40,15 @@ export class CityController implements ICityController {
     @Query("page") page: number = 1,
     @Query("size") size: number = 20,
     @Query("name") name?: string,
-    @Query("state") state_id?: number
+    @Query("state") state_id?: number,
+    @Query("status") status?: boolean
   ): Promise<IResponse<IPagination<ICity[]>>> {
     const cities = await this.cityService.findCities(
       page,
       size,
       name,
-      state_id
+      state_id,
+      status
     );
     const total = await this.cityService.countCities();
     return {

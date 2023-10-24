@@ -8,6 +8,7 @@ import {
   ImageTransform,
 } from 'ngx-image-cropper';
 import { Observable, finalize, map } from 'rxjs';
+import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { EOnboardingStep } from 'src/app/core/enums/auth';
 import { IUpdateUser } from 'src/app/core/models/auth';
 import { ICity, ICountry, IState } from 'src/app/core/models/location';
@@ -55,7 +56,12 @@ export class OnboardingComponent implements OnInit {
     private alertService: AlertService,
     private alertCtrl: AlertController
   ) {
-    this.userData = JSON.parse(localStorage.getItem('USER') || '') as IUser;
+    const user = localStorage.getItem(STORAGE_VARIABLES.USER);
+    if (user) {
+      this.userData = JSON.parse(user) as IUser;
+    } else {
+      this.route.navigate(['/auth/login']);
+    }
   }
 
   get formData() {
@@ -183,7 +189,7 @@ export class OnboardingComponent implements OnInit {
       )
       .subscribe({
         next: async (res) => {
-          const alert = await this.alertCtrl.create({
+          let alert = await this.alertCtrl.create({
             header: 'Success',
             message: 'Image uploaded successfully',
             animated: true,
@@ -194,9 +200,9 @@ export class OnboardingComponent implements OnInit {
           });
         },
         error: async (err) => {
-          const alert = await this.alertCtrl.create({
+          let alert = await this.alertCtrl.create({
             header: 'Error',
-            message: err.error.message,
+            message: err?.error?.message,
             animated: true,
             buttons: ['Okay'],
           });

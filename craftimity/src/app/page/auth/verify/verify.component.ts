@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { Subscription, finalize, map } from 'rxjs';
-import { EContactType } from 'src/app/core/enums/auth';
+import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { IVerifyOtp } from 'src/app/core/models/auth';
+import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
@@ -24,7 +25,9 @@ export class VerifyComponent implements OnInit, OnDestroy {
     private router: ActivatedRoute,
     private authService: AuthService,
     private route: Router,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private alertService: AlertService,
+    private alertCtrl: AlertController
   ) {}
 
   get formData() {
@@ -73,7 +76,14 @@ export class VerifyComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (res) => {
-          localStorage.setItem('USER', JSON.stringify(res.data));
+          localStorage.setItem(
+            STORAGE_VARIABLES.USER,
+            JSON.stringify(res.user)
+          );
+          localStorage.setItem(
+            STORAGE_VARIABLES.REGISTERATION_TOKEN,
+            res.token
+          );
           this.route.navigate(['/auth/onboarding'], {
             queryParams: {
               email: payload.email,
@@ -81,8 +91,14 @@ export class VerifyComponent implements OnInit, OnDestroy {
             },
           });
         },
-        error: (err) => {
-          console.log(err);
+        error: async (err) => {
+          let alert = await this.alertCtrl.create({
+            header: 'Error',
+            message: err?.error?.message,
+            animated: true,
+            buttons: ['Okay'],
+          });
+          await alert.present();
         },
       });
   }

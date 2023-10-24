@@ -62,6 +62,7 @@ export class CategoryController implements ICategoryController {
       },
     };
   }
+
   @Get(":id")
   async findCategoryById(
     @Param("id") id: number

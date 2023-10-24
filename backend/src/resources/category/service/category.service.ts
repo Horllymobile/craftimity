@@ -62,6 +62,7 @@ export class CategoryService implements ICategoryService {
           .ilike("name", `%${name}%`)
           .limit(size)
           .order("id", { ascending: true })
+          .eq("active", true)
           .range(page, size);
 
       if (error) {

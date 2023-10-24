@@ -48,7 +48,8 @@ export class CityService implements ICityService {
     page: number,
     size: number,
     name?: string,
-    state_id?: number
+    state_id?: number,
+    status?: boolean
   ): Promise<ICity[]> {
     page = page <= 1 ? 0 : page;
     let res: { data: ICity[]; error: any };
@@ -62,6 +63,7 @@ export class CityService implements ICityService {
         .ilike("name", `%${name}%`)
         .limit(size)
         .eq("state_id", state_id)
+        .eq("active", status ?? true)
         .order("id", { ascending: true })
         .range(page, size);
     } else if (name) {
@@ -74,6 +76,7 @@ export class CityService implements ICityService {
         .ilike("name", `%${name}%`)
         .limit(size)
         .eq("state_id", state_id)
+        .eq("active", status ?? true)
         .order("id", { ascending: true })
         .range(page, size);
     } else if (state_id) {
@@ -84,6 +87,7 @@ export class CityService implements ICityService {
           "id, name, active, created_at, updated_at, State(id, name, active)"
         )
         .eq("state_id", state_id)
+        .eq("active", status ?? true)
         .limit(size)
         .order("id", { ascending: true })
         .range(page, size);
@@ -95,6 +99,7 @@ export class CityService implements ICityService {
           "id, name, active, created_at, updated_at, State(id, name, active)"
         )
         .limit(size)
+        .eq("active", status ?? true)
         .order("id", { ascending: true })
         .range(page, size);
     }

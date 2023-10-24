@@ -26,6 +26,7 @@ export class AuthGuard implements CanActivate {
     if (!this.authService.isAuthenticated()) {
       localStorage.removeItem(STORAGE_VARIABLES.USER);
       localStorage.removeItem(STORAGE_VARIABLES.TOKEN);
+      localStorage.removeItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);
       this.router.navigate(['/auth/login'], {
         queryParams: { returnUrl: state.url },
       });
