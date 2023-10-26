@@ -10,4 +10,4 @@ import { HomePageRoutingModule } from './admin-routing.module';
   imports: [CommonModule, FormsModule, IonicModule, HomePageRoutingModule],
   declarations: [AdminPage],
 })
-export class HomePageModule {}
+export class AdminModule {}

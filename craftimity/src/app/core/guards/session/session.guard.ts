@@ -23,7 +23,7 @@ export class SessionGuard implements CanActivate {
     | boolean
     | UrlTree {
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/home/']);
+      this.router.navigate(['/admin/home']);
       return false;
     }
     return true;
