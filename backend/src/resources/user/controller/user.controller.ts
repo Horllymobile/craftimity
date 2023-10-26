@@ -31,6 +31,7 @@ import { Public } from "src/core/decorators/public-route";
 export class UserController implements IUserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(AuthGuard)
   @Get()
   async findUsers(
     @Query("page") page: number = 1,
@@ -50,6 +51,7 @@ export class UserController implements IUserController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get(":id")
   async findUser(@Param("id") id: string): Promise<IResponse<IUser>> {
     const user = await this.userService.findUserById(id);

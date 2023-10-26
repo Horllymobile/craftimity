@@ -12,8 +12,9 @@ import { AuthModule } from "./resources/auth/auth.module";
 import { CategoryModule } from "./resources/category/category.module";
 import { JwtModule } from "@nestjs/jwt";
 import { jwtConstants } from "./resources/auth/constants/constants";
-import { APP_GUARD } from "@nestjs/core";
-import { AuthGuard } from "./core/guards/auth.guard";
+// import { APP_GUARD } from "@nestjs/core";
+// import { AuthGuard } from "./core/guards/auth.guard";
+import { CraftsmenModule } from './resources/craftsmen/craftsmen.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot([
@@ -34,6 +35,7 @@ import { AuthGuard } from "./core/guards/auth.guard";
     UserModule,
     AuthModule,
     CategoryModule,
+    CraftsmenModule,
   ],
   controllers: [AppController],
   providers: [

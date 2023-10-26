@@ -3,3 +3,6 @@ node_modules
 backend/dist
 dist
 .env
+.env.dev
+.vercel
+

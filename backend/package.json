@@ -1,6 +1,6 @@
 {
   "name": "craftimity",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A service rendering application.",
   "author": "",
   "private": true,
@@ -86,7 +86,7 @@
     "testEnvironment": "node"
   },
   "engines": {
-    "node": "18.13.0",
+    "node": "18.17.1",
     "npm": "9.6.7"
   }
 }
