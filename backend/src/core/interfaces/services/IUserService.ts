@@ -15,6 +15,8 @@ export interface IUserService {
 
   updateUser(id: string, payload: UpdateUserDto): Promise<any>;
 
+  deleteCraftsman?(id: string): Promise<any>;
+  toggleCraftsmanStatus?(id: string): Promise<any>;
   verifyOtpCode(payload: {
     email?: string;
     code: string;

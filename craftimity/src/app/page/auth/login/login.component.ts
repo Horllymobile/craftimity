@@ -120,7 +120,9 @@ export class LoginComponent implements OnInit {
           // this.alertService.success('User is found');
           if (res === null) {
             await this.alertService.success(
-              `Verification code have been sent to ${payload.email}`
+              `Verification code have been sent to ${
+                payload.type === 'email' ? payload.email : payload.phone
+              }`
             );
             this.navCtrl.navigateForward(
               [
@@ -145,10 +147,8 @@ export class LoginComponent implements OnInit {
             }
           }
         },
-        error: async (err) => {
-          console.log(err);
-          await this.alertService.error(err.message);
-          // this.isLoadingEmail = false;
+        error: async (error: Error) => {
+          await this.alertService.error(error.message);
         },
       });
   }
@@ -194,7 +194,7 @@ export class LoginComponent implements OnInit {
         },
         error: async ({ error }) => {
           console.log(error);
-          await this.alertService.error(error.message);
+          // await this.alertService.error(error.error.message);
         },
       });
   }

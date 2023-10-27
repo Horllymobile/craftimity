@@ -14,9 +14,15 @@ import { JwtModule } from "@nestjs/jwt";
 import { jwtConstants } from "./resources/auth/constants/constants";
 // import { APP_GUARD } from "@nestjs/core";
 // import { AuthGuard } from "./core/guards/auth.guard";
-import { CraftsmenModule } from './resources/craftsmen/craftsmen.module';
+import { CraftsmenModule } from "./resources/craftsmen/craftsmen.module";
+import { HttpModule } from "@nestjs/axios";
+import { MailModule } from './mail/mail.module';
 @Module({
   imports: [
+    HttpModule.register({
+      timeout: 5000,
+      maxRedirects: 5,
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
@@ -36,6 +42,7 @@ import { CraftsmenModule } from './resources/craftsmen/craftsmen.module';
     AuthModule,
     CategoryModule,
     CraftsmenModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [

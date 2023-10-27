@@ -1,3 +1,4 @@
+import { SendgridService } from "../../../core/services/sendgrid.service";
 import {
   Injectable,
   InternalServerErrorException,
@@ -15,13 +16,16 @@ import { VerifyPhoneOtpDto, VerifyUserDto } from "../dto/verify-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { ERole } from "src/core/enums/Role";
 import { JwtService } from "@nestjs/jwt";
+import { EmailMessage, EmailTemplate } from "src/core/models/email-template";
+import { PhoneMessageService } from "src/core/services/phone.service";
 
 @Injectable()
 export class UserService implements IUserService {
   private readonly logger = new Logger(UserService.name);
   constructor(
     private readonly superBaseService: SuperbaseService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private phoneMessageService: PhoneMessageService
   ) {}
 
   async checkUser(payload: UserCheckDto): Promise<any> {
@@ -241,6 +245,16 @@ export class UserService implements IUserService {
       .insert({
         phone: phone,
         code,
+      });
+    this.phoneMessageService
+      .sendVerificationCode({ phoneNumber: phone, verifyCode: code })
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+        },
+        error: (err) => {
+          console.log(err);
+        },
       });
     if (error) {
       this.logger.error(error);
