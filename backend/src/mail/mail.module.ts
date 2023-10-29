@@ -3,6 +3,7 @@ import { MailService } from "./mail.service";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import { join } from "path";
+import { getConfigToken } from "@nestjs/config";
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { join } from "path";
         secure: true,
         auth: {
           user: "horlamidex1@gmail.com",
-          pass: process.env.EMAIL_PASSWORD,
+          pass: getConfigToken("EMAIL_PASSWORD"),
         },
       },
       defaults: {
