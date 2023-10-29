@@ -27,6 +27,8 @@ export class ErrorHandlerService {
     let message: string = '';
     switch (error.status) {
       case 400:
+        message = apiErrorResponse.message[0];
+        break;
       case 402:
         if (apiErrorResponse) {
         }

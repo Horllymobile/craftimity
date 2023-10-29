@@ -20,6 +20,12 @@ export interface IVerifyPhoneOtp {
   code: string;
 }
 
+export interface IForgotPassword {
+  type: 'email' | 'phone';
+  email?: string;
+  phone?: string;
+}
+
 export interface IUpdateUser {
   first_name?: string;
   last_name?: string;

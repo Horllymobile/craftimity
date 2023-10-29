@@ -6,6 +6,7 @@ import { SendgridService } from "src/core/services/sendgrid.service";
 import { HttpModule } from "@nestjs/axios";
 import { MailService } from "@sendgrid/mail";
 import { PhoneMessageService } from "src/core/services/phone.service";
+import { MailModule } from "src/mail/mail.module";
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PhoneMessageService } from "src/core/services/phone.service";
       timeout: 5000,
       maxRedirects: 5,
     }),
+    MailModule,
   ],
   controllers: [UserController],
   providers: [

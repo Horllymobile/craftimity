@@ -8,6 +8,7 @@ import { VerifyComponent } from './verify/verify.component';
 import { OnboardingComponent } from './onboarding/onboarding.component';
 import { SharedModule } from 'src/app/core/shared/shared.module';
 import { SessionGuard } from 'src/app/core/guards/session/session.guard';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 
 const routes: Routes = [
   {
@@ -30,10 +31,20 @@ const routes: Routes = [
     component: OnboardingComponent,
     canActivate: [SessionGuard],
   },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    canActivate: [SessionGuard],
+  },
 ];
 
 @NgModule({
-  declarations: [LoginComponent, VerifyComponent, OnboardingComponent],
+  declarations: [
+    LoginComponent,
+    VerifyComponent,
+    OnboardingComponent,
+    ForgotPasswordComponent,
+  ],
   imports: [
     CommonModule,
     IonicModule,

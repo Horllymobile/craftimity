@@ -192,9 +192,8 @@ export class LoginComponent implements OnInit {
             this.goToHome();
           }
         },
-        error: async ({ error }) => {
-          console.log(error);
-          // await this.alertService.error(error.error.message);
+        error: async (error: Error) => {
+          await this.alertService.error(error.message);
         },
       });
   }

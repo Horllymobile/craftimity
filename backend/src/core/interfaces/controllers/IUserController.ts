@@ -16,4 +16,15 @@ export interface IUserController {
   updateUser(id: string, payload: UpdateUserDto): Promise<IResponse<any>>;
 
   verifyOtpCode(payload: VerifyUserDto): Promise<IResponse<any>>;
+
+  forgotPassword(payload: {
+    email?: string;
+    phone?: string;
+    type: "email" | "phone";
+  }): Promise<IResponse<any>>;
+
+  updatePassword(
+    id: string,
+    payload: { password: string }
+  ): Promise<IResponse<any>>;
 }

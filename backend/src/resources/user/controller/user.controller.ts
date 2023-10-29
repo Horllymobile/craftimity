@@ -95,7 +95,12 @@ export class UserController implements IUserController {
 
   @Patch("verify")
   async verifyOtpCode(@Body() payload: VerifyUserDto): Promise<IResponse<any>> {
-    return await this.userService.verifyOtpCode(payload);
+    const req = await this.userService.verifyOtpCode(payload);
+    return {
+      message: "Verification successfull",
+      data: req,
+      status: EResponseStatus.SUCCESS,
+    };
   }
 
   @Patch("verify-phone")
@@ -110,6 +115,52 @@ export class UserController implements IUserController {
     @Body() payload: VerifyPhoneOtpDto
   ): Promise<IResponse<any>> {
     return await this.userService.verifyEmailOtpCode(payload);
+  }
+
+  @Post("forgot-password")
+  async forgotPassword(
+    @Body()
+    payload: {
+      email?: string;
+      phone?: string;
+      type: "email" | "phone";
+    }
+  ): Promise<IResponse<any>> {
+    const user = await this.userService.forgotPassword(payload);
+    return {
+      message: `Verfication code have been sent to ${
+        payload.type === "email" ? payload.email : payload.phone
+      }`,
+      status: EResponseStatus.SUCCESS,
+      data: user,
+    };
+  }
+
+  @Post("verify-reset-password")
+  async verifyPasswordOtpCode(
+    @Body()
+    payload: VerifyUserDto
+  ): Promise<IResponse<any>> {
+    const user = await this.userService.verifyForgotPasswordOtpCode(payload);
+    return {
+      message: `Verfication successfuly`,
+      status: EResponseStatus.SUCCESS,
+      data: user,
+    };
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch(":id/update-password")
+  async updatePassword(
+    @Param("id") id: string,
+    @Body() payload: { password: string }
+  ): Promise<IResponse<any>> {
+    const req = await this.userService.updatePassword(id, payload);
+    return {
+      message: "Update password successfull",
+      status: EResponseStatus.SUCCESS,
+      data: req,
+    };
   }
 
   @Patch("resend-verification")

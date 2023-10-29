@@ -1,4 +1,3 @@
-import { SendgridService } from "../../../core/services/sendgrid.service";
 import {
   Injectable,
   InternalServerErrorException,
@@ -16,8 +15,8 @@ import { VerifyPhoneOtpDto, VerifyUserDto } from "../dto/verify-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { ERole } from "src/core/enums/Role";
 import { JwtService } from "@nestjs/jwt";
-import { EmailMessage, EmailTemplate } from "src/core/models/email-template";
 import { PhoneMessageService } from "src/core/services/phone.service";
+import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -25,7 +24,8 @@ export class UserService implements IUserService {
   constructor(
     private readonly superBaseService: SuperbaseService,
     private jwtService: JwtService,
-    private phoneMessageService: PhoneMessageService
+    private phoneMessageService: PhoneMessageService,
+    private mailService: MailService
   ) {}
 
   async checkUser(payload: UserCheckDto): Promise<any> {
@@ -217,6 +217,76 @@ export class UserService implements IUserService {
         email: email,
         code,
       });
+    await this.mailService.sendUserConfirmation(email, code);
+    if (error) {
+      this.logger.error(error);
+    }
+    return;
+  }
+
+  async sendForgotPasswordCodeToEmail(email: string) {
+    const code = generateVerifcationCode(6);
+    console.log("Email OTP code " + code);
+    let res = await this.superBaseService
+      .connect()
+      .from("verification_code")
+      .select("*")
+      .eq("email", email);
+
+    if (res.data) {
+      await this.superBaseService
+        .connect()
+        .from("verification_code")
+        .delete()
+        .eq("email", email);
+    }
+    let { data, error } = await this.superBaseService
+      .connect()
+      .from("verification_code")
+      .insert({
+        email: email,
+        code,
+      });
+    await this.mailService.sendForgotPasswordCode(email, code);
+    if (error) {
+      this.logger.error(error);
+    }
+    return;
+  }
+
+  async sendForgotPasswordCodeToPhone(phone: string) {
+    const code = generateVerifcationCode(6);
+    console.log("Phone OTP code " + code);
+    let res = await this.superBaseService
+      .connect()
+      .from("verification_code")
+      .select("*")
+      .eq("phone", phone);
+
+    if (res.data) {
+      await this.superBaseService
+        .connect()
+        .from("verification_code")
+        .delete()
+        .eq("phone", phone);
+    }
+    let { data, error } = await this.superBaseService
+      .connect()
+      .from("verification_code")
+      .insert({
+        phone: phone,
+        code,
+      });
+    // this.phoneMessageService
+    //   .sendVerificationCode({ phoneNumber: phone, verifyCode: code })
+    //   .subscribe({
+    //     next: (res) => {
+    //       console.log(res);
+    //     },
+    //     error: (err) => {
+    //       console.log(err);
+    //     },
+    //   });
     if (error) {
       this.logger.error(error);
     }
@@ -266,6 +336,107 @@ export class UserService implements IUserService {
     id: string,
     payload: UpdateUserDto
   ): Promise<{ message: string }> {
+    let res = await this.superBaseService
+      .connect()
+      .from("User")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (!res.data)
+      throw new NotFoundException({
+        message: "User not found",
+        status: EResponseStatus.FAILED,
+      });
+
+    res = await this.superBaseService
+      .connect()
+      .from("User")
+      .update({
+        first_name: payload.first_name,
+        last_name: payload.last_name,
+        full_name: `${payload.first_name ?? ""} ${payload.last_name ?? ""}`,
+        country_id: payload.country,
+        state_id: payload.state,
+        city_id: payload.city,
+        birthdate: payload.birthdate,
+        address: payload.address,
+        password: payload.password,
+        profile_image: payload.profile_image,
+      })
+      .eq("id", id);
+
+    res = await this.superBaseService
+      .connect()
+      .from("User")
+      .select(
+        "first_name, last_name, full_name, country_id, state_id, city_id, birthdate, address, password, profile_image"
+      )
+      .eq("id", id)
+      .single();
+    const onboardingCheck = Object.values(res.data).every(
+      (value) => value !== null
+    );
+    if (onboardingCheck) {
+      res = await this.superBaseService
+        .connect()
+        .from("User")
+        .update({
+          is_onboarded: true,
+        })
+        .eq("id", id);
+      await this.mailService.sendWelcomingMessage(
+        res.data.email,
+        res.data.full_name
+      );
+    }
+
+    if (res.error) {
+      this.logger.error(res.error);
+    } else if (!res.data && res.error) {
+      throw new InternalServerErrorException({
+        message: "Something went wrong not your fault",
+        status: EResponseStatus.FAILED,
+      });
+    }
+    return res.data;
+  }
+
+  async forgotPassword(payload: {
+    email?: string;
+    phone?: string;
+    type: "email" | "phone";
+  }) {
+    let user: IUser;
+    if (payload.type === USERCHECKTYPE.EMAIL) {
+      user = await this.findUserByEmail(payload.email);
+      if (!user)
+        throw new NotFoundException({
+          message: "User not found",
+          status: EResponseStatus.FAILED,
+        });
+      if (user) {
+        await this.sendForgotPasswordCodeToEmail(payload.email);
+      }
+      return user;
+    }
+
+    user = await this.findUserByPhone(payload.phone);
+    if (!user)
+      throw new NotFoundException({
+        message: "User not found",
+        status: EResponseStatus.FAILED,
+      });
+    if (user) {
+      await this.sendVerificationCodeToPhone(payload.phone);
+    }
+    return user;
+  }
+
+  async updatePassword(
+    id: string,
+    payload: { password: string }
+  ): Promise<any> {
     let { data, error } = await this.superBaseService
       .connect()
       .from("User")
@@ -283,18 +454,10 @@ export class UserService implements IUserService {
       .connect()
       .from("User")
       .update({
-        first_name: payload.first_name,
-        last_name: payload.last_name,
-        full_name: `${payload.first_name} ${payload.last_name}`,
-        country_id: payload.country,
-        state_id: payload.state,
-        city_id: payload.city,
-        birthdate: payload.birthdate,
-        address: payload.address,
         password: payload.password,
-        profile_image: payload.profile_image,
       })
       .eq("id", id);
+
     if (res.error) {
       this.logger.error(res.error);
     } else if (!res.data && res.error) {
@@ -343,12 +506,50 @@ export class UserService implements IUserService {
     const token = await this.jwtService.signAsync(jwtPayload);
 
     return {
-      message: "Verification successfull",
-      status: EResponseStatus.SUCCESS,
-      data: {
-        user,
-        token: token,
-      },
+      user,
+      token: token,
+    };
+  }
+
+  async verifyForgotPasswordOtpCode(payload: VerifyUserDto) {
+    let user: IUser;
+    let { data, error } = await this.superBaseService
+      .connect()
+      .from("verification_code")
+      .select("*")
+      .eq("code", payload.code)
+      .single();
+
+    if (!data)
+      throw new NotFoundException({
+        message: "Invalid verification code",
+        status: EResponseStatus.FAILED,
+      });
+
+    if (payload.type === "email") {
+      user = await this.findUserByEmail(payload.email);
+    } else {
+      user = await this.findUserByPhone(payload.phone);
+    }
+
+    await this.superBaseService
+      .connect()
+      .from("verification_code")
+      .delete()
+      .eq("code", payload.code);
+
+    const jwtPayload = {
+      sub: user.id,
+      ...(user.email && { email: user.email }),
+      ...(user.phone_number && { phone: user.phone_number }),
+      type: payload.type,
+    };
+
+    const token = await this.jwtService.signAsync(jwtPayload);
+
+    return {
+      user,
+      token: token,
     };
   }
 

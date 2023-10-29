@@ -16,9 +16,10 @@ import { jwtConstants } from "./resources/auth/constants/constants";
 // import { AuthGuard } from "./core/guards/auth.guard";
 import { CraftsmenModule } from "./resources/craftsmen/craftsmen.module";
 import { HttpModule } from "@nestjs/axios";
-import { MailModule } from './mail/mail.module';
+import { MailModule } from "./mail/mail.module";
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 5,
@@ -34,7 +35,6 @@ import { MailModule } from './mail/mail.module';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: "60m" },
     }),
-    ConfigModule.forRoot({ isGlobal: true }),
     CityModule,
     StateModule,
     CountryModule,

@@ -17,4 +17,5 @@ export interface IUser {
   state_id: string;
   city_id: string;
   decrypted_password?: string;
+  is_onboarded?: boolean;
 }

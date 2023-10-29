@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IUser } from '../../models/user';
 import {
+  IForgotPassword,
   ILoginResponse,
   ISignIn,
   IUpdateUser,
@@ -63,6 +64,17 @@ export class AuthService {
       .pipe(map((res) => res.data));
   }
 
+  verifyForgotPasswordOtp(
+    payload: IVerifyOtp
+  ): Observable<{ user: IUser; token: string }> {
+    return this.http
+      .post<IAPICallResponse<{ user: IUser; token: string }>>(
+        `${this.baseUrl}/users/verify-reset-password`,
+        payload
+      )
+      .pipe(map((res) => res.data));
+  }
+
   verifyPhoneOtp(payload: IVerifyPhoneOtp): Observable<IAPIResponse> {
     return this.http
       .patch<IAPIResponse>(`${this.baseUrl}/users/verify-phone`, payload)
@@ -72,6 +84,15 @@ export class AuthService {
   verifyEmailOtp(payload: IVerifyPhoneOtp): Observable<IAPIResponse> {
     return this.http
       .patch<IAPIResponse>(`${this.baseUrl}/users/verify-email`, payload)
+      .pipe(map((res) => res));
+  }
+
+  forgotPassword(payload: IForgotPassword) {
+    return this.http
+      .post<IAPICallResponse<any>>(
+        `${this.baseUrl}/users/forgot-password`,
+        payload
+      )
       .pipe(map((res) => res));
   }
 
@@ -104,6 +125,23 @@ export class AuthService {
       .put<IAPIResponse>(`${this.baseUrl}/users/${id}`, payload, {
         headers: { Authorization: tok },
       })
+      .pipe(map((res) => res.message));
+  }
+
+  updatePassword(id: string, payload: { password: string }) {
+    const token = localStorage.getItem(STORAGE_VARIABLES.FORGOT_PASSWORD_TOKEN);
+    let tok: string = '';
+    if (token) {
+      tok = `Bearer ${token}`;
+    }
+    return this.http
+      .patch<IAPIResponse>(
+        `${this.baseUrl}/users/${id}/update-password`,
+        payload,
+        {
+          headers: { Authorization: tok },
+        }
+      )
       .pipe(map((res) => res.message));
   }
 
