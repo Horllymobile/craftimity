@@ -370,7 +370,7 @@ export class UserService implements IUserService {
       .connect()
       .from("User")
       .select(
-        "first_name, last_name, full_name, country_id, state_id, city_id, birthdate, address, password, profile_image"
+        "first_name, last_name, email, full_name, country_id, state_id, city_id, birthdate, address, password, profile_image"
       )
       .eq("id", id)
       .single();
@@ -378,13 +378,14 @@ export class UserService implements IUserService {
       (value) => value !== null
     );
     if (onboardingCheck) {
-      res = await this.superBaseService
+      await this.superBaseService
         .connect()
         .from("User")
         .update({
           is_onboarded: true,
         })
         .eq("id", id);
+
       await this.mailService.sendWelcomingMessage(
         res.data.email,
         res.data.full_name

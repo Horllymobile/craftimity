@@ -27,7 +27,6 @@ async function bootstrap() {
   // app.use(csurf());
   app.enableCors();
   app.use(helmet());
-  app.use();
   await app.listen(process.env.PORT);
 }
 bootstrap();

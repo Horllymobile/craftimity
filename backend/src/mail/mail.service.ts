@@ -9,7 +9,7 @@ export class MailService {
     return await this.mailerService.sendMail({
       to: email,
       from: '"Support Team" <support@craftimity.com>', // override default from
-      subject: "Reset Password OTP code",
+      subject: "Welcome to Craftimity! Verify your Email",
       template: "./verification", // `.hbs` extension is appended automatically
       context: {
         code,
@@ -21,7 +21,7 @@ export class MailService {
     return await this.mailerService.sendMail({
       to: email,
       from: '"Support Team" <support@craftimity.com>', // override default from
-      subject: "Welcome to Craftimity! Verify your Email",
+      subject: "Reset Password OTP code",
       template: "./forgot", // `.hbs` extension is appended automatically
       context: {
         code,
