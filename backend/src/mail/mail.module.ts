@@ -19,7 +19,7 @@ import { ConfigModule, ConfigService, getConfigToken } from "@nestjs/config";
           },
         },
         defaults: {
-          from: '"No Reply" <noreply@craftimity.com>',
+          // from: '"No Reply" <noreply@craftimity.com>',
         },
         template: {
           dir: join(__dirname, "templates"),
