@@ -8,9 +8,9 @@ export class MailService {
   async sendUserConfirmation(email: string, code: string) {
     return await this.mailerService.sendMail({
       to: email,
-      from: '"Support Team" <support@craftimity.com>', // override default from
+      from: '"Support Team" <horlamidex1@gmail.com>',
       subject: "Welcome to Craftimity! Verify your Email",
-      template: "./verification", // `.hbs` extension is appended automatically
+      template: "./verification",
       context: {
         code,
       },
@@ -20,9 +20,9 @@ export class MailService {
   async sendForgotPasswordCode(email: string, code: string) {
     return await this.mailerService.sendMail({
       to: email,
-      from: '"Support Team" <support@craftimity.com>', // override default from
+      from: '"Support Team" <horlamidex1@gmail.com>',
       subject: "Reset Password OTP code",
-      template: "./forgot", // `.hbs` extension is appended automatically
+      template: "./forgot",
       context: {
         code,
       },
@@ -32,9 +32,9 @@ export class MailService {
   async sendWelcomingMessage(email: string, full_name: string) {
     return await this.mailerService.sendMail({
       to: email,
-      from: '"Support Team" <info@craftimity.com>', // override default from
+      from: '"Support Team" <horlamidex1@gmail.com>',
       subject: "Welcome to Craftimity - Let's Get Crafty Together!",
-      template: "./onboarded", // `.hbs` extension is appended automatically
+      template: "./onboarded",
       context: {
         full_name,
       },
