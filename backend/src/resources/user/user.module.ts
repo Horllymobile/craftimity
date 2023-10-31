@@ -7,6 +7,7 @@ import { HttpModule } from "@nestjs/axios";
 import { MailService } from "@sendgrid/mail";
 import { PhoneMessageService } from "src/core/services/phone.service";
 import { MailModule } from "src/mail/mail.module";
+import { ElasticService } from "src/core/services/elastic.service";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MailModule } from "src/mail/mail.module";
     SendgridService,
     MailService,
     PhoneMessageService,
+    ElasticService,
   ],
   exports: [UserService],
 })

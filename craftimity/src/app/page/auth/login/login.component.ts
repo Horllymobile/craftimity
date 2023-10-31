@@ -191,6 +191,8 @@ export class LoginComponent implements OnInit {
           } else {
             this.goToHome();
           }
+          this.emailLoginForm.reset();
+          this.phoneLoginForm.reset();
         },
         error: async (error: Error) => {
           await this.alertService.error(error.message);

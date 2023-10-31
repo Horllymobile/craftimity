@@ -16,7 +16,7 @@ import { UpdateUserDto } from "../dto/update-user.dto";
 import { ERole } from "src/core/enums/Role";
 import { JwtService } from "@nestjs/jwt";
 import { PhoneMessageService } from "src/core/services/phone.service";
-import { MailService } from "src/mail/mail.service";
+import { ElasticService } from "src/core/services/elastic.service";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -25,7 +25,7 @@ export class UserService implements IUserService {
     private readonly superBaseService: SuperbaseService,
     private jwtService: JwtService,
     private phoneMessageService: PhoneMessageService,
-    private mailService: MailService
+    private elasticService: ElasticService
   ) {}
 
   async checkUser(payload: UserCheckDto): Promise<any> {
@@ -34,14 +34,12 @@ export class UserService implements IUserService {
       user = await this.findUserByEmail(payload.email);
       if (!user) {
         await this.sendVerificationCodeToEmail(payload.email);
-        return null;
       }
       return user;
     }
     user = await this.findUserByPhone(payload.phone);
     if (!user) {
       await this.sendVerificationCodeToPhone(payload.phone);
-      return null;
     }
     return user;
   }
@@ -196,7 +194,6 @@ export class UserService implements IUserService {
 
   async sendVerificationCodeToEmail(email: string) {
     const code = generateVerifcationCode(6);
-    console.log("Email OTP code " + code);
     let res = await this.superBaseService
       .connect()
       .from("verification_code")
@@ -217,7 +214,30 @@ export class UserService implements IUserService {
         email: email,
         code,
       });
-    await this.mailService.sendUserConfirmation(email, code);
+    this.elasticService
+      .sendEmailDynamic({
+        Recipients: {
+          To: [email],
+        },
+        Content: {
+          From: "support@craftimity.com",
+          TemplateName: "VERIFY_EMAIL",
+          Subject: "Account Verification",
+          Merge: {
+            code,
+            email_address: "support@craftimity.com",
+          },
+        },
+      })
+      .subscribe({
+        next: (res) => {
+          console.log(res.data);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+    // await this.mailService.sendUserConfirmation(email, code);
     if (error) {
       this.logger.error(error);
     }
@@ -226,7 +246,6 @@ export class UserService implements IUserService {
 
   async sendForgotPasswordCodeToEmail(email: string) {
     const code = generateVerifcationCode(6);
-    console.log("Email OTP code " + code);
     let res = await this.superBaseService
       .connect()
       .from("verification_code")
@@ -247,7 +266,29 @@ export class UserService implements IUserService {
         email: email,
         code,
       });
-    await this.mailService.sendForgotPasswordCode(email, code);
+    this.elasticService
+      .sendEmailDynamic({
+        Recipients: {
+          To: [email],
+        },
+        Content: {
+          From: "support@craftimity.com",
+          TemplateName: "RESET_PASSWORD_OTP",
+          Subject: "Password Reset Request",
+          Merge: {
+            email_address: "info@craftimity.com",
+            code,
+          },
+        },
+      })
+      .subscribe({
+        next: (res) => {
+          console.log(res.data);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
     if (error) {
       this.logger.error(error);
     }
@@ -385,11 +426,29 @@ export class UserService implements IUserService {
           is_onboarded: true,
         })
         .eq("id", id);
-
-      await this.mailService.sendWelcomingMessage(
-        res.data.email,
-        res.data.full_name
-      );
+      this.elasticService
+        .sendEmailDynamic({
+          Recipients: {
+            To: [res.data.email],
+          },
+          Content: {
+            From: "info@craftimity.com",
+            TemplateName: "WELCOMING_EMAIL",
+            Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
+            Merge: {
+              full_name: res.data.full_name,
+              accountaddress: "info@craftimity.com",
+            },
+          },
+        })
+        .subscribe({
+          next: (res) => {
+            console.log(res.data);
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
     }
 
     if (res.error) {
@@ -604,7 +663,6 @@ export class UserService implements IUserService {
       .single();
 
     user = res.data;
-    console.log(user);
 
     await this.activateAndEnableUser(payload);
     return user;
@@ -731,7 +789,6 @@ export class UserService implements IUserService {
   }
 
   async verifyEmailOtpCode(payload: VerifyPhoneOtpDto) {
-    console.log(payload);
     let { data, error } = await this.superBaseService
       .connect()
       .from("verification_code")

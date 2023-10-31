@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController } from '@ionic/angular';
 import { Observable, Subscription, finalize, map } from 'rxjs';
@@ -35,7 +30,7 @@ export class ForgotPasswordComponent implements OnInit {
   showPassword = false;
   isSent = false;
 
-  step: 'forgot' | 'verify' | 'change' = 'change';
+  step: 'forgot' | 'verify' | 'change' = 'forgot';
 
   isLoadingEmail = false;
 
