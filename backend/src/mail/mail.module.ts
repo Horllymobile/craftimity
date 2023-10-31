@@ -11,10 +11,12 @@ import { ConfigModule, ConfigService, getConfigToken } from "@nestjs/config";
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         transport: {
-          host: "smtp.gmail.com",
-          secure: true,
+          host: configService.get("EMAIL_HOST"),
+          // host: "smtp.gmail.com",
+          // secure: true,
+          port: 2525,
           auth: {
-            user: "horlamidex1@gmail.com",
+            user: configService.get("EMAIL_USER"),
             pass: configService.get("EMAIL_PASSWORD"),
           },
         },
