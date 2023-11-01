@@ -17,6 +17,7 @@ import { ERole } from "src/core/enums/Role";
 import { JwtService } from "@nestjs/jwt";
 import { PhoneMessageService } from "src/core/services/phone.service";
 import { ElasticService } from "src/core/services/elastic.service";
+import { Observable, map } from "rxjs";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -33,9 +34,8 @@ export class UserService implements IUserService {
     if (payload.type === USERCHECKTYPE.EMAIL) {
       user = await this.findUserByEmail(payload.email);
       if (!user) {
-        await this.sendVerificationCodeToEmail(payload.email);
+        return await this.sendVerificationCodeToEmail(payload.email);
       }
-      return user;
     }
     user = await this.findUserByPhone(payload.phone);
     if (!user) {
@@ -231,10 +231,10 @@ export class UserService implements IUserService {
       })
       .subscribe({
         next: (res) => {
-          console.log(res.data);
+          this.logger.log(res.data, "Email sending succes");
         },
         error: (err) => {
-          console.log(err);
+          this.logger.error(err.data, "Email sending error");
         },
       });
     // await this.mailService.sendUserConfirmation(email, code);
