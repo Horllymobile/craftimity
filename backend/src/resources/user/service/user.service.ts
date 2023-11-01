@@ -127,9 +127,9 @@ export class UserService implements IUserService {
       )
       .eq("email", email)
       .single();
-    if (error) {
-      this.logger.error(error);
-    }
+    // if (error) {
+    //   this.logger.error(error);
+    // }
 
     return data;
   }

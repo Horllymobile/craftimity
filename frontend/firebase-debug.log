@@ -1,0 +1,80 @@
+[debug] [2023-10-31T21:48:30.076Z] ----------------------------------------------------------------------
+[debug] [2023-10-31T21:48:30.077Z] Command:       /Users/horlly/.nvm/versions/node/v18.13.0/bin/node /Users/horlly/.nvm/versions/node/v18.13.0/bin/firebase deploy
+[debug] [2023-10-31T21:48:30.077Z] CLI Version:   12.7.0
+[debug] [2023-10-31T21:48:30.077Z] Platform:      darwin
+[debug] [2023-10-31T21:48:30.077Z] Node Version:  v18.13.0
+[debug] [2023-10-31T21:48:30.078Z] Time:          Tue Oct 31 2023 22:48:30 GMT+0100 (West Africa Standard Time)
+[debug] [2023-10-31T21:48:30.078Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-10-31T21:48:30.116Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-10-31T21:48:30.117Z] > authorizing via signed-in user (horlamidex1@gmail.com)
+[debug] [2023-10-31T21:48:30.117Z] [iam] checking project craftimity for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2023-10-31T21:48:30.118Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/craftimity:testIamPermissions [none]
+[debug] [2023-10-31T21:48:30.118Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/craftimity:testIamPermissions x-goog-quota-user=projects/craftimity
+[debug] [2023-10-31T21:48:30.118Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/craftimity:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-10-31T21:48:32.038Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/craftimity:testIamPermissions 200
+[debug] [2023-10-31T21:48:32.039Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/craftimity:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-10-31T21:48:32.041Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/craftimity [none]
+[debug] [2023-10-31T21:48:35.589Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/craftimity 200
+[debug] [2023-10-31T21:48:35.590Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/craftimity {"projectId":"craftimity","projectNumber":"536537889848","displayName":"craftimity","name":"projects/craftimity","resources":{"hostingSite":"craftimity"},"state":"ACTIVE","etag":"1_0b1ba6a2-70f5-4743-b15d-a9efd158823d"}
+[info] 
+[info] === Deploying to 'craftimity'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2023-10-31T21:48:35.602Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/versions [none]
+[debug] [2023-10-31T21:48:35.602Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2023-10-31T21:48:43.202Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/versions 200
+[debug] [2023-10-31T21:48:43.203Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/versions {"name":"projects/536537889848/sites/craftimity/versions/371d3574f32134b0","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[craftimity]: beginning deploy... 
+[info] i  hosting[craftimity]: found 23 files in dist/browser 
+[debug] [2023-10-31T21:48:45.928Z] [hosting] uploading with 200 concurrency
+[debug] [2023-10-31T21:48:45.975Z] [hosting] hash cache [ZGlzdC9icm93c2Vy] stored for 23 files
+[debug] [2023-10-31T21:48:45.976Z] [hosting][hash queue][FINAL] {"max":37,"min":11,"avg":14.08695652173913,"active":0,"complete":23,"success":23,"errored":0,"retried":0,"total":23,"elapsed":44}
+[debug] [2023-10-31T21:48:45.976Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/536537889848/sites/craftimity/versions/371d3574f32134b0:populateFiles [none]
+[debug] [2023-10-31T21:48:45.976Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/536537889848/sites/craftimity/versions/371d3574f32134b0:populateFiles {"files":{"/662.dff353c0883f5e44.js":"6386d934efa147433c6ec173c0403f92a0ce9629cc93d7aab1697aa121cd29f6","/954.72b2ee74a82af240.js":"c2bef612eae7862f858fab0acb38c094a8a577d54036b092ea031514313f3d43","/3rdpartylicenses.txt":"d1485944027d22d00cb72949171b4ed47f76cd16ebcbbc86185313b169e8820b","/_redirects":"735f00bd2aa162c97eff95b9a3657a08e1f0be4b059c5e024730dea22463dfeb","/robots.txt":"0629a48cac6e6cd433a735fa11df8e0d0f670c1be2808cb55c90c09f573e31cb","/runtime.a9a868cf768aa828.js":"e913a9084eea68a6d58a429ebae929ae2912464232a36e26d473d3b174e3b3b7","/favicon.ico":"2c262fffd4350482dcd4c8fb3611f9b9c338343e25082d87d1d6ca76a4959dc6","/site.webmanifest":"0fa34cb8a05307082badeb5d7812851532e3d23494d5b361213d4c577b00fcd2","/assets/conhect (1).png":"dd8a8ecff95a032dfda02e23ee728fe688d8706afdd6c5e4fa23bec223190cb9","/assets/Logo (1).png":"b0e451eefdd3deef2925b387c0bd0ff00e5a32c518de19103245250873bf25d9","/assets/conhect.png":"abf4d8ed17b4b2690171e00897592860f765cfe68378717916271143f7fed633","/assets/placeholder.png":"76b6d5972e4b7f1d2956ed1df261102fd37bc50a7e7b753e3f15ae77930d04ef","/polyfills.2e75357f8d0831d8.js":"9e12a3921f47f856b4e0a6336b679423f6793770e886d1fdaaef9408c9cf8d0d","/assets/icons/bars-solid (1).svg":"89ccdcbe5457824399d9c05179ad5fd0b91f96e077a7f40dc19d3f67982c389e","/assets/conhect.svg":"121885dc9ec4fed2b3613b53c1795351a93110e707faf9421e3e580066fbd799","/assets/android-chrome-192x192.png":"759cddbf6805b7a1307657a4d12075f079a2622fdc5b78b0f928c55663a36fca","/index.html":"ebe06932743b6f9aee3b40e83a0a8538122d19d912b8044d3694a5ed6dcf5f75","/assets/apple-touch-icon.png":"26cb20fce61725a9dbb02d1760c0fa0e695918470d26060b152dc03c718914a0","/assets/header.png":"e19217b206fdedfb002025d2f43b762dfbb1cc223fbae1c54f86890f037a1f98","/styles.ee5b07696acb19f6.css":"b47a772addb9233b4918f5554a542865204294e779b1a3573e14e025259955fa","/49.98185f57d104f652.js":"339eb9033d566cbe4e9aab785db3891241a7c3973760e1fa7dd32b1736a042ba","/assets/android-chrome-512x512.png":"19e19bd87eb922c8e04d8e2c22c079f9def8a1c6025d3846552390c901063d2e","/main.c7e99fcca8472af9.js":"05fbfb6b73387e3434359412946d7ac8b2999837d3f16111aaac1ed7a74fcda0"}}
+[debug] [2023-10-31T21:48:53.749Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/536537889848/sites/craftimity/versions/371d3574f32134b0:populateFiles 200
+[debug] [2023-10-31T21:48:53.749Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/536537889848/sites/craftimity/versions/371d3574f32134b0:populateFiles {"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/craftimity/versions/371d3574f32134b0/files"}
+[debug] [2023-10-31T21:48:53.750Z] [hosting][populate queue][FINAL] {"max":7776,"min":7776,"avg":7776,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":7776}
+[debug] [2023-10-31T21:48:53.750Z] [hosting] uploads queued: 0
+[debug] [2023-10-31T21:48:53.751Z] [hosting][upload queue][FINAL] {"max":0,"min":9999999999,"avg":0,"active":0,"complete":0,"success":0,"errored":0,"retried":0,"total":0,"elapsed":1698788933751}
+[info] ✔  hosting[craftimity]: file upload complete 
+[debug] [2023-10-31T21:48:53.751Z] [hosting] deploy completed after 7836ms
+[debug] [2023-10-31T21:48:53.752Z] [
+  {
+    "config": {
+      "public": "dist/browser",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "site": "craftimity"
+    },
+    "version": "projects/536537889848/sites/craftimity/versions/371d3574f32134b0"
+  }
+]
+[info] i  hosting[craftimity]: finalizing version... 
+[debug] [2023-10-31T21:48:53.755Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/versions/371d3574f32134b0 updateMask=status%2Cconfig
+[debug] [2023-10-31T21:48:53.755Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/versions/371d3574f32134b0 {"status":"FINALIZED","config":{}}
+[debug] [2023-10-31T21:49:04.368Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/versions/371d3574f32134b0 200
+[debug] [2023-10-31T21:49:04.369Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/versions/371d3574f32134b0 {"name":"projects/536537889848/sites/craftimity/versions/371d3574f32134b0","status":"FINALIZED","config":{},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2023-10-31T21:48:41.529178Z","createUser":{"email":"horlamidex1@gmail.com"},"finalizeTime":"2023-10-31T21:48:58.512901Z","finalizeUser":{"email":"horlamidex1@gmail.com"}}
+[debug] [2023-10-31T21:49:04.369Z] [hosting] finalized version for craftimity:[object Object]
+[info] ✔  hosting[craftimity]: version finalized 
+[info] i  hosting[craftimity]: releasing new version... 
+[debug] [2023-10-31T21:49:04.372Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/channels/live/releases versionName=projects%2F536537889848%2Fsites%2Fcraftimity%2Fversions%2F371d3574f32134b0
+[debug] [2023-10-31T21:49:04.372Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/channels/live/releases {}
+[debug] [2023-10-31T21:49:08.040Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/channels/live/releases 200
+[debug] [2023-10-31T21:49:08.040Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craftimity/channels/live/releases {"name":"projects/536537889848/sites/craftimity/channels/live/releases/1698788947054000","version":{"name":"projects/536537889848/sites/craftimity/versions/371d3574f32134b0","status":"FINALIZED","config":{},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2023-10-31T21:48:41.529178Z","createUser":{"email":"horlamidex1@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLoQphhFqragH98qovXj0qlhDyyUaGkfIuBLuOkqOmpAMU"},"finalizeTime":"2023-10-31T21:48:58.512901Z","finalizeUser":{"email":"horlamidex1@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLoQphhFqragH98qovXj0qlhDyyUaGkfIuBLuOkqOmpAMU"}},"type":"DEPLOY","releaseTime":"2023-10-31T21:49:07.054Z","releaseUser":{"email":"horlamidex1@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLoQphhFqragH98qovXj0qlhDyyUaGkfIuBLuOkqOmpAMU"}}
+[debug] [2023-10-31T21:49:08.040Z] [hosting] release: {"name":"projects/536537889848/sites/craftimity/channels/live/releases/1698788947054000","version":{"name":"projects/536537889848/sites/craftimity/versions/371d3574f32134b0","status":"FINALIZED","config":{},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2023-10-31T21:48:41.529178Z","createUser":{"email":"horlamidex1@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLoQphhFqragH98qovXj0qlhDyyUaGkfIuBLuOkqOmpAMU"},"finalizeTime":"2023-10-31T21:48:58.512901Z","finalizeUser":{"email":"horlamidex1@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLoQphhFqragH98qovXj0qlhDyyUaGkfIuBLuOkqOmpAMU"}},"type":"DEPLOY","releaseTime":"2023-10-31T21:49:07.054Z","releaseUser":{"email":"horlamidex1@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLoQphhFqragH98qovXj0qlhDyyUaGkfIuBLuOkqOmpAMU"}}
+[info] ✔  hosting[craftimity]: release complete 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/craftimity/overview
+[info] Hosting URL: https://craftimity.web.app
+[debug] [2023-10-31T21:49:20.353Z] Error: Timed out.
+    at Timeout.<anonymous> (/Users/horlly/.nvm/versions/node/v18.13.0/lib/node_modules/firebase-tools/lib/utils.js:254:49)
+    at listOnTimeout (node:internal/timers:564:17)
+    at process.processTimers (node:internal/timers:507:7)
+[error] 
+[error] Error: An unexpected error has occurred.
