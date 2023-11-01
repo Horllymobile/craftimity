@@ -67,14 +67,14 @@ export class UserController implements IUserController {
   async checkUser(
     @Body() payload: UserCheckDto
   ): Promise<IResponse<IUser | { message: string }>> {
-    const check = await this.userService.checkUser(payload);
+    const user = await this.userService.checkUser(payload);
     return {
-      message: check
+      message: user
         ? "User check success"
         : `We sent a verification code to your ${
             payload.type === "email" ? "email address" : "phone number"
           }`,
-      data: check,
+      data: user ?? null,
       status: EResponseStatus.SUCCESS,
     };
   }
