@@ -5,8 +5,7 @@
 export const environment = {
   production: false,
   PROD_URL: 'https://craftimity-horllymobile.vercel.app/api/v1',
-  BASE_URL: 'https://craftimity-hm7cb317l-horllymobile.vercel.app/api/v1',
-  // BASE_URL: 'https://craftimity-horllymobile.vercel.app/api/v1',
+  BASE_URL: 'https://craftimity-horllymobile.vercel.app/api/v1',
   // BASE_URL: 'http://localhost:4000/api/v1',
   SUPABASE_URL: 'https://lxscyztmkcklnybwpymh.supabase.co',
   SUPABASE_API_KEY:
