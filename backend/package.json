@@ -1,6 +1,6 @@
 {
   "name": "craftimity",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A service rendering application.",
   "author": "",
   "private": true,
@@ -21,19 +21,29 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.7.1",
+    "@nestjs/axios": "^3.0.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.0.1",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/jwt": "^10.1.1",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/sequelize": "^10.0.0",
     "@nestjs/swagger": "^7.1.11",
     "@nestjs/throttler": "^5.0.0",
+    "@sendgrid/mail": "^7.7.0",
     "@supabase/supabase-js": "^2.33.2",
+    "@types/nodemailer": "^6.4.13",
+    "axios": "^1.6.0",
+    "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "csurf": "^1.11.0",
+    "dotenv": "^16.3.1",
+    "handlebars": "^4.7.8",
     "helmet": "^7.0.0",
+    "nodemailer": "^6.9.7",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
@@ -45,6 +55,7 @@
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
+    "@types/bcrypt": "^5.0.1",
     "@types/express": "^4.17.13",
     "@types/jest": "28.1.8",
     "@types/node": "^16.0.0",
@@ -82,8 +93,9 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
+  "module": "es2022",
   "engines": {
-    "node": "18.13.0",
+    "node": "18.17.1",
     "npm": "9.6.7"
   }
 }

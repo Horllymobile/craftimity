@@ -1,0 +1,16 @@
+ion-input.custom .helper-text,
+ion-input.custom .counter {
+  color: var(--ion-color-step-700, #12427A);
+}
+
+ion-button.button-custom {
+  --background: #12427A;
+}
+
+ion-button.button-custom-2 {
+  --background: #fff;
+  --color: #12427A;
+  --border-color: #12427A;
+  --border-style: solid;
+  --border-width: 0.2px;
+}

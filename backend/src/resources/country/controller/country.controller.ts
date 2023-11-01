@@ -18,6 +18,9 @@ import { ICountry } from "src/core/interfaces/ICountry";
 import { IPagination } from "src/core/interfaces/IPagination";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { ToogleActiveDto } from "../../../core/dto/dto";
+import { ApiTags } from "@nestjs/swagger";
+
+@ApiTags("Country")
 @Controller(`api/v1/countries`)
 export class CountryController implements ICountryController {
   constructor(private readonly countryService: CountryService) {}
@@ -36,11 +39,17 @@ export class CountryController implements ICountryController {
 
   @Get()
   async findCountries(
-    @Query("page") page: number,
-    @Query("size") size: number,
-    @Query("name") name?: string
+    @Query("page") page: number = 1,
+    @Query("size") size: number = 10,
+    @Query("name") name?: string,
+    @Query("status") status?: boolean
   ): Promise<IResponse<IPagination<ICountry[]>>> {
-    const countries = await this.countryService.findCountries(page, size, name);
+    const countries = await this.countryService.findCountries(
+      page,
+      size,
+      name,
+      status
+    );
     const total = await this.countryService.countCountries();
     return {
       message: "Countries fetched successfully",

@@ -18,7 +18,9 @@ import { IResponse } from "src/core/interfaces/IResponse";
 import { IState } from "src/core/interfaces/IState";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { ToogleActiveDto } from "src/core/dto/dto";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("State")
 @Controller("api/v1/states")
 export class StateController implements IStateController {
   constructor(private readonly stateService: StateService) {}
@@ -38,15 +40,17 @@ export class StateController implements IStateController {
   @Get("")
   async findStates(
     @Query("page") page: number = 1,
-    @Query("size") size: number = 10,
+    @Query("size") size: number = 20,
     @Query("name") name?: string,
-    @Query("country") country_id?: number
+    @Query("country") country_id?: number,
+    @Query("status") status?: boolean
   ): Promise<IResponse<IPagination<IState[]>>> {
     const states = await this.stateService.findStates(
       page,
       size,
       name,
-      country_id
+      country_id,
+      status
     );
     const total = await this.stateService.countStates();
     return {

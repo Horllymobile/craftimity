@@ -1,0 +1,157 @@
+<ion-content>
+  <section class="container">
+    <ion-img src="assets/svg/craftimity-blue.svg" class="w-16 mx-auto my-5"></ion-img>
+    <section class="border border-[#12427A] w-[90%] rounded-2xl mx-auto my-10">
+      <div class="p-8 border-b border-[#12427A]">
+        <h1 class="text-[#12427A] text-center" *ngIf="steps !== EOnboardingStep.COMPLETE">Create your profile</h1>
+        <h1 class="text-[#12427A] text-center" *ngIf="steps === EOnboardingStep.COMPLETE">Finishing Up</h1>
+      </div>
+
+      <form class="p-5" [formGroup]="imageForm" (ngSubmit)="submitImage()"
+        *ngIf="steps === EOnboardingStep.IMAGE_UPLOAD">
+        <div class="p-5">
+          <p class="text-sm text-center text-[#12427A] font-semibold">Step 2 of 2</p>
+          <p class="text-sm text-[#12427A] text-center">Add a profile photo</p>
+          <p class="text-xs text-[#12427A] text-center">Pick an image that shows your face. Hosts won't be able to see
+            your profile
+            photo until your service is confirmed.
+          </p>
+
+          <div *ngIf="imageChangedEvent">
+
+            <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+              [containWithinAspectRatio]="containWithinAspectRatio" [aspectRatio]="1 / 1" [resizeToWidth]="256"
+              [cropperMinWidth]="100" [onlyScaleDown]="true" [roundCropper]="true" [canvasRotation]="canvasRotation"
+              [transform]="transform" [alignImage]="'left'" [style.display]="showCropper ? null : 'none'" format="png"
+              (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()" (cropperReady)="cropperReady($event)"
+              (loadImageFailed)="loadImageFail()"></image-cropper>
+
+            <ion-icon (click)="deleteImage()" color="danger" name="trash-outline"></ion-icon>
+          </div>
+
+          <div *ngIf="!imageChangedEvent" class="mt-5 flex justify-center">
+            <label for="image" class="mx-auto">
+              <ion-icon name="add-circle-outline" class="text-[6em] mx-auto text-[#12427A] "></ion-icon>
+              <!-- <img src="assets/imgs/add-profile.svg" class="mx-auto cursor-pointer w-[80%]" alt=""> -->
+            </label>
+            <input type="file" id="image" class="hidden" accept="image/*" formControlName="url"
+              (change)="uploadImage($event)">
+          </div>
+          <div class="w-full my-5">
+            <button type="submit" [disabled]="imageForm.invalid"
+              class="bg-[#12427A] w-full p-2 rounded-lg text-lg text-white">Continue</button>
+          </div>
+
+        </div>
+        <p class="text-center my-2"><a (click)="steps = EOnboardingStep.COMPLETE" class="underline">I'll do this
+            later</a></p>
+      </form>
+
+      <form [formGroup]="form" (ngSubmit)="updateUser(formData)" class="p-5" *ngIf="steps === EOnboardingStep.COMPLETE">
+
+        <div class="">
+          <div>
+            <input formControlName="firstName"
+              class="w-full p-2 bg-white text-[#12427A] border border-[#12427A] placeholder:text-[#12427A] rounded-tl-lg rounded-tr-lg"
+              label="Select Country" placeholder="First Name">
+            <input formControlName="lastName" placeholder="Last Name"
+              class="w-full p-2 bg-white text-[#12427A] placeholder:text-[#12427A] border border-[#12427A] border-t-0 rounded-bl-lg rounded-br-lg">
+          </div>
+          <p class="text-xs text-[#878484] my-2">Make sure it matches the name on your government ID.</p>
+          <!-- <p class="text-red-500 text-xs mb-3">
+            Please enter First Name
+          </p>
+          <p class="text-red-500 text-xs mb-3">
+            Please enter Last Name
+          </p> -->
+        </div>
+
+        <div class="w-full mb-2">
+          <input type="date" formControlName="birthdate"
+            class="w-full p-2 bg-white text-[#12427A] border border-[#12427A] rounded-lg" label="Select Country"
+            placeholder="dd/mm/yyyy">
+          <p class="text-xs text-[#878484] my-2">To sign up, you need to be at least 18. Your birthday won't be
+            shared
+            with other people who use Craftimity</p>
+          <!-- <p class="text-red-500 text-xs mb-3">
+            Please enter Date of birth dd/mm/yyyy
+          </p> -->
+        </div>
+
+
+        <div class="w-full mb-2">
+          <input type="text" formControlName="address"
+            class="w-full p-2 bg-white text-[#12427A] placeholder:text-[#12427A] border border-[#12427A] rounded-lg"
+            placeholder="Address Line 1">
+          <!-- <p class="text-red-500 text-xs mb-3">
+            Please enter Date of birth dd/mm/yyyy
+          </p> -->
+        </div>
+
+        <div class="w-full my-5">
+          <input type="text" formControlName="address2"
+            class="w-full p-2 bg-white text-[#12427A] placeholder:text-[#12427A] border border-[#12427A] rounded-lg"
+            placeholder="Address Line 2">
+          <!-- <p class="text-red-500 text-xs mb-3">
+            Please enter Date of birth dd/mm/yyyy
+          </p> -->
+        </div>
+
+        <div class="w-full my-5">
+          <div class="flex gap-[0.70em]">
+            <ion-select formControlName="country"
+              class="w-24 px-1 text-xs bg-white text-[#12427A] border border-[#12427A] rounded-lg"
+              label="Select Country" placeholder="Select country code" (ionChange)="onSelectCountry($event)">
+              <ng-container *ngFor="let country of countries$ | async">
+                <ion-select-option class="w-10" [value]="country.id">{{ country.name }}</ion-select-option>
+              </ng-container>
+            </ion-select>
+
+            <ion-select formControlName="state"
+              class="w-24 text-xs px-1 bg-white text-[#12427A] border border-[#12427A] rounded-lg" label="Select State"
+              placeholder="Select country code" (ionChange)="onSelectState($event)">
+              <ng-container *ngFor="let state of states$ | async">
+                <ion-select-option class="w-10" [value]="state.id">{{ state.name }}</ion-select-option>
+              </ng-container>
+            </ion-select>
+
+            <ion-select formControlName="city"
+              class="w-24 px-1 text-xs bg-white text-[#12427A] border border-[#12427A] rounded-lg" label="Select City"
+              placeholder="Select country code">
+              <ng-container *ngFor="let city of cities$ | async">
+                <ion-select-option class="w-10" [value]="city.id">{{ city.name }}</ion-select-option>
+              </ng-container>
+            </ion-select>
+          </div>
+        </div>
+
+        <div class="w-full my-5">
+          <div class="relative">
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
+              class="w-full p-2 bg-white text-[#12427A] placeholder:text-[#12427A] border border-[#12427A] rounded-lg"
+              label="Select Country" placeholder="Password">
+            <span (click)="onShowPassword()" class="text-sm text-[#12427A] mb-2 absolute top-3 right-3 cursor-pointer"
+              [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
+          </div>
+        </div>
+
+        <div class="w-full my-3 flex gap-2">
+          <ion-checkbox formControlName="accept"></ion-checkbox>
+          <!-- <input formControlName="accept" type="checkbox" id="checkbox" style="width: 40px;"
+            class="text-[#E78614] mb-2 rounded-lg"> -->
+          <p for="checkbox" class="text-[0.60em] leading-4">By selecting Agree and Continue, I agree to Craftimity's
+            Terms of
+            Service, Payments
+            Terms of
+            Service, and Nondiscrimination Policy. and acknowledge the Privacy Policy.</p>
+        </div>
+
+        <button type="submit" [disabled]="!isFormValid(form)"
+          [ngClass]="isFormValid(form) ? 'bg-[#12427A] text-white' : 'bg-[#e8e5e1] text-black'"
+          class="w-full p-2 mt-2 rounded-lg text-lg">Continue</button>
+
+        <!-- <p class="text-center my-2"><a routerLink="/auth/login" class="underline">I'll do this later</a></p> -->
+      </form>
+    </section>
+  </section>
+</ion-content>

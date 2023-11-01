@@ -26,7 +26,10 @@
     "@angular/platform-server": "^16.0.0",
     "@angular/router": "^16.0.0",
     "@nguniversal/express-engine": "^16.2.0",
+    "@supabase/supabase-js": "^2.38.0",
     "express": "^4.15.2",
+    "ngx-image-cropper": "^7.0.3",
+    "ngx-toastr": "^17.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"

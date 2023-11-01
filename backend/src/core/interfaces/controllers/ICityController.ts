@@ -10,7 +10,8 @@ export interface ICityController {
   findCities(
     page: number,
     size: number,
-    name?: string
+    name?: string,
+    state_id?: number
   ): Promise<IResponse<IPagination<ICity[]>>>;
 
   findCityById(id: number): Promise<IResponse<ICity>>;
