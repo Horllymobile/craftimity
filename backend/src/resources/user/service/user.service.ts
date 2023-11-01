@@ -34,8 +34,9 @@ export class UserService implements IUserService {
     if (payload.type === USERCHECKTYPE.EMAIL) {
       user = await this.findUserByEmail(payload.email);
       if (!user) {
-        return await this.sendVerificationCodeToEmail(payload.email);
+        await this.sendVerificationCodeToEmail(payload.email);
       }
+      return user;
     }
     user = await this.findUserByPhone(payload.phone);
     if (!user) {
