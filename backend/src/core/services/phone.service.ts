@@ -16,7 +16,7 @@ export class PhoneMessageService {
     verifyCode: string;
   }): Observable<any> {
     return this.httpService.post(
-      API_URL.telesign,
+      "",
       {},
       {
         params,

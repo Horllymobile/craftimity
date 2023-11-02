@@ -34,7 +34,8 @@ export class UserService implements IUserService {
     if (payload.type === USERCHECKTYPE.EMAIL) {
       user = await this.findUserByEmail(payload.email);
       if (!user) {
-        await this.sendVerificationCodeToEmail(payload.email);
+        const sent = await this.sendVerificationCodeToEmail(payload.email);
+        console.log(sent.data);
       }
       return user;
     }
@@ -215,34 +216,24 @@ export class UserService implements IUserService {
         email: email,
         code,
       });
-    this.elasticService
-      .sendEmailDynamic({
-        Recipients: {
-          To: [email],
-        },
-        Content: {
-          From: "support@craftimity.com",
-          TemplateName: "VERIFY_EMAIL",
-          Subject: "Account Verification",
-          Merge: {
-            code,
-            email_address: "support@craftimity.com",
-          },
-        },
-      })
-      .subscribe({
-        next: (res) => {
-          this.logger.log(res.data, "Email sending succes");
-        },
-        error: (err) => {
-          this.logger.error(err.data, "Email sending error");
-        },
-      });
     // await this.mailService.sendUserConfirmation(email, code);
     if (error) {
       this.logger.error(error);
     }
-    return;
+    return await this.elasticService.sendEmailDynamic({
+      Recipients: {
+        To: [email],
+      },
+      Content: {
+        From: "support@craftimity.com",
+        TemplateName: "VERIFY_EMAIL",
+        Subject: "Account Verification",
+        Merge: {
+          code,
+          email_address: "support@craftimity.com",
+        },
+      },
+    });
   }
 
   async sendForgotPasswordCodeToEmail(email: string) {
@@ -267,33 +258,24 @@ export class UserService implements IUserService {
         email: email,
         code,
       });
-    this.elasticService
-      .sendEmailDynamic({
-        Recipients: {
-          To: [email],
-        },
-        Content: {
-          From: "support@craftimity.com",
-          TemplateName: "RESET_PASSWORD_OTP",
-          Subject: "Password Reset Request",
-          Merge: {
-            email_address: "info@craftimity.com",
-            code,
-          },
-        },
-      })
-      .subscribe({
-        next: (res) => {
-          console.log(res.data);
-        },
-        error: (err) => {
-          console.log(err);
-        },
-      });
+
     if (error) {
       this.logger.error(error);
     }
-    return;
+    return await this.elasticService.sendEmailDynamic({
+      Recipients: {
+        To: [email],
+      },
+      Content: {
+        From: "support@craftimity.com",
+        TemplateName: "RESET_PASSWORD_OTP",
+        Subject: "Password Reset Request",
+        Merge: {
+          email_address: "info@craftimity.com",
+          code,
+        },
+      },
+    });
   }
 
   async sendForgotPasswordCodeToPhone(phone: string) {
@@ -427,29 +409,21 @@ export class UserService implements IUserService {
           is_onboarded: true,
         })
         .eq("id", id);
-      this.elasticService
-        .sendEmailDynamic({
-          Recipients: {
-            To: [res.data.email],
+      const onboard = await this.elasticService.sendEmailDynamic({
+        Recipients: {
+          To: [res.data.email],
+        },
+        Content: {
+          From: "info@craftimity.com",
+          TemplateName: "WELCOMING_EMAIL",
+          Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
+          Merge: {
+            full_name: res.data.full_name,
+            accountaddress: "info@craftimity.com",
           },
-          Content: {
-            From: "info@craftimity.com",
-            TemplateName: "WELCOMING_EMAIL",
-            Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
-            Merge: {
-              full_name: res.data.full_name,
-              accountaddress: "info@craftimity.com",
-            },
-          },
-        })
-        .subscribe({
-          next: (res) => {
-            console.log(res.data);
-          },
-          error: (err) => {
-            console.log(err);
-          },
-        });
+        },
+      });
+      console.log(onboard);
     }
 
     if (res.error) {
@@ -477,7 +451,8 @@ export class UserService implements IUserService {
           status: EResponseStatus.FAILED,
         });
       if (user) {
-        await this.sendForgotPasswordCodeToEmail(payload.email);
+        const sent = await this.sendForgotPasswordCodeToEmail(payload.email);
+        console.log(sent);
       }
       return user;
     }

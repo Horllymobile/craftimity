@@ -19,7 +19,7 @@ import { HttpModule } from "@nestjs/axios";
 import { MailModule } from "./mail/mail.module";
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: "../.env" }),
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 5,
