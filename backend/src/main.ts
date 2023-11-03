@@ -45,3 +45,6 @@ bootstrap();
 //   "node": "18.18.0",
 //   "npm": "9.6.7"
 // }
+// v=spf1 include:spf.efwd.registrar-servers.com ~all
+
+// v=spf1 include:spf.efwd.registrar-servers.com include:_spf.mailersend.net ~all

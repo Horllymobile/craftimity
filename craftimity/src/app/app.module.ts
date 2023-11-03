@@ -12,6 +12,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './core/shared/shared.module';
 import { JwtModule } from '@auth0/angular-jwt';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import {
+  getAnalytics,
+  provideAnalytics,
+  ScreenTrackingService,
+} from '@angular/fire/analytics';
+
+import { getMessaging, provideMessaging } from '@angular/fire/messaging';
+import { environment } from 'src/environments/environment';
 
 export function tokenGetter() {
   return localStorage.getItem('ACCESS_TOKEN');
@@ -34,6 +43,9 @@ export function tokenGetter() {
         // disallowedRoutes: ["http://example.com/examplebadroute/"],
       },
     }),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideAnalytics(() => getAnalytics()),
+    provideMessaging(() => getMessaging()),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
@@ -42,6 +54,7 @@ export function tokenGetter() {
       useClass: ErrorInterceptor,
       multi: true,
     },
+    ScreenTrackingService,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

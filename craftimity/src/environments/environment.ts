@@ -6,6 +6,15 @@ export const environment = {
   production: false,
   PROD_URL: 'https://craftimity.vercel.app/api/v1',
   BASE_URL: 'https://craftimity.vercel.app/api/v1',
+  firebaseConfig: {
+    apiKey: 'AIzaSyB3SK2Uzt3ZrqB4NXTV-SwjogB08viVBO4',
+    authDomain: 'craftimity.firebaseapp.com',
+    projectId: 'craftimity',
+    storageBucket: 'craftimity.appspot.com',
+    messagingSenderId: '536537889848',
+    appId: '1:536537889848:web:a33c2420afcde49ddafacd',
+    measurementId: 'G-SMS2245XVT',
+  },
   // BASE_URL: 'http://localhost:4000/api/v1',
   SUPABASE_URL: 'https://lxscyztmkcklnybwpymh.supabase.co',
   SUPABASE_API_KEY:
