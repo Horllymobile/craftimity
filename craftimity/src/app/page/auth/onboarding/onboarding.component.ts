@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
+import { constants } from 'buffer';
 import {
   Dimensions,
   ImageCroppedEvent,
@@ -17,6 +19,7 @@ import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
 import { SupaBaseService } from 'src/app/core/services/supabase.service';
+import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
   selector: 'app-onboarding',
@@ -54,7 +57,8 @@ export class OnboardingComponent implements OnInit {
     private locationService: LocationService,
     private route: Router,
     private alertService: AlertService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private analytics: AngularFireAnalytics
   ) {
     const user = localStorage.getItem(STORAGE_VARIABLES.USER);
     if (user) {
@@ -244,9 +248,28 @@ export class OnboardingComponent implements OnInit {
           this.alertService.success(res).then(() => {
             this.route.navigateByUrl('/auth/login');
           });
+          const user = JSON.parse(
+            localStorage.getItem(STORAGE_VARIABLES.USER) ?? ''
+          );
+          this.analytics.logEvent('registeration_successfull', {
+            email: user?.email,
+            first_name: payload?.first_name,
+            last_name: payload?.first_name,
+            platform: getPlaform(),
+          });
         },
         error: async (err) => {
+          const user = JSON.parse(
+            localStorage.getItem(STORAGE_VARIABLES.USER) ?? ''
+          );
           await this.alertService.success(err.message);
+          this.analytics.logEvent('registeration_failed', {
+            email: user?.email,
+            first_name: payload?.first_name,
+            last_name: payload?.first_name,
+            platform: getPlaform(),
+            error: err,
+          });
         },
       });
   }

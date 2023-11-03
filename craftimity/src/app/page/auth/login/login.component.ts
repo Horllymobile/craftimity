@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import {
   FormBuilder,
   FormControl,
@@ -6,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController, NavController } from '@ionic/angular';
+import { LoadingController, NavController, isPlatform } from '@ionic/angular';
 import { Observable, finalize, map } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { ISignIn } from 'src/app/core/models/auth';
@@ -14,6 +15,7 @@ import { ICountry } from 'src/app/core/models/location';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
+import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
   selector: 'app-login',
@@ -44,7 +46,8 @@ export class LoginComponent implements OnInit {
     private alertService: AlertService,
     private navCtrl: NavController,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private analytics: AngularFireAnalytics
   ) {}
 
   get emailLoginFormData() {
@@ -193,9 +196,20 @@ export class LoginComponent implements OnInit {
           }
           this.emailLoginForm.reset();
           this.phoneLoginForm.reset();
+          this.analytics.logEvent('login_sucessfull', {
+            ...(payload.email && { email: payload.email }),
+            ...(payload.phone && { phone: payload.phone }),
+            platform: getPlaform(),
+            ...(res.metaData.full_name && { name: res.metaData.full_name }),
+          });
         },
         error: async (error: Error) => {
           await this.alertService.error(error.message);
+          this.analytics.logEvent('login_failed', {
+            ...(payload.email && { email: payload.email }),
+            ...(payload.phone && { phone: payload.phone }),
+            platform: getPlaform(),
+          });
         },
       });
   }
