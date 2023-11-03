@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.craftimity.craftimity-client</string>
+	<string>com.craftimity.craftimity</string>
 	<key>PROJECT_ID</key>
 	<string>craftimity</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:536537889848:ios:a80e148d73ebe316dafacd</string>
+	<string>1:536537889848:ios:8d617def26a9db73dafacd</string>
 </dict>
 </plist>

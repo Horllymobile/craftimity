@@ -1,112 +1,112 @@
 {
   "images" : [
     {
-      "filename" : "app-iconx40.png",
+      "filename" : "craftimityx40.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
       "size" : "20x20"
     },
     {
-      "filename" : "app-iconx60.png",
+      "filename" : "craftimityx60.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
       "size" : "20x20"
     },
     {
-      "filename" : "app-iconx58.png",
+      "filename" : "craftimityx58.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
-      "filename" : "app-iconx87.png",
+      "filename" : "craftimityx87.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
       "size" : "29x29"
     },
     {
-      "filename" : "app-iconx76.png",
+      "filename" : "craftimityx76.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
       "size" : "38x38"
     },
     {
-      "filename" : "app-iconx114.png",
+      "filename" : "craftimityx114.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
       "size" : "38x38"
     },
     {
-      "filename" : "app-iconx80.png",
+      "filename" : "craftimityx80.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
       "size" : "40x40"
     },
     {
-      "filename" : "app-iconx120 1.png",
+      "filename" : "craftimityx120 1.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
-      "filename" : "app-iconx120.png",
+      "filename" : "craftimityx120.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
-      "filename" : "app-iconx180.png",
+      "filename" : "craftimityx180.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
       "size" : "60x60"
     },
     {
-      "filename" : "app-iconx128.png",
+      "filename" : "craftimityx128.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
       "size" : "64x64"
     },
     {
-      "filename" : "app-iconx192.png",
+      "filename" : "craftimityx192.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "3x",
       "size" : "64x64"
     },
     {
-      "filename" : "app-iconx136.png",
+      "filename" : "craftimityx136.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
       "size" : "68x68"
     },
     {
-      "filename" : "app-iconx152.png",
+      "filename" : "craftimityx152.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
       "size" : "76x76"
     },
     {
-      "filename" : "app-iconx167.png",
+      "filename" : "craftimityx167.png",
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
       "size" : "83.5x83.5"
     },
     {
-      "filename" : "app-icon 1.png",
+      "filename" : "craftimityx1024.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
