@@ -21,6 +21,7 @@ import { getPlaform } from 'src/app/core/utils/functions';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  providers: [AngularFireAnalytics],
 })
 export class LoginComponent implements OnInit {
   loginType: 'email' | 'phone' = 'phone';

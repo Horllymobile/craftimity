@@ -16,7 +16,7 @@ export class ElasticService {
 
   async sendEmailDynamic(data: EmailPayload) {
     return await this.httpService
-      .post(`${API_URL.elastic_api}/emails/transactional`, data, {
+      .post(`${API_URL.elastic_api}emails/transactional`, data, {
         params: {
           apikey: this.configService.get("ELASTICT_EMAIL_API_KEY"),
         },

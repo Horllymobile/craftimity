@@ -9,6 +9,9 @@ import { OnboardingComponent } from './onboarding/onboarding.component';
 import { SharedModule } from 'src/app/core/shared/shared.module';
 import { SessionGuard } from 'src/app/core/guards/session/session.guard';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
+import { FirebaseApp } from '@angular/fire/app';
+import { AngularFireModule } from '@angular/fire/compat';
 
 const routes: Routes = [
   {
@@ -52,5 +55,6 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     SharedModule,
   ],
+  providers: [AngularFireAnalytics],
 })
 export class AuthModule {}

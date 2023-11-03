@@ -21,6 +21,8 @@ import {
 
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { environment } from 'src/environments/environment';
+import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
+import { AngularFireModule } from '@angular/fire/compat';
 
 export function tokenGetter() {
   return localStorage.getItem('ACCESS_TOKEN');
@@ -43,6 +45,7 @@ export function tokenGetter() {
         // disallowedRoutes: ["http://example.com/examplebadroute/"],
       },
     }),
+    AngularFireModule.initializeApp(environment.firebaseConfig),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAnalytics(() => getAnalytics()),
     provideMessaging(() => getMessaging()),
@@ -55,6 +58,7 @@ export function tokenGetter() {
       multi: true,
     },
     ScreenTrackingService,
+    AngularFireAnalytics,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

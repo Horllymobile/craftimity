@@ -33,9 +33,10 @@ export class UserService implements IUserService {
     let user: IUser;
     if (payload.type === USERCHECKTYPE.EMAIL) {
       user = await this.findUserByEmail(payload.email);
+      console.log(user);
       if (!user) {
         const sent = await this.sendVerificationCodeToEmail(payload.email);
-        console.log(sent.data);
+        console.log(sent);
       }
       return user;
     }
