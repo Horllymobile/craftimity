@@ -28,7 +28,11 @@
             </div>
           </div>
           <div class="flex justify-between align-middle">
-            <a class="text-[#12427A] underline self-center" href="#">More Options</a>
+            <ion-button [disabled]="!(timer === 0)" fill="outline" class="text-[#12427A] underline self-center"
+              (click)="resendOTPCode()">
+              <span *ngIf="timer === 0">Resend</span>
+              <span *ngIf="timer !== 0">Resend in {{ timer }}</span>
+            </ion-button>
             <ion-button type="submit" expand="medium" [disabled]="form.invalid"
               class="button-custom mt-5">Continue</ion-button>
           </div>

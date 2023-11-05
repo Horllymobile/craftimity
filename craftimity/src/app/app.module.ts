@@ -46,9 +46,9 @@ export function tokenGetter() {
       },
     }),
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
-    provideAnalytics(() => getAnalytics()),
-    provideMessaging(() => getMessaging()),
+    // provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    // provideAnalytics(() => getAnalytics()),
+    // provideMessaging(() => getMessaging()),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

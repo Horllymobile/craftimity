@@ -2,9 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
-import { Subscription, finalize, map } from 'rxjs';
+import { Subscription, finalize, interval, map } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
-import { IVerifyOtp } from 'src/app/core/models/auth';
+import { ISignIn, IVerifyOtp } from 'src/app/core/models/auth';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 
@@ -20,6 +20,10 @@ export class VerifyComponent implements OnInit, OnDestroy {
   paramSub$!: Subscription;
   querySub$!: Subscription;
   verifySub$!: Subscription;
+  timer = 60;
+  intervalSub$!: Subscription;
+  resetSub$!: Subscription;
+  isResending = false;
   constructor(
     private fb: FormBuilder,
     private router: ActivatedRoute,
@@ -47,6 +51,7 @@ export class VerifyComponent implements OnInit, OnDestroy {
     });
 
     this.getRouteDetails();
+    this.startTimer();
   }
 
   submit() {}
@@ -59,6 +64,7 @@ export class VerifyComponent implements OnInit, OnDestroy {
       spinner: 'lines-small',
       cssClass: 'loader',
     });
+    await loader.present();
     const payload: IVerifyOtp = {
       type: this.type,
       code: formPayload['code'],
@@ -66,7 +72,6 @@ export class VerifyComponent implements OnInit, OnDestroy {
       ...(this.type === 'phone' && { phone: this.data }),
     };
 
-    await loader.present();
     this.verifySub$ = this.authService
       .verifyOtp(payload)
       .pipe(
@@ -127,6 +132,52 @@ export class VerifyComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+  }
+
+  async resendOTPCode() {
+    this.isResending = true;
+    let payload: ISignIn = {
+      type: this.type,
+      ...(this.type === 'email' && { email: this.data }),
+      ...(this.type === 'phone' && { phone: this.data }),
+    };
+    const loader = await this.loadingCtrl.create({
+      message: '',
+      animated: true,
+      duration: 5000,
+      spinner: 'lines-small',
+      cssClass: 'loader',
+    });
+    await loader.present();
+    this.resetSub$ = this.authService
+      .resendOTPCode(payload)
+      .pipe(
+        finalize(async () => {
+          this.startTimer();
+          await loader.dismiss();
+        })
+      )
+      .subscribe({
+        next: async (res) => {
+          await this.alertService.success(res);
+        },
+        error: async (err) => {
+          await this.alertService.error(err);
+        },
+      });
+  }
+
+  startTimer() {
+    if (this.timer < 1) this.timer = 60;
+    this.intervalSub$ = interval(1000)
+      .pipe()
+      .subscribe((res) => {
+        this.timer -= 1;
+        if (this.timer <= 0) {
+          this.intervalSub$.unsubscribe();
+          this.timer = 0;
+        }
+      });
   }
 
   ngOnDestroy(): void {

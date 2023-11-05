@@ -7,8 +7,8 @@ export const environment = {
     projectId: 'craftimity',
     storageBucket: 'craftimity.appspot.com',
     messagingSenderId: '536537889848',
-    appId: '1:536537889848:web:a33c2420afcde49ddafacd',
-    measurementId: 'G-SMS2245XVT',
+    appId: '1:536537889848:web:3bcf5b525ab0eeccdafacd',
+    measurementId: 'G-CT70TPNDEP',
   },
   SUPABASE_URL: 'https://lxscyztmkcklnybwpymh.supabase.co',
   SUPABASE_API_KEY:
