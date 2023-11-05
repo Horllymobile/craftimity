@@ -227,30 +227,23 @@ export class UserService implements IUserService {
     const job = this.schedulerRegistry.getCronJob("delete-code");
     job.start();
 
-    this.elasticService
-      .sendEmailDynamic({
-        Recipients: {
-          To: [email],
+    let mail = await this.elasticService.sendEmailDynamic({
+      Recipients: {
+        To: [email],
+      },
+      Content: {
+        From: "support@craftimity.com",
+        TemplateName: "VERIFY_EMAIL",
+        Subject: "Account Verification",
+        Merge: {
+          code,
+          email_address: "support@craftimity.com",
         },
-        Content: {
-          From: "support@craftimity.com",
-          TemplateName: "VERIFY_EMAIL",
-          Subject: "Account Verification",
-          Merge: {
-            code,
-            email_address: "support@craftimity.com",
-          },
-        },
-      })
-      .subscribe({
-        next: (res) => {
-          this.logger.log(res.data);
-        },
-        error: (err) => {
-          this.logger.error(err);
-          throw new InternalServerErrorException();
-        },
-      });
+      },
+    });
+    if (mail.data) {
+      this.logger.log(mail.data);
+    }
     return;
   }
 
@@ -284,30 +277,23 @@ export class UserService implements IUserService {
     const job = this.schedulerRegistry.getCronJob("delete-code");
     job.start();
 
-    this.elasticService
-      .sendEmailDynamic({
-        Recipients: {
-          To: [email],
+    let mail = await this.elasticService.sendEmailDynamic({
+      Recipients: {
+        To: [email],
+      },
+      Content: {
+        From: "support@craftimity.com",
+        TemplateName: "RESET_PASSWORD_OTP",
+        Subject: "Password Reset Request",
+        Merge: {
+          email_address: "info@craftimity.com",
+          code,
         },
-        Content: {
-          From: "support@craftimity.com",
-          TemplateName: "RESET_PASSWORD_OTP",
-          Subject: "Password Reset Request",
-          Merge: {
-            email_address: "info@craftimity.com",
-            code,
-          },
-        },
-      })
-      .subscribe({
-        next: (res) => {
-          this.logger.log(res.data);
-        },
-        error: (err) => {
-          this.logger.error(err);
-          throw new InternalServerErrorException();
-        },
-      });
+      },
+    });
+    if (mail.data) {
+      this.logger.log(mail.data);
+    }
     return;
   }
 
@@ -475,30 +461,24 @@ export class UserService implements IUserService {
           is_onboarded: true,
         })
         .eq("id", id);
-      this.elasticService
-        .sendEmailDynamic({
-          Recipients: {
-            To: [res.data.email],
+      let mail = await this.elasticService.sendEmailDynamic({
+        Recipients: {
+          To: [res.data.email],
+        },
+        Content: {
+          From: "info@craftimity.com",
+          TemplateName: "WELCOMING_EMAIL",
+          Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
+          Merge: {
+            full_name: res.data.full_name,
+            accountaddress: "info@craftimity.com",
           },
-          Content: {
-            From: "info@craftimity.com",
-            TemplateName: "WELCOMING_EMAIL",
-            Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
-            Merge: {
-              full_name: res.data.full_name,
-              accountaddress: "info@craftimity.com",
-            },
-          },
-        })
-        .subscribe({
-          next: (res) => {
-            this.logger.log(res.data);
-          },
-          error: (err) => {
-            this.logger.error(err);
-            throw new InternalServerErrorException();
-          },
-        });
+        },
+      });
+
+      if (mail.data) {
+        this.logger.log(mail.data);
+      }
     }
 
     if (res.error) {

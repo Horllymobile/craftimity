@@ -14,11 +14,9 @@ export class ElasticService {
     private readonly httpService: HttpService
   ) {}
 
-  sendEmailDynamic(data: EmailPayload) {
-    return this.httpService.post(
-      `${API_URL.elastic_api}emails/transactional`,
-      data,
-      {
+  async sendEmailDynamic(data: EmailPayload) {
+    return await this.httpService
+      .post(`${API_URL.elastic_api}emails/transactional`, data, {
         params: {
           apikey: this.configService.get("ELASTICT_EMAIL_API_KEY"),
         },
@@ -27,7 +25,7 @@ export class ElasticService {
           "Content-Type": "application/json",
           "Request-Body-Schema": "application/json",
         },
-      }
-    );
+      })
+      .toPromise();
   }
 }
