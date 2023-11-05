@@ -17,7 +17,10 @@ import { ERole } from "src/core/enums/Role";
 import { JwtService } from "@nestjs/jwt";
 import { PhoneMessageService } from "src/core/services/phone.service";
 import { ElasticService } from "src/core/services/elastic.service";
-import { Observable, map } from "rxjs";
+import { TasksService } from "src/core/services/tasks.service";
+import { SchedulerRegistry } from "@nestjs/schedule";
+import { IsString } from "class-validator";
+import { UpdateImage } from "../dto/dto";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -26,17 +29,16 @@ export class UserService implements IUserService {
     private readonly superBaseService: SuperbaseService,
     private jwtService: JwtService,
     private phoneMessageService: PhoneMessageService,
-    private elasticService: ElasticService
+    private elasticService: ElasticService,
+    private schedulerRegistry: SchedulerRegistry
   ) {}
 
   async checkUser(payload: UserCheckDto): Promise<any> {
     let user: IUser;
     if (payload.type === USERCHECKTYPE.EMAIL) {
       user = await this.findUserByEmail(payload.email);
-      console.log(user);
       if (!user) {
-        const sent = await this.sendVerificationCodeToEmail(payload.email);
-        console.log(sent);
+        await this.sendVerificationCodeToEmail(payload.email);
       }
       return user;
     }
@@ -125,13 +127,13 @@ export class UserService implements IUserService {
         `id,first_name,last_name, full_name, email, 
       phone_number, address, active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, birthdate, password`
+      updated_at, country_id, state_id, city_id, birthdate`
       )
       .eq("email", email)
       .single();
-    // if (error) {
-    //   this.logger.error(error);
-    // }
+    if (error) {
+      this.logger.error(error);
+    }
 
     return data;
   }
@@ -221,20 +223,32 @@ export class UserService implements IUserService {
     if (error) {
       this.logger.error(error);
     }
-    return await this.elasticService.sendEmailDynamic({
-      Recipients: {
-        To: [email],
-      },
-      Content: {
-        From: "support@craftimity.com",
-        TemplateName: "VERIFY_EMAIL",
-        Subject: "Account Verification",
-        Merge: {
-          code,
-          email_address: "support@craftimity.com",
+
+    this.elasticService
+      .sendEmailDynamic({
+        Recipients: {
+          To: [email],
         },
-      },
-    });
+        Content: {
+          From: "support@craftimity.com",
+          TemplateName: "VERIFY_EMAIL",
+          Subject: "Account Verification",
+          Merge: {
+            code,
+            email_address: "support@craftimity.com",
+          },
+        },
+      })
+      .subscribe({
+        next: (res) => {
+          this.logger.log(res.data);
+        },
+        error: (err) => {
+          this.logger.error(err);
+          throw new InternalServerErrorException();
+        },
+      });
+    return;
   }
 
   async sendForgotPasswordCodeToEmail(email: string) {
@@ -263,20 +277,31 @@ export class UserService implements IUserService {
     if (error) {
       this.logger.error(error);
     }
-    return await this.elasticService.sendEmailDynamic({
-      Recipients: {
-        To: [email],
-      },
-      Content: {
-        From: "support@craftimity.com",
-        TemplateName: "RESET_PASSWORD_OTP",
-        Subject: "Password Reset Request",
-        Merge: {
-          email_address: "info@craftimity.com",
-          code,
+    this.elasticService
+      .sendEmailDynamic({
+        Recipients: {
+          To: [email],
         },
-      },
-    });
+        Content: {
+          From: "support@craftimity.com",
+          TemplateName: "RESET_PASSWORD_OTP",
+          Subject: "Password Reset Request",
+          Merge: {
+            email_address: "info@craftimity.com",
+            code,
+          },
+        },
+      })
+      .subscribe({
+        next: (res) => {
+          this.logger.log(res.data);
+        },
+        error: (err) => {
+          this.logger.error(err);
+          throw new InternalServerErrorException();
+        },
+      });
+    return;
   }
 
   async sendForgotPasswordCodeToPhone(phone: string) {
@@ -357,6 +382,35 @@ export class UserService implements IUserService {
     return;
   }
 
+  async updateImage(id: string, payload: UpdateImage) {
+    let res = await this.superBaseService
+      .connect()
+      .from("User")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (!res.data)
+      throw new NotFoundException({
+        message: "User not found",
+        status: EResponseStatus.FAILED,
+      });
+
+    res = await this.superBaseService
+      .connect()
+      .from("User")
+      .update({
+        profile_image: payload.profile_image,
+      })
+      .eq("id", id);
+
+    if (res.error) {
+      this.logger.error(res.error);
+    }
+
+    return res.data;
+  }
+
   async updateUser(
     id: string,
     payload: UpdateUserDto
@@ -410,21 +464,30 @@ export class UserService implements IUserService {
           is_onboarded: true,
         })
         .eq("id", id);
-      const onboard = await this.elasticService.sendEmailDynamic({
-        Recipients: {
-          To: [res.data.email],
-        },
-        Content: {
-          From: "info@craftimity.com",
-          TemplateName: "WELCOMING_EMAIL",
-          Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
-          Merge: {
-            full_name: res.data.full_name,
-            accountaddress: "info@craftimity.com",
+      this.elasticService
+        .sendEmailDynamic({
+          Recipients: {
+            To: [res.data.email],
           },
-        },
-      });
-      console.log(onboard);
+          Content: {
+            From: "info@craftimity.com",
+            TemplateName: "WELCOMING_EMAIL",
+            Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
+            Merge: {
+              full_name: res.data.full_name,
+              accountaddress: "info@craftimity.com",
+            },
+          },
+        })
+        .subscribe({
+          next: (res) => {
+            this.logger.log(res.data);
+          },
+          error: (err) => {
+            this.logger.error(err);
+            throw new InternalServerErrorException();
+          },
+        });
     }
 
     if (res.error) {

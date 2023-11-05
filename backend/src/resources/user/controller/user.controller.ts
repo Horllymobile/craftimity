@@ -25,6 +25,7 @@ import { UpdateUserDto } from "../dto/update-user.dto";
 import { IPagination } from "src/core/interfaces/IPagination";
 import { AuthGuard } from "src/core/guards/auth.guard";
 import { Public } from "src/core/decorators/public-route";
+import { UpdateImage } from "../dto/dto";
 
 @ApiTags("User")
 @Controller("api/v1/users")
@@ -86,6 +87,20 @@ export class UserController implements IUserController {
     @Body() payload: UpdateUserDto
   ): Promise<IResponse<any>> {
     const data = await this.userService.updateUser(id, payload);
+    return {
+      message: "Update successfull",
+      data: data,
+      status: EResponseStatus.SUCCESS,
+    };
+  }
+
+  @UseGuards(AuthGuard)
+  @Put("user-image/:id")
+  async updateUserImage(
+    @Param("id") id: string,
+    @Body() payload: UpdateImage
+  ): Promise<IResponse<any>> {
+    const data = await this.userService.updateImage(id, payload);
     return {
       message: "Update successfull",
       data: data,

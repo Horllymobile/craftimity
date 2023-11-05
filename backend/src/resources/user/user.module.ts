@@ -28,6 +28,6 @@ import { ConfigModule } from "@nestjs/config";
     PhoneMessageService,
     ElasticService,
   ],
-  exports: [UserService],
+  exports: [UserService, ElasticService],
 })
 export class UserModule {}
