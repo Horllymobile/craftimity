@@ -7,15 +7,19 @@ export class TasksService {
   private readonly logger = new Logger(TasksService.name);
   constructor(private superbaseService: SuperbaseService) {}
 
-  @Cron(CronExpression.EVERY_10_MINUTES, { name: "delete-code" })
+  @Cron(CronExpression.EVERY_30_MINUTES, { name: "delete-code" })
   async deletedVerificationCode() {
     this.logger.log("verification_code delete job called");
     var twoHoursBefore = new Date();
-    twoHoursBefore.setHours(twoHoursBefore.getHours() - 12);
-    await this.superbaseService
+    var d = new Date(twoHoursBefore.setHours(twoHoursBefore.getMinutes() - 30));
+    const res = await this.superbaseService
       .connect()
       .from("verification_code")
       .delete()
-      .filter("created_at", "gt", twoHoursBefore);
+      .filter("created_at", "gt", d.toISOString());
+    if (res.error) {
+      this.logger.log(res.error);
+    }
+    this.logger.log(res);
   }
 }

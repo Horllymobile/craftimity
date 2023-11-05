@@ -18,6 +18,7 @@ import { CraftsmenModule } from "./resources/craftsmen/craftsmen.module";
 import { HttpModule } from "@nestjs/axios";
 import { MailModule } from "./mail/mail.module";
 import { ScheduleModule } from "@nestjs/schedule";
+import { TasksService } from "./core/services/tasks.service";
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -50,6 +51,7 @@ import { ScheduleModule } from "@nestjs/schedule";
   providers: [
     AppService,
     SuperbaseService,
+    TasksService,
     // {
     //   provide: APP_GUARD,
     //   useClass: AuthGuard,

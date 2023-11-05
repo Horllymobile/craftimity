@@ -224,6 +224,9 @@ export class UserService implements IUserService {
       this.logger.error(error);
     }
 
+    const job = this.schedulerRegistry.getCronJob("delete-code");
+    job.start();
+
     this.elasticService
       .sendEmailDynamic({
         Recipients: {
@@ -277,6 +280,10 @@ export class UserService implements IUserService {
     if (error) {
       this.logger.error(error);
     }
+
+    const job = this.schedulerRegistry.getCronJob("delete-code");
+    job.start();
+
     this.elasticService
       .sendEmailDynamic({
         Recipients: {
@@ -327,6 +334,8 @@ export class UserService implements IUserService {
         phone: phone,
         code,
       });
+    const job = this.schedulerRegistry.getCronJob("delete-code");
+    job.start();
     // this.phoneMessageService
     //   .sendVerificationCode({ phoneNumber: phone, verifyCode: code })
     //   .subscribe({
@@ -366,6 +375,8 @@ export class UserService implements IUserService {
         phone: phone,
         code,
       });
+    const job = this.schedulerRegistry.getCronJob("delete-code");
+    job.start();
     this.phoneMessageService
       .sendVerificationCode({ phoneNumber: phone, verifyCode: code })
       .subscribe({
