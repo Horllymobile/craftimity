@@ -200,30 +200,23 @@ export class AuthService {
 
     if (update_user.error) this.logger.log(update_user.error);
 
-    this.elasticService
-      .sendEmailDynamic({
-        Recipients: {
-          To: [user.data.email],
+    const mail = await this.elasticService.sendEmailDynamic({
+      Recipients: {
+        To: [user.data.email],
+      },
+      Content: {
+        From: "info@craftimity.com",
+        TemplateName: "WELCOMING_EMAIL",
+        Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
+        Merge: {
+          full_name: `${payload.first_name} ${payload.last_name}`,
+          accountaddress: "info@craftimity.com",
         },
-        Content: {
-          From: "info@craftimity.com",
-          TemplateName: "WELCOMING_EMAIL",
-          Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
-          Merge: {
-            full_name: `${payload.first_name} ${payload.last_name}`,
-            accountaddress: "info@craftimity.com",
-          },
-        },
-      })
-      .subscribe({
-        next: (res) => {
-          this.logger.log(res.data);
-        },
-        error: (err) => {
-          this.logger.error(err);
-          throw new InternalServerErrorException();
-        },
-      });
+      },
+    });
+    if (mail.data) {
+      this.logger.log(mail.data);
+    }
   }
 
   async updateCraft(id: string, payload: UpdateCraftmanDto) {
