@@ -1,0 +1,7 @@
+{
+  "name": "Craftivity",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
