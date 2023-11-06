@@ -115,7 +115,7 @@ export class AuthService {
       .pipe(map((res) => res.message));
   }
 
-  updateUser(id: string, payload: IUpdateUser) {
+  updateUser(id: string, payload: IUpdateUser): Observable<any> {
     const token = localStorage.getItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);
     let tok: string = '';
     if (token) {

@@ -18,6 +18,7 @@ import { IUser } from 'src/app/core/models/user';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
+import { MixpanelService } from 'src/app/core/services/mixpanel.service';
 import { SupaBaseService } from 'src/app/core/services/supabase.service';
 import { getPlaform } from 'src/app/core/utils/functions';
 
@@ -58,7 +59,8 @@ export class OnboardingComponent implements OnInit {
     private route: Router,
     private alertService: AlertService,
     private alertCtrl: AlertController,
-    private analytics: AngularFireAnalytics
+    private analytics: AngularFireAnalytics,
+    private mixpanelService: MixpanelService
   ) {
     const user = localStorage.getItem(STORAGE_VARIABLES.USER);
     if (user) {
@@ -193,6 +195,9 @@ export class OnboardingComponent implements OnInit {
       )
       .subscribe({
         next: async (res) => {
+          this.mixpanelService.track('Update Image successfully', {
+            message: res,
+          });
           let alert = await this.alertCtrl.create({
             header: 'Success',
             message: 'Image uploaded successfully',
@@ -204,6 +209,9 @@ export class OnboardingComponent implements OnInit {
           });
         },
         error: async (err) => {
+          this.mixpanelService.track('Update Image Error', {
+            error: err,
+          });
           let alert = await this.alertCtrl.create({
             header: 'Error',
             message: err?.error?.message,
@@ -244,13 +252,19 @@ export class OnboardingComponent implements OnInit {
       )
       .subscribe({
         next: (res) => {
+          const user = JSON.parse(
+            localStorage.getItem(STORAGE_VARIABLES.USER) ?? ''
+          );
+          this.mixpanelService.track('Registeration Successfull', {
+            email: user?.email,
+            first_name: payload?.first_name,
+            last_name: payload?.first_name,
+            platform: getPlaform(),
+          });
           this.form.reset();
           this.alertService.success(res).then(() => {
             this.route.navigateByUrl('/auth/login');
           });
-          const user = JSON.parse(
-            localStorage.getItem(STORAGE_VARIABLES.USER) ?? ''
-          );
           this.analytics.logEvent('registeration_successfull', {
             email: user?.email,
             first_name: payload?.first_name,
@@ -259,6 +273,10 @@ export class OnboardingComponent implements OnInit {
           });
         },
         error: async (err) => {
+          this.mixpanelService.track('Registeration Failed', {
+            error: err,
+            platform: getPlaform(),
+          });
           const user = JSON.parse(
             localStorage.getItem(STORAGE_VARIABLES.USER) ?? ''
           );

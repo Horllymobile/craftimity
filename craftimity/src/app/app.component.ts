@@ -8,6 +8,7 @@ import {
   IOSSettings,
 } from 'capacitor-native-settings';
 import { getPlaform } from './core/utils/functions';
+import { MixpanelService } from './core/services/mixpanel.service';
 
 @Component({
   selector: 'app-root',
@@ -18,8 +19,11 @@ export class AppComponent implements OnInit {
   constructor(
     private alertCtrl: AlertController,
     private platform: Platform,
-    private analytics: AngularFireAnalytics
-  ) {}
+    private analytics: AngularFireAnalytics,
+    private mixpanelService: MixpanelService
+  ) {
+    this.mixpanelService.init();
+  }
 
   async ngOnInit() {
     this.platform.ready().then(() => {

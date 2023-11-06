@@ -15,6 +15,7 @@ import { ICountry } from 'src/app/core/models/location';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
+import { MixpanelService } from 'src/app/core/services/mixpanel.service';
 import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
@@ -48,7 +49,8 @@ export class LoginComponent implements OnInit {
     private navCtrl: NavController,
     private route: ActivatedRoute,
     private router: Router,
-    private analytics: AngularFireAnalytics
+    private analytics: AngularFireAnalytics,
+    private mixpanelService: MixpanelService
   ) {}
 
   get emailLoginFormData() {
@@ -122,7 +124,9 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: async (res) => {
           // this.alertService.success('User is found');
+
           if (res === null) {
+            this.mixpanelService.track('Registeration Process', res);
             await this.alertService.success(
               `Verification code have been sent to ${
                 payload.type === 'email' ? payload.email : payload.phone
@@ -136,6 +140,7 @@ export class LoginComponent implements OnInit {
               { queryParams: { type: payload.type } }
             );
           } else {
+            this.mixpanelService.track('Login Process', res);
             if (payload.type === 'email') {
               this.emailLoginForm?.addControl(
                 'password',
@@ -152,6 +157,7 @@ export class LoginComponent implements OnInit {
           }
         },
         error: async (error: Error) => {
+          this.mixpanelService.track('Registeration Error', error);
           await this.alertService.error(error.message);
         },
       });
@@ -203,8 +209,11 @@ export class LoginComponent implements OnInit {
             platform: getPlaform(),
             ...(res.metaData.full_name && { name: res.metaData.full_name }),
           });
+          this.mixpanelService.identify(res.metaData.id);
+          this.mixpanelService.track('Login', res.metaData);
         },
         error: async (error: Error) => {
+          this.mixpanelService.track('Login Error', error);
           await this.alertService.error(error.message);
           this.analytics.logEvent('login_failed', {
             ...(payload.email && { email: payload.email }),
