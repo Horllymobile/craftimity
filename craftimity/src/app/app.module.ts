@@ -7,36 +7,32 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { PagePageModule } from './page/page.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './core/shared/shared.module';
 import { JwtModule } from '@auth0/angular-jwt';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import {
-  getAnalytics,
-  provideAnalytics,
-  ScreenTrackingService,
-} from '@angular/fire/analytics';
-
-import { getMessaging, provideMessaging } from '@angular/fire/messaging';
+import { ScreenTrackingService } from '@angular/fire/analytics';
 import { environment } from 'src/environments/environment';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { AngularFireModule } from '@angular/fire/compat';
+import { SelectAppComponent } from './select-app/select-app.component';
+import { CraftimityModule } from './craftimity/craftimity.module';
+import { CraftivityModule } from './craftivity/craftivity.module';
 
 export function tokenGetter() {
   return localStorage.getItem('ACCESS_TOKEN');
 }
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, SelectAppComponent],
   imports: [
     BrowserModule,
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
     IonicModule.forRoot(),
+    CraftivityModule,
+    CraftimityModule,
     AppRoutingModule,
-    PagePageModule,
     SharedModule,
     JwtModule.forRoot({
       config: {

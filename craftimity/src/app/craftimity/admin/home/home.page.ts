@@ -1,23 +1,11 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { ICategory } from 'src/app/core/models/category';
 import { IUser } from 'src/app/core/models/user';
 import { CategoryService } from 'src/app/core/services/category/category.service';
 import { UsersService } from 'src/app/core/services/users/users.service';
 import { SwiperOptions } from 'swiper/types';
-import {
-  Navigation,
-  Pagination,
-  Mousewheel,
-  A11y,
-  Controller,
-} from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 
 @Component({
   selector: 'app-home',

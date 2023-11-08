@@ -1,42 +1,29 @@
-import { NgModule, inject } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { ExploreComponent } from './page/explore/explore.component';
-import { WishlistsComponent } from './page/wishlists/wishlists.component';
-import { PagePage } from './page/page.page';
 import { AuthGuard } from './core/guards/auth/auth.guard';
-import { SessionGuard } from './core/guards/session/session.guard';
+import { SelectAppComponent } from './select-app/select-app.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: PagePage,
-    children: [
-      {
-        path: '',
-        redirectTo: 'explore',
-        pathMatch: 'full',
-      },
-      {
-        path: 'auth',
-        loadChildren: () =>
-          import('./page/auth/auth.module').then((m) => m.AuthModule),
-      },
-      {
-        path: 'explore',
-        component: ExploreComponent,
-      },
-      {
-        path: 'wishlists',
-        component: WishlistsComponent,
-      },
-    ],
-    canActivate: [SessionGuard],
+    redirectTo: 'select-app',
+    pathMatch: 'full',
   },
   {
-    path: 'admin',
+    path: 'select-app',
+    component: SelectAppComponent,
+  },
+  {
+    path: 'craftimity',
     loadChildren: () =>
-      import('./admin/admin.module').then((m) => m.AdminModule),
-    canActivate: [AuthGuard],
+      import('./craftimity/craftimity.module').then((m) => m.CraftimityModule),
+    // canActivate: [AuthGuard],
+  },
+  {
+    path: 'craftivity',
+    loadChildren: () =>
+      import('./craftivity/craftivity.module').then((m) => m.CraftivityModule),
+    // canActivate: [AuthGuard],
   },
 ];
 
