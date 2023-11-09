@@ -10,34 +10,32 @@ import { SharedModule } from 'src/app/core/shared/shared.module';
 import { SessionGuard } from 'src/app/core/guards/session/session.guard';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
-import { FirebaseApp } from '@angular/fire/app';
-import { AngularFireModule } from '@angular/fire/compat';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'auth/login',
     pathMatch: 'full',
   },
   {
     path: 'login',
     component: LoginComponent,
-    canActivate: [SessionGuard],
+    // canActivate: [SessionGuard],
   },
   {
     path: 'verify/:data',
     component: VerifyComponent,
-    canActivate: [SessionGuard],
+    // canActivate: [SessionGuard],
   },
   {
     path: 'onboarding',
     component: OnboardingComponent,
-    canActivate: [SessionGuard],
+    // canActivate: [SessionGuard],
   },
   {
     path: 'forgot-password',
     component: ForgotPasswordComponent,
-    canActivate: [SessionGuard],
+    // canActivate: [SessionGuard],
   },
 ];
 

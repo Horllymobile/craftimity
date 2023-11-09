@@ -13,7 +13,9 @@ export class UsersService {
   currentUser!: BehaviorSubject<IUser>;
   constructor(private http: HttpClient) {
     this.currentUser = new BehaviorSubject(
-      JSON.parse(localStorage.getItem(STORAGE_VARIABLES.USER) || '') as IUser
+      JSON.parse(
+        localStorage.getItem(STORAGE_VARIABLES.USER) || 'null'
+      ) as IUser
     );
   }
 

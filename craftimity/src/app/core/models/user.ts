@@ -1,3 +1,5 @@
+import { ERole } from '../enums/role';
+
 export interface IUser {
   id: string;
   first_name: string;
@@ -7,7 +9,7 @@ export interface IUser {
   address: string;
   active: boolean;
   enabled: boolean;
-  role: string;
+  role: ERole;
   country_id: number;
   state_id: number;
   city_id: number;

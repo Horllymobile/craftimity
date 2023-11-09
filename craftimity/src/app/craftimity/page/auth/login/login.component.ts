@@ -229,6 +229,6 @@ export class LoginComponent implements OnInit {
   }
 
   goToHome() {
-    this.router.navigate(['/admin/']);
+    this.router.navigate(['/craftimity/admin/']);
   }
 }

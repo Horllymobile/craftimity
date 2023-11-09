@@ -30,8 +30,6 @@ export function tokenGetter() {
     HttpClientModule,
     ReactiveFormsModule,
     IonicModule.forRoot(),
-    CraftivityModule,
-    CraftimityModule,
     AppRoutingModule,
     SharedModule,
     JwtModule.forRoot({

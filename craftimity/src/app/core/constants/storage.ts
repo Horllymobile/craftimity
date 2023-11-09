@@ -4,4 +4,7 @@ export const STORAGE_VARIABLES = {
   FORGOT_PASSWORD_DATA: 'forgot_password',
   FORGOT_PASSWORD_TOKEN: 'forgot_password_token',
   USER: 'user',
+  APP: 'app',
+  CRAFTIMITY: 'craftimity',
+  CRAFTIVITY: 'craftivity',
 };

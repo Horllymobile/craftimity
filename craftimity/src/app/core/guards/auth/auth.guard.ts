@@ -23,13 +23,20 @@ export class AuthGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
+    const app = localStorage.getItem(STORAGE_VARIABLES.APP);
     if (!this.authService.isAuthenticated()) {
       localStorage.removeItem(STORAGE_VARIABLES.USER);
       localStorage.removeItem(STORAGE_VARIABLES.TOKEN);
       localStorage.removeItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);
-      this.router.navigate(['/auth/login'], {
-        queryParams: { returnUrl: state.url },
-      });
+      if (app === STORAGE_VARIABLES.CRAFTIMITY) {
+        this.router.navigate(['/craftimity/page/login'], {
+          queryParams: { returnUrl: state.url },
+        });
+      } else {
+        this.router.navigate(['/craftivity/auth/login'], {
+          queryParams: { returnUrl: state.url },
+        });
+      }
       return false;
     }
     return true;

@@ -1,3 +1,37 @@
-<p>
-  register works!
-</p>
+<ion-content>
+  <ion-card>
+    <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto mt-8 mb-8"></ion-img>
+    <ion-card-header>
+      <ion-title class="text-[#12427A] text-lg">Register</ion-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-text class="mx-auto text-[#12427A]">
+        Create an account and, start managing craftsmanship and service business.
+      </ion-text>
+      <form class="mt-5">
+        <div>
+          <ion-input placeholder="Email" class="border border-[#12427A] rounded p-3"></ion-input>
+        </div>
+
+        <div class="mt-5">
+          <ion-input placeholder="Password" class="border border-[#12427A] rounded p-3"></ion-input>
+        </div>
+
+        <div class="mt-5">
+          <ion-input placeholder="Confirm Password" class="border border-[#12427A] rounded p-3"></ion-input>
+        </div>
+
+        <div class="w-full flex gap-2 my-5">
+          <ion-checkbox formControlName="accept"></ion-checkbox>
+          <p class="text-xs mt-2">I agree to the Terms and Conditions. </p>
+        </div>
+
+        <ion-button type="submit" expand="full" class="my-5 rounded">Register</ion-button>
+
+        <p class="text-lg text-center font-medium">Already have an account? <span class="text-[#12427A] underline"
+            routerLink="/craftivity/login">Login
+            here...</span></p>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

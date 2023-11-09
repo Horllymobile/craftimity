@@ -46,7 +46,6 @@ export class AuthService {
   signout() {
     localStorage.removeItem(STORAGE_VARIABLES.TOKEN);
     localStorage.removeItem(STORAGE_VARIABLES.USER);
-    this.router.navigate(['/auth/login']);
   }
 
   check(payload: ISignIn): Observable<IUser> {
