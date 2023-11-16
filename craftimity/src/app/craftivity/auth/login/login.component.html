@@ -43,14 +43,16 @@
           </div>
 
           <div class="w-full">
-            <p class="text-right text-[#12427A] underline">Forgot Password?</p>
+            <p class="text-right text-[#12427A] underline" routerLink="/craftivity/auth/forgot-password">
+              Forgot Password?
+            </p>
           </div>
         </div>
 
         <ion-button type="submit" expand="full" class="my-5 rounded" [disabled]="form.invalid">Login</ion-button>
 
         <p class="text-lg text-center font-medium">Don't have an account? <span class="text-[#12427A] underline"
-            routerLink="/craftivity/register">Register
+            routerLink="/craftivity/auth/register">Register
             here...</span></p>
       </form>
     </ion-card-content>

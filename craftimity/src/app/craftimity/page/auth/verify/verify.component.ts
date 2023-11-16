@@ -9,7 +9,7 @@ import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
-  selector: 'app-verify',
+  selector: 'craftimity-verify',
   templateUrl: './verify.component.html',
   styleUrls: ['./verify.component.scss'],
 })

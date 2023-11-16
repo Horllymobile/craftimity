@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -71,7 +72,7 @@ export class UserService implements IUserService {
           `id,first_name,last_name, full_name, email, 
         phone_number, address, active, enabled, email_verified, 
         phone_verified, role, created_at, 
-        updated_at, country_id, state_id, city_id`
+        updated_at, country_id, state_id, city_id, is_onboarded`
         )
         .ilike("idx_user_name", `%${name}%`)
         .limit(size)
@@ -86,7 +87,7 @@ export class UserService implements IUserService {
           `id,first_name,last_name, email, 
         phone_number, address, active, enabled, email_verified, 
         phone_verified, role, created_at, 
-        updated_at, country_id, state_id, city_id`
+        updated_at, country_id, state_id, city_id, is_onboarded`
         )
         .limit(size)
         .eq("active", true)
@@ -107,7 +108,7 @@ export class UserService implements IUserService {
         `id,first_name,last_name, full_name, email, 
       phone_number, address, active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id`
+      updated_at, country_id, state_id, city_id, is_onboarded`
       )
       .eq("id", id)
       .single();
@@ -127,7 +128,7 @@ export class UserService implements IUserService {
         `id,first_name,last_name, full_name, email, 
       phone_number, address, active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, birthdate`
+      updated_at, country_id, state_id, city_id, birthdate, is_onboarded`
       )
       .eq("email", email)
       .single();
@@ -146,7 +147,7 @@ export class UserService implements IUserService {
         `id,first_name,last_name, full_name, email, 
       phone_number, address, active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, birthdate, password, decrypted_password`
+      updated_at, country_id, state_id, city_id, birthdate, password, decrypted_password, is_onboarded`
       )
       .eq("email", email)
       .single();
@@ -165,7 +166,7 @@ export class UserService implements IUserService {
         `id,first_name,last_name, full_name, email, 
       phone_number, address, active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, password`
+      updated_at, country_id, state_id, city_id, password, is_onboarded`
       )
       .eq("phone_number", phone)
       .single();
@@ -185,7 +186,7 @@ export class UserService implements IUserService {
         `id,first_name,last_name, full_name, email, 
       phone_number, address, active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, password, decrypted_password`
+      updated_at, country_id, state_id, city_id, password, decrypted_password, is_onboarded`
       )
       .eq("phone_number", phone)
       .single();
@@ -198,6 +199,15 @@ export class UserService implements IUserService {
   }
 
   async sendVerificationCodeToEmail(email: string) {
+    const user = await this.findUserByEmail(email);
+
+    if (user.email_verified) {
+      throw new ConflictException({
+        status: EResponseStatus.FAILED,
+        message: "Email already verified, proceed to login",
+      });
+    }
+
     const code = generateVerifcationCode(6);
     let res = await this.superBaseService
       .connect()
@@ -500,6 +510,7 @@ export class UserService implements IUserService {
     let user: IUser;
     if (payload.type === USERCHECKTYPE.EMAIL) {
       user = await this.findUserByEmail(payload.email);
+      console.log(user);
       if (!user)
         throw new NotFoundException({
           message: "User not found",

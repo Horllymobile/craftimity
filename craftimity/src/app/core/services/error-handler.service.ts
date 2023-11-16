@@ -18,8 +18,7 @@ export class ErrorHandlerService {
         ? error?.error?.message
         : error?.error.error.toString() ?? 'An error occured';
     }
-    console.log(errorMessage);
-    return throwError(() => new Error(errorMessage));
+    return throwError(() => errorMessage);
   }
 
   processErrorMessage(error: HttpErrorResponse): string {

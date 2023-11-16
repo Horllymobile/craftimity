@@ -1,15 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-messages',
+  selector: 'craftimity-messages',
   templateUrl: './messages.page.html',
   styleUrls: ['./messages.page.scss'],
 })
 export class MessagesPage implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

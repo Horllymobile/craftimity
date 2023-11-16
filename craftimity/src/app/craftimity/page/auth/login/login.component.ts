@@ -19,7 +19,7 @@ import { MixpanelService } from 'src/app/core/services/mixpanel.service';
 import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
-  selector: 'app-login',
+  selector: 'craftimity-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   providers: [AngularFireAnalytics],

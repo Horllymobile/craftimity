@@ -13,7 +13,11 @@ import { IUser } from "src/core/interfaces/IUser";
 import { JwtService } from "@nestjs/jwt";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { ERole } from "src/core/enums/Role";
-import { UpdateCraftmanDto, VerifyCraftmanDto } from "../dto/dto";
+import {
+  RegisterCraftmanDto,
+  UpdateCraft,
+  VerifyCraftmanDto,
+} from "../dto/dto";
 import { ElasticService } from "src/core/services/elastic.service";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { ICraft } from "src/core/interfaces/ICraft";
@@ -101,7 +105,8 @@ export class AuthService {
     };
   }
 
-  async registerCraftman(payload: { email: string; password: string }) {
+  async registerCraftman(payload: RegisterCraftmanDto) {
+    console.log(payload);
     const user = await this.usersService.findUserByEmail(payload.email);
     if (user) {
       throw new ConflictException({
@@ -110,17 +115,21 @@ export class AuthService {
       });
     }
 
-    let res = await this.superbaseService.connect().from("User").insert({
-      email: payload.email,
-      password: payload.password,
-    });
-
+    let res = await this.superbaseService
+      .connect()
+      .from("User")
+      .insert({
+        first_name: payload.first_name,
+        last_name: payload.last_name,
+        full_name: `${payload.first_name ?? ""} ${payload.last_name ?? ""}`,
+        email: payload.email,
+        password: payload.password,
+        role: ERole.CRAFTMAN,
+      });
     if (res.error) {
       this.logger.error(res.error);
     }
-
     await this.usersService.sendVerificationCodeToEmail(payload.email);
-    return user;
   }
 
   async verifyOtpCode(payload: VerifyCraftmanDto) {
@@ -146,7 +155,6 @@ export class AuthService {
           email_verified: true,
           active: true,
           enabled: true,
-          role: ERole.CRAFTMAN,
         })
         .eq("email", payload.email);
 
@@ -162,7 +170,7 @@ export class AuthService {
       .eq("code", payload.code);
 
     user = await this.usersService.findUserByEmail(payload.email);
-
+    console.log(user);
     const jwtPayload = {
       sub: user.id,
       ...(user.email && { email: user.email }),
@@ -178,7 +186,7 @@ export class AuthService {
     };
   }
 
-  async updateCraftman(id: string, payload: UpdateCraftmanDto) {
+  async updateCraftman(id: string, payload: UpdateCraft) {
     let user = await this.superbaseService
       .connect()
       .from("User")
@@ -196,10 +204,6 @@ export class AuthService {
 
     if (!res.error) this.logger.error(res.error);
 
-    let update_user = await this.updateUser(id, payload);
-
-    if (update_user.error) this.logger.log(update_user.error);
-
     const mail = await this.elasticService.sendEmailDynamic({
       Recipients: {
         To: [user.data.email],
@@ -209,7 +213,7 @@ export class AuthService {
         TemplateName: "WELCOMING_EMAIL",
         Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
         Merge: {
-          full_name: `${payload.first_name} ${payload.last_name}`,
+          full_name: `${user.data.first_name} ${user.data.last_name}`,
           accountaddress: "info@craftimity.com",
         },
       },
@@ -219,7 +223,7 @@ export class AuthService {
     }
   }
 
-  async updateCraft(id: string, payload: UpdateCraftmanDto) {
+  async updateCraft(id: string, payload: UpdateCraft) {
     return await this.superbaseService.connect().from("crafts").insert({
       name: payload.service_name,
       business_name: payload.business_name,
@@ -229,39 +233,39 @@ export class AuthService {
     });
   }
 
-  async updateUser(id: string, payload: UpdateCraftmanDto) {
-    let craft = await this.superbaseService
-      .connect()
-      .from("crafts")
-      .select("id, name, business_name, user_id")
-      .eq("user_id", id)
-      .single();
+  // async updateUser(id: string, payload: UpdateCraftmanDto) {
+  //   let craft = await this.superbaseService
+  //     .connect()
+  //     .from("crafts")
+  //     .select("id, name, business_name, user_id")
+  //     .eq("user_id", id)
+  //     .single();
 
-    console.log(craft);
+  //   console.log(craft);
 
-    if (!craft.data)
-      throw new InternalServerErrorException({
-        message: "Something happend from our side",
-        status: EResponseStatus.FAILED,
-      });
+  //   if (!craft.data)
+  //     throw new InternalServerErrorException({
+  //       message: "Something happend from our side",
+  //       status: EResponseStatus.FAILED,
+  //     });
 
-    return await await this.superbaseService
-      .connect()
-      .from("User")
-      .update({
-        first_name: payload.first_name,
-        last_name: payload.last_name,
-        full_name: `${payload.first_name ?? ""} ${payload.last_name ?? ""}`,
-        country_id: payload.country,
-        state_id: payload.state,
-        phone_number: payload.phone_number,
-        city_id: payload.city,
-        birthdate: payload.birthdate,
-        address: payload.address,
-        craft_id: craft.data.id,
-      })
-      .eq("id", id);
-  }
+  //   return await await this.superbaseService
+  //     .connect()
+  //     .from("User")
+  //     .update({
+  //       first_name: payload.first_name,
+  //       last_name: payload.last_name,
+  //       full_name: `${payload.first_name ?? ""} ${payload.last_name ?? ""}`,
+  //       country_id: payload.country,
+  //       state_id: payload.state,
+  //       phone_number: payload.phone_number,
+  //       city_id: payload.city,
+  //       birthdate: payload.birthdate,
+  //       address: payload.address,
+  //       craft_id: craft.data.id,
+  //     })
+  //     .eq("id", id);
+  // }
 
   private async updateEmail(payload: VerifyCraftmanDto) {
     let res: any;

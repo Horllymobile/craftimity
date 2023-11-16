@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-wishlists',
+  selector: 'craftimity-wishlists',
   templateUrl: './wishlists.component.html',
   styleUrls: ['./wishlists.component.scss'],
 })
-export class WishlistsComponent  implements OnInit {
-
-  constructor() { }
+export class WishlistsComponent implements OnInit {
+  constructor() {}
 
   ngOnInit() {}
-
 }

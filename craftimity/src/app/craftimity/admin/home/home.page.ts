@@ -8,7 +8,7 @@ import { SwiperOptions } from 'swiper/types';
 import { Navigation } from 'swiper/modules';
 
 @Component({
-  selector: 'app-home',
+  selector: 'craftimity-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })

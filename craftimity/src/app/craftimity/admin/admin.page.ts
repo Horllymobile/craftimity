@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-home',
+  selector: 'craftimity-admin',
   templateUrl: 'admin.page.html',
   styleUrls: ['admin.page.scss'],
 })

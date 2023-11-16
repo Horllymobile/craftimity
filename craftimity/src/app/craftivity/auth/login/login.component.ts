@@ -14,7 +14,7 @@ import { MixpanelService } from 'src/app/core/services/mixpanel.service';
 import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
-  selector: 'app-login',
+  selector: 'craftivity-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -112,6 +112,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
             this.goToHome();
           }
+          this.form.reset();
           this.analytics.logEvent('craftman_login_sucessfull', {
             ...(payload.email && { email: payload.email }),
             ...(payload.phone && { phone: payload.phone }),

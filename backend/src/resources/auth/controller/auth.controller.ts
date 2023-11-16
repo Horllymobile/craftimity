@@ -13,7 +13,11 @@ import { IUser } from "src/core/interfaces/IUser";
 import { ApiTags } from "@nestjs/swagger";
 import { IResponse } from "src/core/interfaces/IResponse";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
-import { UpdateCraftmanDto, VerifyCraftmanDto } from "../dto/dto";
+import {
+  RegisterCraftmanDto,
+  UpdateCraft,
+  VerifyCraftmanDto,
+} from "../dto/dto";
 import { AuthGuard } from "src/core/guards/auth.guard";
 
 @ApiTags("Authentication")
@@ -38,9 +42,9 @@ export class AuthController {
 
   @Post("/register-craftman")
   async registerCraftman(
-    @Body() payload: { email: string; password: string }
+    @Body() payload: RegisterCraftmanDto
   ): Promise<IResponse<{ metaData: IUser; access_token: string }>> {
-    const user = await this.authService.registerCraftman(payload);
+    await this.authService.registerCraftman(payload);
     return {
       message: `We sent a verification code to your email`,
       status: EResponseStatus.SUCCESS,
@@ -63,7 +67,7 @@ export class AuthController {
   @Put("update-craftman/:id")
   async updateCraftman(
     @Param("id") id: string,
-    @Body() payload: UpdateCraftmanDto
+    @Body() payload: UpdateCraft
   ): Promise<IResponse<any>> {
     const req = await this.authService.updateCraftman(id, payload);
     return {

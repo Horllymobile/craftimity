@@ -182,7 +182,6 @@ export class UserController implements IUserController {
   async resendVerificationCode(
     @Body() payload: SendOTPDto
   ): Promise<IResponse<any>> {
-    console.log(payload);
     if (payload.type === "phone") {
       await this.userService.sendVerificationCodeToPhone(payload.phone);
       return {

@@ -54,10 +54,28 @@ export class AuthService {
       .pipe(map((res) => res.data));
   }
 
+  registerCraftsman(payload: { email: string; password: string }) {
+    return this.http
+      .post<IAPICallResponse<IUser>>(
+        `${this.baseUrl}/auth/register-craftman`,
+        payload
+      )
+      .pipe(map((res) => res.data));
+  }
+
   verifyOtp(payload: IVerifyOtp): Observable<{ user: IUser; token: string }> {
     return this.http
       .patch<IAPICallResponse<{ user: IUser; token: string }>>(
         `${this.baseUrl}/users/verify`,
+        payload
+      )
+      .pipe(map((res) => res.data));
+  }
+
+  verifyCraftman(payload: IVerifyOtp) {
+    return this.http
+      .put<IAPICallResponse<{ user: IUser; token: string }>>(
+        `${this.baseUrl}/auth/verify-craftman`,
         payload
       )
       .pipe(map((res) => res.data));

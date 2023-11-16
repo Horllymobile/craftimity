@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
-  selector: 'app-more',
+  selector: 'craftimity-more',
   templateUrl: './more.page.html',
   styleUrls: ['./more.page.scss'],
 })

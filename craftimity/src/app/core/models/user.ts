@@ -21,4 +21,5 @@ export interface IUser {
   email_verified: boolean;
   phone_verified: boolean;
   full_name?: string;
+  is_onboarded: boolean;
 }

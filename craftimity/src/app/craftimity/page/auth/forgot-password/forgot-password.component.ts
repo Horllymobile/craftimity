@@ -12,7 +12,7 @@ import { LocationService } from 'src/app/core/services/location/location.service
 import { CustomValidators } from 'src/app/core/utils/custom-validators';
 
 @Component({
-  selector: 'app-forgot-password',
+  selector: 'craftimity-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
 })
@@ -245,12 +245,13 @@ export class ForgotPasswordComponent implements OnInit {
       ],
     });
 
-    this.changePasswordForm = this.fb.group(
-      {
-        password: ['', [Validators.required, Validators.minLength(8)]],
-        cmPassword: ['', [Validators.required, Validators.minLength(8)]],
-      },
-      { validator: CustomValidators.MatchingPasswords }
+    this.changePasswordForm = this.fb.group({
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      cmPassword: ['', [Validators.required, Validators.minLength(8)]],
+    });
+
+    this.changePasswordFormControl['cmPassword'].addValidators(
+      CustomValidators.matchingPasswords()
     );
   }
 }

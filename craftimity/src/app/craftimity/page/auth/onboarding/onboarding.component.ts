@@ -3,7 +3,6 @@ import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
-import { constants } from 'buffer';
 import {
   Dimensions,
   ImageCroppedEvent,
@@ -23,7 +22,7 @@ import { SupaBaseService } from 'src/app/core/services/supabase.service';
 import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
-  selector: 'app-onboarding',
+  selector: 'craftimity-onboarding',
   templateUrl: './onboarding.component.html',
   styleUrls: ['./onboarding.component.scss'],
 })

@@ -2,16 +2,16 @@
 || layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Medium))">
     <section class="w-[90%] mx-auto flex justify-between align-middle">
         <div class="self-center cursor-pointer" routerLink="/home">
-            <img src="assets/conhect.png">
+            <img src="assets/svg/craftimity-blue.svg">
         </div>
 
         <div class="self-center" *ngIf="getCurrentPath() !== 'login'">
             <craft-search></craft-search>
         </div>
 
-        <section class="flex gap-5">
+        <section class="flex gap-5" (click)="toogleMenu()">
             <a href="" class="self-center text-gray-500">Render your service</a>
-            <button (click)="toogleMenu()" #toogleMenuButton
+            <button #toogleMenuButton
                 class="flex justify-between align-middle p-2 gap-3 rounded-full border border-gray-400">
                 <i class="fa-solid fa-bars self-center"></i>
                 <img src="https://picsum.photos/200" class="w-8 rounded-full">

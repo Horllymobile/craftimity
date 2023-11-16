@@ -4,7 +4,7 @@ import { IUser } from 'src/app/core/models/user';
 import { UsersService } from 'src/app/core/services/users/users.service';
 
 @Component({
-  selector: 'app-home',
+  selector: 'craftivity-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })

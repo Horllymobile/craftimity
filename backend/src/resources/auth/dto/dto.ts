@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsStrongPassword,
   Length,
 } from "class-validator";
 
@@ -27,48 +28,34 @@ export class VerifyCraftmanDto {
   type: "email" | "phone";
 }
 
-export class UpdateCraftmanDto {
+export class UpdateCraft {
   @IsString()
-  @IsOptional()
-  first_name: string;
-
-  @IsString()
-  @IsOptional()
-  last_name: string;
-
-  @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   service_name: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   business_name: string;
 
-  @IsOptional()
-  @IsPhoneNumber("NG")
-  phone_number: string;
-
-  @IsString()
-  @IsOptional()
-  address: string;
-
-  @IsString()
-  @IsOptional()
-  birthdate: string;
-
   @IsNumber()
-  @IsOptional()
+  @IsNotEmpty()
   service_category: number;
+}
 
-  @IsNumber()
-  @IsOptional()
-  country: number;
+export class RegisterCraftmanDto {
+  @IsString()
+  @IsNotEmpty()
+  first_name: string;
 
-  @IsNumber()
-  @IsOptional()
-  state: number;
+  @IsString()
+  @IsNotEmpty()
+  last_name: string;
 
-  @IsNumber()
-  @IsOptional()
-  city: number;
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 }

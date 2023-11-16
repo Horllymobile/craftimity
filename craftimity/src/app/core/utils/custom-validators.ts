@@ -1,24 +1,27 @@
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, FormGroup, ValidatorFn } from '@angular/forms';
 
 export class CustomValidators {
-  static MatchingPasswords(control: AbstractControl) {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('cmPassword')?.value;
-    const currentErrors = control.get('cmPassword')?.errors;
-    const confirmControl = control.get('cmPassword');
+  static phoneNumberLenght(): ValidatorFn {
+    return (control: AbstractControl) => {
+      if (!control.value) {
+        return null;
+      }
 
-    if (compare(password, confirmPassword)) {
-      if (confirmControl) {
-        confirmControl.setErrors({ ...currentErrors, not_matching: true });
+      return control.value === 10 ? { length: true } : null;
+    };
+  }
+  static matchingPasswords(): ValidatorFn {
+    return (control: AbstractControl) => {
+      if (!control.value) {
+        return null;
       }
-    } else {
-      if (confirmControl && currentErrors) {
-        confirmControl.setErrors(currentErrors);
-      }
-    }
+      return !compare(control.value.password, control.value.cmPassword)
+        ? { notmatch: true }
+        : null;
+    };
   }
 }
 
 function compare(password: string, confirmPassword: string) {
-  return password !== confirmPassword && confirmPassword !== '';
+  return password == confirmPassword;
 }
