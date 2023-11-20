@@ -16,8 +16,7 @@ import { environment } from 'src/environments/environment';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { AngularFireModule } from '@angular/fire/compat';
 import { SelectAppComponent } from './select-app/select-app.component';
-import { CraftimityModule } from './craftimity/craftimity.module';
-import { CraftivityModule } from './craftivity/craftivity.module';
+import { RequestInterceptor } from './core/interceptors/http.interceptor';
 
 export function tokenGetter() {
   return localStorage.getItem('ACCESS_TOKEN');
@@ -49,6 +48,11 @@ export function tokenGetter() {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RequestInterceptor,
       multi: true,
     },
     ScreenTrackingService,

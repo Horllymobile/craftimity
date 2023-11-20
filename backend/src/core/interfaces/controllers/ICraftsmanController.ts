@@ -1,6 +1,6 @@
 import { CrateCrafmanDto } from "src/resources/craftsmen/dto/create-craftman.dto";
 import { ICraftsman } from "../ICraftsman";
-import { UpdateCrafmanDto } from "src/resources/craftsmen/dto/update-craftman.dto";
+import { UpdateCraft } from "src/resources/craftsmen/dto/update-craftman.dto";
 import { IResponse } from "../IResponse";
 import { IPagination } from "../IPagination";
 
@@ -19,7 +19,7 @@ export interface ICraftsmanController {
 
   findCraftsmanByPhone(phone: string): Promise<IResponse<ICraftsman>>;
 
-  updateCraftsman(id: string, payload: UpdateCrafmanDto): Promise<any>;
+  updateCraftsman(id: string, payload: UpdateCraft): Promise<any>;
   deleteCraftsman(id: string): Promise<any>;
   toggleCraftsmanStatus?(id: string): Promise<any>;
 }

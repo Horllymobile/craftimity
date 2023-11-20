@@ -5,6 +5,7 @@ export interface ISignIn {
   email?: string;
   phone?: string;
   password?: string;
+  remember?: boolean;
 }
 
 export interface IVerifyOtp {

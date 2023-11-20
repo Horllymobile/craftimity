@@ -7,6 +7,8 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
 import { UserService } from "../service/user.service";
@@ -26,10 +28,12 @@ import { IPagination } from "src/core/interfaces/IPagination";
 import { AuthGuard } from "src/core/guards/auth.guard";
 import { Public } from "src/core/decorators/public-route";
 import { UpdateImage } from "../dto/dto";
+import { Request } from "express";
+import { ERole } from "src/core/enums/Role";
 
 @ApiTags("User")
 @Controller("api/v1/users")
-export class UserController implements IUserController {
+export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(AuthGuard)
@@ -84,23 +88,21 @@ export class UserController implements IUserController {
   @Put(":id")
   async updateUser(
     @Param("id") id: string,
-    @Body() payload: UpdateUserDto
+    @Body() payload: UpdateUserDto,
+    @Req() req: Request
   ): Promise<IResponse<any>> {
+    const user = req["user"];
+    if (
+      user &&
+      user.sub !== id &&
+      (user.role !== ERole.ADMIN || user.role !== ERole.SUPER_ADMIN)
+    ) {
+      throw new UnauthorizedException({
+        message: "Operation unallowed constact admin for support",
+        status: EResponseStatus.FAILED,
+      });
+    }
     const data = await this.userService.updateUser(id, payload);
-    return {
-      message: "Update successfull",
-      data: data,
-      status: EResponseStatus.SUCCESS,
-    };
-  }
-
-  @UseGuards(AuthGuard)
-  @Put("user-image/:id")
-  async updateUserImage(
-    @Param("id") id: string,
-    @Body() payload: UpdateImage
-  ): Promise<IResponse<any>> {
-    const data = await this.userService.updateImage(id, payload);
     return {
       message: "Update successfull",
       data: data,

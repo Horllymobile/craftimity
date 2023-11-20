@@ -1,6 +1,6 @@
 import { CrateCrafmanDto } from "src/resources/craftsmen/dto/create-craftman.dto";
 import { ICraftsman } from "../ICraftsman";
-import { UpdateCrafmanDto } from "src/resources/craftsmen/dto/update-craftman.dto";
+import { UpdateCraft } from "src/resources/craftsmen/dto/update-craftman.dto";
 
 export interface ICraftsmanService {
   createCraftsman(payload: CrateCrafmanDto): Promise<ICraftsman>;
@@ -17,7 +17,7 @@ export interface ICraftsmanService {
 
   findCraftsmanByPhone(phone: string): Promise<ICraftsman>;
 
-  updateCraftsman(id: string, payload: UpdateCrafmanDto): Promise<any>;
+  updateCraftsman(id: string, payload: UpdateCraft): Promise<any>;
   deleteCraftsman(id: string): Promise<any>;
   toggleCraftsmanStatus?(id: string): Promise<any>;
 }

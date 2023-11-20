@@ -11,6 +11,7 @@
     "test": "ng test",
     "lint": "ng lint"
   },
+  "type": "module",
   "private": true,
   "dependencies": {
     "@angular/animations": "^16.0.0",
@@ -25,12 +26,14 @@
     "@auth0/angular-jwt": "^5.1.2",
     "@capacitor/android": "5.5.0",
     "@capacitor/app": "5.0.6",
+    "@capacitor/camera": "^5.0.7",
     "@capacitor/core": "5.5.0",
     "@capacitor/haptics": "5.0.6",
     "@capacitor/ios": "5.5.0",
     "@capacitor/keyboard": "5.0.6",
     "@capacitor/status-bar": "5.0.6",
     "@ionic/angular": "^7.0.0",
+    "@ionic/pwa-elements": "^3.2.2",
     "@supabase/node-fetch": "^2.6.14",
     "@supabase/supabase-js": "^2.38.1",
     "capacitor-native-settings": "^5.0.1",

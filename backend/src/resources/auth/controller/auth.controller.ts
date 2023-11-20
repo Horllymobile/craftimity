@@ -62,18 +62,4 @@ export class AuthController {
       status: EResponseStatus.SUCCESS,
     };
   }
-
-  @UseGuards(AuthGuard)
-  @Put("update-craftman/:id")
-  async updateCraftman(
-    @Param("id") id: string,
-    @Body() payload: UpdateCraft
-  ): Promise<IResponse<any>> {
-    const req = await this.authService.updateCraftman(id, payload);
-    return {
-      message: "Update user successfull",
-      data: req,
-      status: EResponseStatus.SUCCESS,
-    };
-  }
 }

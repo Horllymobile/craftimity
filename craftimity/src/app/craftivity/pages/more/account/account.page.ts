@@ -1,40 +1,43 @@
-import { UsersService } from './../../core/services/users/users.service';
-import { AlertService } from './../../core/services/alert.service';
-import { MixpanelService } from './../../core/services/mixpanel.service';
-import { AuthService } from './../../core/services/auth/auth.service';
-import { SupaBaseService } from './../../core/services/supabase.service';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AlertService } from './../../../../core/services/alert.service';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { ModalController, NavParams } from '@ionic/angular';
+import { Camera, CameraResultType, Photo } from '@capacitor/camera';
 import {
   Dimensions,
   ImageCroppedEvent,
   ImageTransform,
 } from 'ngx-image-cropper';
 import { Observable, Subscription, finalize, map } from 'rxjs';
+import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { EOnboardingStep } from 'src/app/core/enums/auth';
+import { ICategory } from 'src/app/core/models/category';
 import { ICity, ICountry, IState } from 'src/app/core/models/location';
+import { IUser } from 'src/app/core/models/user';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { CategoryService } from 'src/app/core/services/category/category.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
-import { IUser } from 'src/app/core/models/user';
-import { HttpEvent, HttpEventType } from '@angular/common/http';
-import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
-import { Camera, CameraResultType } from '@capacitor/camera';
+import { MixpanelService } from 'src/app/core/services/mixpanel.service';
+import { SupaBaseService } from 'src/app/core/services/supabase.service';
+import { UsersService } from 'src/app/core/services/users/users.service';
 
 @Component({
-  selector: 'app-onboarding-craftsman',
-  templateUrl: './onboarding-craftsman.component.html',
-  styleUrls: ['./onboarding-craftsman.component.scss'],
+  selector: 'app-account',
+  templateUrl: './account.page.html',
+  styleUrls: ['./account.page.scss'],
 })
-export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
+export class AccountPage implements OnInit {
   imageChangedEvent: any = '';
   containWithinAspectRatio = false;
   croppedImage: any = '';
+  categories$!: Observable<ICategory[]>;
+  selectedCategory!: ICategory;
   canvasRotation = 0;
   rotation = 0;
   scale = 1;
@@ -42,6 +45,11 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
   transform: ImageTransform = {};
 
   segment = 'user_info';
+  identity_segment = 'identity';
+  liveImageUploaded = false;
+
+  buffer = 0.6;
+  progress = 0;
 
   countries$!: Observable<ICountry[]>;
   states$!: Observable<IState[]>;
@@ -50,10 +58,8 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
   EOnboardingStep = EOnboardingStep;
   imageForm!: FormGroup;
   form!: FormGroup;
-  progress = 0;
-  buffer = 0;
 
-  @Input() userData!: IUser;
+  userData!: IUser;
   imageUrl: string = '';
 
   phoneDigitLength = 10;
@@ -62,9 +68,14 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
   getUserSub$!: Subscription;
   uploadImageSub$!: Subscription;
   updateUserSub$!: Subscription;
-  liveImageUploaded = false;
+
+  liveImageUrl = '';
+
+  identity_type = '';
+
+  page = 1;
+  size = 100;
   constructor(
-    private modalController: ModalController,
     private locationService: LocationService,
     private loadService: LoaderService,
     private supaBaseService: SupaBaseService,
@@ -73,9 +84,9 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private usersService: UsersService,
     private fb: FormBuilder,
-    private navParam: NavParams
+    private categothryService: CategoryService
   ) {
-    this.userData = this.navParam.get('user');
+    this.userData = this.usersService.userProfile;
   }
 
   get formCtrl() {
@@ -89,6 +100,18 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
     this.countries$ = this.locationService
       .getCountries()
       .pipe(map((res) => res));
+
+    this.categories$ = this.categothryService
+      .getCategories({
+        page: this.page,
+        size: this.size,
+      })
+      .pipe(
+        map((res) => {
+          this.selectedCategory = res[0];
+          return res;
+        })
+      );
   }
 
   initForm() {
@@ -140,14 +163,6 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
         localStorage.setItem(STORAGE_VARIABLES.USER, JSON.stringify(user));
       },
     });
-  }
-
-  async close(data?: any) {
-    if (data) {
-      await this.modalController.dismiss(data, 'success');
-    } else {
-      await this.modalController.dismiss(null, 'cancle');
-    }
   }
 
   onSelectCountry({ detail: { value } }: any) {
@@ -206,7 +221,61 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
       });
   }
 
-  private getProgress(event: HttpEvent<any>, file: File) {
+  async takePicture() {
+    const image = await Camera.getPhoto({
+      quality: 100,
+      // allowEditing: true,
+      resultType: CameraResultType.Base64,
+    });
+    var imageUrl = image;
+    if (imageUrl.base64String)
+      this.supaBaseService
+        .uploadVerificationImage(
+          this.dataUrlToFile(
+            imageUrl,
+            `${this.userData.first_name} - Live Image`
+          ),
+          `${this.userData.first_name} - Live Image`
+        )
+
+        .pipe(map((event) => this.getProgress(event, imageUrl)))
+        .subscribe({
+          next: (value) => {
+            this.liveImageUploaded = true;
+            this.liveImageUrl = value ?? '';
+          },
+          error: (err) => {
+            this.alertService.error(err);
+          },
+        });
+  }
+
+  dataUrlToFile(dataUrl: Photo, filename?: string) {
+    var arr: any;
+    var bstr: any;
+    var n: any;
+    var u8arr: any;
+
+    if (dataUrl.base64String) {
+      (arr = dataUrl.base64String.split(',')),
+        (bstr = atob(arr[arr.length - 1])),
+        (n = bstr.length),
+        (u8arr = new Uint8Array(n));
+    }
+
+    var mime = '';
+    var match = arr[0].match(/:(.*?);/);
+    if (match) {
+      mime = match[1];
+    }
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename ?? '', { type: `image/png` });
+  }
+
+  private getProgress(event: HttpEvent<any>, file: any) {
     switch (event.type) {
       case HttpEventType.Sent:
         return `Uploading file "${file.name}" of size ${file.size}.`;
@@ -268,38 +337,16 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
     }
   }
 
+  uploadFile(event: any) {
+    const files = event.target.files;
+    console.log(files[0]);
+    var filesize = (files[0].size / 1024 / 1024).toFixed(4);
+    console.log(filesize);
+  }
+
   ngOnDestroy(): void {
     this.getUserSub$?.unsubscribe();
     this.uploadImageSub$?.unsubscribe();
     this.updateUserSub$?.unsubscribe();
-  }
-
-  async takePicture() {
-    const image = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: true,
-      resultType: CameraResultType.Uri,
-    });
-
-    // image.webPath will contain a path that can be set as an image src.
-    // You can access the original file using image.path, which can be
-    // passed to the Filesystem API to read the raw data of the image,
-    // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    var imageUrl = image.base64String;
-
-    // Can be set to the src of an image now
-    // imageElement.src = imageUrl;
-    this.supaBaseService
-      .uploadFile(image.base64String)
-      .pipe(
-        map((event) => this.getProgress(event, this.croppedImage)),
-        finalize(() => (this.steps = EOnboardingStep.COMPLETE))
-      )
-      .subscribe({
-        next: (value) => {},
-        error: (err) => {
-          this.alertService.error(err);
-        },
-      });
   }
 }

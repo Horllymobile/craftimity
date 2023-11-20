@@ -178,6 +178,7 @@ export class LoginComponent implements OnInit {
       ...(formPayload.phone && {
         phone: `${formPayload.code}${formPayload.phone}`,
       }),
+      // remember: formPayload.remember,
     };
 
     await loader.present();

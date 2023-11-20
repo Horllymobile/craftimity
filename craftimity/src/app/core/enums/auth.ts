@@ -11,4 +11,5 @@ export enum EContactType {
 export enum EOnboardingStep {
   IMAGE_UPLOAD = 'image_upload',
   COMPLETE = 'complete',
+  CRAFTS_DETAILS = 'crafts_details',
 }

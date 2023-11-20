@@ -178,7 +178,7 @@ export class OnboardingComponent implements OnInit {
     await loader.present();
     const url = await this.supabaseService.uploadFile(this.croppedImage);
     if (url) {
-      this.updateImage(url, loader);
+      // this.updateImage(url, loader);
     }
   }
 

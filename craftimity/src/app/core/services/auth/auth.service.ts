@@ -34,6 +34,10 @@ export class AuthService {
     );
   }
 
+  isAuthenticatedT(token: string) {
+    return !this.jwtHelperService.isTokenExpired(token);
+  }
+
   signin(payload: ISignIn): Observable<ILoginResponse> {
     return this.http
       .post<IAPICallResponse<ILoginResponse>>(
@@ -120,27 +124,20 @@ export class AuthService {
   }
 
   updateImageUrl(id: string, payload: { profile_image: string }) {
-    const token = localStorage.getItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);
-    let tok: string = '';
-    if (token) {
-      tok = `Bearer ${token}`;
-    }
     return this.http
-      .put<IAPIResponse>(`${this.baseUrl}/users/${id}`, payload, {
-        headers: { Authorization: tok },
-      })
+      .put<IAPIResponse>(`${this.baseUrl}/users/${id}`, payload)
       .pipe(map((res) => res.message));
   }
 
   updateUser(id: string, payload: IUpdateUser): Observable<any> {
-    const token = localStorage.getItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);
-    let tok: string = '';
-    if (token) {
-      tok = `Bearer ${token}`;
-    }
+    // const token = localStorage.getItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);
+    // let tok: string = '';
+    // if (token) {
+    //   tok = `Bearer ${token}`;
+    // }
     return this.http
       .put<IAPIResponse>(`${this.baseUrl}/users/${id}`, payload, {
-        headers: { Authorization: tok },
+        // headers: { Authorization: tok },
       })
       .pipe(map((res) => res.message));
   }

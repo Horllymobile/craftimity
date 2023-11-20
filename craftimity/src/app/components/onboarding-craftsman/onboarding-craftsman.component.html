@@ -1,16 +1,220 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>
-      Onboarding
-    </ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="close()">
-        <ion-icon color="dark" name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <ion-segment value="user_info" [(ngModel)]="segment">
+      <ion-segment-button value="user_info">
+        <ion-label>User Info</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="identity_info">
+        <ion-label>Identity Info</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
+  <ion-progress-bar [buffer]="progress > 0 ? buffer: ''" [value]="progress"></ion-progress-bar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content id="user_info" [fullscreen]="true">
+  <ng-container [ngSwitch]="segment">
+    <ion-card *ngSwitchCase="'user_info'">
+      <ion-card-header>
+        <ion-card-title>
+          User Information
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form [formGroup]="imageForm" class="p-5" *ngIf="steps === EOnboardingStep.IMAGE_UPLOAD"
+          (ngSubmit)="submitImage()">
+          <div class="p-5">
+            <p class="text-sm text-center text-primary font-semibold">Step 2 of 2</p>
+            <p class="text-sm text-primary text-center">Add a profile photo</p>
 
+            <div *ngIf="imageChangedEvent">
+
+              <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                [containWithinAspectRatio]="containWithinAspectRatio" [aspectRatio]="1 / 1" [resizeToWidth]="256"
+                [cropperMinWidth]="100" [onlyScaleDown]="true" [roundCropper]="true" [canvasRotation]="canvasRotation"
+                [transform]="transform" [alignImage]="'left'" [style.display]="showCropper ? null : 'none'" format="png"
+                (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()"
+                (cropperReady)="cropperReady($event)" (loadImageFailed)="loadImageFail()"></image-cropper>
+
+              <ion-icon (click)="deleteImage()" color="danger" name="trash-outline"></ion-icon>
+            </div>
+
+            <div *ngIf="!imageChangedEvent" class="mt-5 flex justify-center">
+              <label for="image" class="mx-auto">
+                <ion-icon name="add-circle-outline" class="text-[6em] mx-auto text-primary "></ion-icon>
+                <!-- <img src="assets/imgs/add-profile.svg" class="mx-auto cursor-pointer w-[80%]" alt=""> -->
+              </label>
+              <input type="file" id="image" class="hidden" accept="image/*" formControlName="url"
+                (change)="uploadImage($event)">
+            </div>
+
+            <div class="w-full my-5">
+              <ion-button color="primary" type="submit" [disabled]="imageForm.invalid" expand="full"
+                class="my-5 rounded">Upload</ion-button>
+            </div>
+
+          </div>
+          <p class="text-center my-2"><a (click)="steps = EOnboardingStep.COMPLETE" class="underline">I'll do this
+              later</a></p>
+        </form>
+        <form *ngIf="steps === EOnboardingStep.COMPLETE" [formGroup]="form" (ngSubmit)="onSubmit(form.value)"
+          class="mt-5">
+          <div class="mb-5">
+            <ion-select formControlName="code"
+              class="w-full px-1 bg-white text-primary border border-primary rounded-tl-lg rounded-tr-lg"
+              label="Select Country" placeholder="Select country code">
+              <ng-container *ngFor="let country of countries$ | async">
+                <ion-select-option [value]="country.phone_code">{{ country.name }}({{ country.phone_code
+                  }})</ion-select-option>
+              </ng-container>
+            </ion-select>
+            <input type="text" placeholder="Phone Number ({{ phoneDigitSamplePlaceholder }})" formControlName="phone"
+              class="w-full p-3 bg-white text-primary border border-primary border-t-0 rounded-bl-lg rounded-br-lg">
+
+            <div *ngIf="formCtrl['code'].errors">
+              <ion-text color="danger" *ngIf="formCtrl['code'].dirty && formCtrl['code'].hasError('required')">
+                Country code is required
+              </ion-text>
+            </div>
+
+            <div *ngIf="formCtrl['phone'].errors">
+              <ion-text color="danger" *ngIf="formCtrl['phone'].dirty && formCtrl['phone'].hasError('required')">
+                Phone number is required
+              </ion-text>
+
+              <ion-text color="danger"
+                *ngIf="formCtrl['phone'].dirty && formCtrl['phone'].hasError('pattern') || formCtrl['phone'].hasError('pattern')">
+                Invalid Phone number
+              </ion-text>
+            </div>
+          </div>
+
+          <div class="w-full mb-5">
+            <input type="date" formControlName="birthdate"
+              class="w-full p-2 bg-white text-primary border border-primary rounded-lg" label="Select Country"
+              placeholder="dd/mm/yyyy">
+            <div *ngIf="formCtrl['birthdate'].errors">
+              <ion-text color="danger"
+                *ngIf="formCtrl['birthdate'].dirty && formCtrl['birthdate'].hasError('required')">
+                Birthdate is required
+              </ion-text>
+            </div>
+            <p class="text-xs text-[#878484] my-2">To sign up, you need to be at least 18. Your birthday won't be
+              shared
+              with other people who use Craftimity</p>
+          </div>
+
+
+          <div class="w-full mb-5">
+            <ion-input type="number" formControlName="house_number"
+              class="w-full p-2 bg-white text-primary placeholder:text-primary border border-primary rounded-lg"
+              placeholder="House Number"></ion-input>
+            <div *ngIf="formCtrl['house_number'].errors">
+              <ion-text color="danger"
+                *ngIf="formCtrl['house_number'].dirty && formCtrl['house_number'].hasError('required')">
+                House number is required
+              </ion-text>
+            </div>
+          </div>
+
+          <div class="w-full my-5">
+            <ion-input type="text" formControlName="street_name"
+              class="w-full p-2 bg-white text-primary placeholder:text-primary border border-primary rounded-lg"
+              placeholder="Street Name"></ion-input>
+            <div *ngIf="formCtrl['street_name'].errors">
+              <ion-text color="danger"
+                *ngIf="formCtrl['street_name'].dirty && formCtrl['street_name'].hasError('required')">
+                Street name is required
+              </ion-text>
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <ion-select formControlName="country"
+              class="w-full px-1 text-xs bg-white text-primary border border-primary rounded-lg" label="Select Country"
+              placeholder="Select country code" (ionChange)="onSelectCountry($event)">
+              <ng-container *ngFor="let country of countries$ | async">
+                <ion-select-option class="w-10" [value]="country.id">{{ country.name }}</ion-select-option>
+              </ng-container>
+            </ion-select>
+            <div *ngIf="formCtrl['country'].errors">
+              <ion-text color="danger" *ngIf="formCtrl['country'].dirty && formCtrl['country'].hasError('required')">
+                State is required
+              </ion-text>
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <ion-select formControlName="state"
+              class="w-full text-xs px-1 bg-white text-primary border border-primary rounded-lg" label="Select State"
+              placeholder="Select country code" (ionChange)="onSelectState($event)">
+              <ng-container *ngFor="let state of states$ | async">
+                <ion-select-option class="w-10" [value]="state.id">{{ state.name }}</ion-select-option>
+              </ng-container>
+            </ion-select>
+            <div *ngIf="formCtrl['state'].errors">
+              <ion-text color="danger" *ngIf="formCtrl['state'].dirty && formCtrl['state'].hasError('required')">
+                State is required
+              </ion-text>
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <ion-select formControlName="city"
+              class="w-full px-1 text-xs bg-white text-primary border border-primary rounded-lg" label="Select City"
+              placeholder="Select country code">
+              <ng-container *ngFor="let city of cities$ | async">
+                <ion-select-option class="w-10" [value]="city.id">{{ city.name }}</ion-select-option>
+              </ng-container>
+            </ion-select>
+            <div *ngIf="formCtrl['city'].errors">
+              <ion-text color="danger" *ngIf="formCtrl['city'].dirty && formCtrl['city'].hasError('required')">
+                State is required
+              </ion-text>
+            </div>
+          </div>
+
+          <div class="w-full mb-5">
+            <ion-button color="primary" [disabled]="form.invalid" type="submit" expand="full"
+              class="my-5 rounded">Save</ion-button>
+            <ion-button (click)="close()" color="medium" type="button" expand="full"
+              class="my-5 rounded">Cancel</ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+    <ion-card *ngSwitchCase="'identity_info'">
+      <ion-card-header>
+        <ion-card-title>
+          Identity Information
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-text>
+          In accordance with government KYC regulations, we require your identity verification to ensure the protection
+          of both yourself and our customers.
+        </ion-text>
+
+        <ion-button *ngIf="!liveImageUploaded" (click)="takePicture()" expand="full" class="mx-auto mt-5 p-3">
+          Take a Live Selfie of yourself
+          <ion-icon size="large" slot="start" color="light" name="camera-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button *ngIf="liveImageUploaded" (click)="takePicture()" expand="full" class="mx-auto mt-5 p-3">
+          Live Image Uploaded Awaiting Approval
+          <ion-icon size="large" slot="start" color="light" name="reload-circle-outline"></ion-icon>
+        </ion-button>
+        <form>
+          <ion-item>
+            <ion-label>Select Identity Type</ion-label>
+            <ion-select label="Select Identity Type">
+              <ion-select-option value="nation_id"> National ID </ion-select-option>
+              <ion-select-option value="drivers_license"> Drivers License </ion-select-option>
+              <ion-select-option value="passport"> Passport </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
 </ion-content>

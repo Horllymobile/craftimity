@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsUrl,
   Length,
 } from "class-validator";
 
@@ -17,7 +18,7 @@ export class UpdateUserDto {
   @IsOptional()
   last_name: string;
 
-  @IsString()
+  @IsUrl()
   @IsOptional()
   profile_image: string;
 
@@ -32,6 +33,10 @@ export class UpdateUserDto {
   @IsNumber()
   @IsOptional()
   country: number;
+
+  @IsPhoneNumber()
+  @IsOptional()
+  phone: string;
 
   @IsNumber()
   @IsOptional()

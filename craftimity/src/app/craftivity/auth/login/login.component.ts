@@ -21,6 +21,9 @@ import { getPlaform } from 'src/app/core/utils/functions';
 export class LoginComponent implements OnInit {
   form!: FormGroup;
   showPassword = false;
+  error = '';
+  sucess = '';
+  showError = false;
   constructor(
     private loaderService: LoaderService,
     private fb: FormBuilder,
@@ -61,6 +64,7 @@ export class LoginComponent implements OnInit {
       type: 'email',
       password: formPayload.password,
       email: formPayload.email,
+      remember: formPayload.remember,
     };
     const alert = await this.alertCtrl.create({
       header: 'Account Notice',
@@ -95,6 +99,7 @@ export class LoginComponent implements OnInit {
       )
       .subscribe({
         next: async (res) => {
+          this.sucess = 'Login successfully';
           if (res.metaData.role === ERole.USER) {
             localStorage.setItem(
               STORAGE_VARIABLES.USER,
@@ -122,14 +127,17 @@ export class LoginComponent implements OnInit {
           this.mixpanelService.identify(res.metaData.id);
           this.mixpanelService.track('craftman_login_sucessfull', res.metaData);
         },
-        error: async (error: Error) => {
-          this.mixpanelService.track('Login Error', error);
-          await this.alertService.error(error.message);
-          this.analytics.logEvent('login_failed', {
-            ...(payload.email && { email: payload.email }),
-            ...(payload.phone && { phone: payload.phone }),
-            platform: getPlaform(),
-          });
+        error: async (error) => {
+          this.showError = true;
+          this.error = error;
+          setTimeout(() => (this.showError = false), 5000);
+          // await this.alertService.error(error);
+          // this.mixpanelService.track('Login Error', error);
+          // this.analytics.logEvent('login_failed', {
+          //   ...(payload.email && { email: payload.email }),
+          //   ...(payload.phone && { phone: payload.phone }),
+          //   platform: getPlaform(),
+          // });
         },
       });
   }

@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  Scope,
 } from "@nestjs/common";
 import { UserCheckDto } from "../dto/user-check.dto";
 import { IUserService } from "src/core/interfaces/services/IUserService";
@@ -18,12 +19,9 @@ import { ERole } from "src/core/enums/Role";
 import { JwtService } from "@nestjs/jwt";
 import { PhoneMessageService } from "src/core/services/phone.service";
 import { ElasticService } from "src/core/services/elastic.service";
-import { TasksService } from "src/core/services/tasks.service";
 import { SchedulerRegistry } from "@nestjs/schedule";
-import { IsString } from "class-validator";
-import { UpdateImage } from "../dto/dto";
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UserService implements IUserService {
   private readonly logger = new Logger(UserService.name);
   constructor(
@@ -389,35 +387,6 @@ export class UserService implements IUserService {
     return;
   }
 
-  async updateImage(id: string, payload: UpdateImage) {
-    let res = await this.superBaseService
-      .connect()
-      .from("User")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (!res.data)
-      throw new NotFoundException({
-        message: "User not found",
-        status: EResponseStatus.FAILED,
-      });
-
-    res = await this.superBaseService
-      .connect()
-      .from("User")
-      .update({
-        profile_image: payload.profile_image,
-      })
-      .eq("id", id);
-
-    if (res.error) {
-      this.logger.error(res.error);
-    }
-
-    return res.data;
-  }
-
   async updateUser(
     id: string,
     payload: UpdateUserDto
@@ -439,16 +408,15 @@ export class UserService implements IUserService {
       .connect()
       .from("User")
       .update({
-        first_name: payload.first_name,
-        last_name: payload.last_name,
-        full_name: `${payload.first_name ?? ""} ${payload.last_name ?? ""}`,
         country_id: payload.country,
         state_id: payload.state,
         city_id: payload.city,
         birthdate: payload.birthdate,
         address: payload.address,
         password: payload.password,
+        phone_number: payload.phone,
         profile_image: payload.profile_image,
+        is_onboarded: true,
       })
       .eq("id", id);
 
