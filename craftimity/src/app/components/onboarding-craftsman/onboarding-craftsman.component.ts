@@ -119,7 +119,7 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
     };
     console.log(payload);
     await loader.present();
-    this.updateUserSub$ = this.authService
+    this.updateUserSub$ = this.usersService
       .updateUser(this.userData.id, payload)
       .pipe(finalize(async () => await loader.dismiss()))
       .subscribe({
@@ -135,11 +135,13 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
   }
 
   getUser() {
-    this.getUserSub$ = this.usersService.getUser(this.userData?.id).subscribe({
-      next: (user) => {
-        localStorage.setItem(STORAGE_VARIABLES.USER, JSON.stringify(user));
-      },
-    });
+    this.getUserSub$ = this.usersService
+      .getUserById(this.userData?.id)
+      .subscribe({
+        next: (user) => {
+          localStorage.setItem(STORAGE_VARIABLES.USER, JSON.stringify(user));
+        },
+      });
   }
 
   async close(data?: any) {

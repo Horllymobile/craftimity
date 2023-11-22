@@ -1,3 +1,4 @@
+import { UsersService } from 'src/app/core/services/users/users.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,6 +42,7 @@ export class ForgotPasswordComponent implements OnInit {
     private fb: FormBuilder,
     private locationService: LocationService,
     private authService: AuthService,
+    private usersService: UsersService,
     private loadingCtrl: LoadingController,
     private alertService: AlertService,
     private navCtrl: NavController,
@@ -201,7 +203,7 @@ export class ForgotPasswordComponent implements OnInit {
     };
 
     await loader.present();
-    this.verifySub$ = this.authService
+    this.verifySub$ = this.usersService
       .updatePassword(data.id, payload)
       .pipe(
         finalize(async () => {

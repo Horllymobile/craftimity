@@ -39,6 +39,12 @@
 		<string>MKDirectionsModeBus</string>
 		<string>MKDirectionsModeCar</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>YES</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>YES</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>YES</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -62,11 +68,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-  <key>NSCameraUsageDescription (Privacy - Camera Usage Description)</key>
-  <string>NSCameraUsageDescription</string>
-  <key>NSPhotoLibraryAddUsageDescription (Privacy - Photo Library Additions Usage Description)</key>
-  <string>NSPhotoLibraryAddUsageDescription</string>
-  <key>NSPhotoLibraryUsageDescription (Privacy - Photo Library Usage Description)</key>
-  <string>NSPhotoLibraryUsageDescription</string>
 </dict>
 </plist>

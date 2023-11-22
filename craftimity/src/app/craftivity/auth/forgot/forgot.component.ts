@@ -1,3 +1,4 @@
+import { UsersService } from 'src/app/core/services/users/users.service';
 import { AlertService } from './../../../core/services/alert.service';
 import { LoaderService } from './../../../core/services/loader.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -27,7 +28,8 @@ export class ForgotComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private loaderService: LoaderService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private usersService: UsersService
   ) {}
 
   ngOnInit() {
@@ -151,7 +153,7 @@ export class ForgotComponent implements OnInit {
     };
 
     await loader.present();
-    this.verifySub$ = this.authService
+    this.verifySub$ = this.usersService
       .updatePassword(data.id, payload)
       .pipe(
         finalize(async () => {

@@ -89,7 +89,7 @@ export class VerifyComponent implements OnInit, OnDestroy {
             STORAGE_VARIABLES.REGISTERATION_TOKEN,
             res.token
           );
-          this.route.navigate(['/auth/onboarding'], {
+          this.route.navigate(['/craftimity/page/auth/onboarding'], {
             queryParams: {
               email: payload.email,
               type: payload.type,

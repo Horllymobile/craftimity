@@ -1,6 +1,6 @@
 import { AlertService } from './../../../../core/services/alert.service';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -13,9 +13,10 @@ import {
   ImageCroppedEvent,
   ImageTransform,
 } from 'ngx-image-cropper';
-import { Observable, Subscription, finalize, map } from 'rxjs';
+import { Observable, Subscription, finalize, interval, map } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { EOnboardingStep } from 'src/app/core/enums/auth';
+import { ISignIn, IVerifyOtp } from 'src/app/core/models/auth';
 import { ICategory } from 'src/app/core/models/category';
 import { ICity, ICountry, IState } from 'src/app/core/models/location';
 import { IUser } from 'src/app/core/models/user';
@@ -54,10 +55,12 @@ export class AccountPage implements OnInit {
   countries$!: Observable<ICountry[]>;
   states$!: Observable<IState[]>;
   cities$!: Observable<ICity[]>;
-  steps: EOnboardingStep = EOnboardingStep.IMAGE_UPLOAD;
+  steps: EOnboardingStep = EOnboardingStep.PHONE_VERIFICATION;
   EOnboardingStep = EOnboardingStep;
   imageForm!: FormGroup;
   form!: FormGroup;
+  phoneForm!: FormGroup;
+  verifyForm!: FormGroup;
 
   userData!: IUser;
   imageUrl: string = '';
@@ -68,6 +71,7 @@ export class AccountPage implements OnInit {
   getUserSub$!: Subscription;
   uploadImageSub$!: Subscription;
   updateUserSub$!: Subscription;
+  resendSub$!: Subscription;
 
   liveImageUrl = '';
 
@@ -75,6 +79,16 @@ export class AccountPage implements OnInit {
 
   page = 1;
   size = 100;
+
+  timer = 30;
+  intervalSub$!: Subscription;
+  verifySub$!: Subscription;
+
+  @ViewChild('') fileId!: HTMLInputElement;
+  @ViewChild('') fileCert!: HTMLInputElement;
+  @ViewChild('') fileWork!: HTMLInputElement;
+  @ViewChild('') fileAddress!: HTMLInputElement;
+
   constructor(
     private locationService: LocationService,
     private loadService: LoaderService,
@@ -87,10 +101,25 @@ export class AccountPage implements OnInit {
     private categothryService: CategoryService
   ) {
     this.userData = this.usersService.userProfile;
+    if (this.userData && !this.userData.phone_verified) {
+      this.steps = EOnboardingStep.PHONE_VERIFICATION;
+    } else if (this.userData && !this.userData.profile_image) {
+      this.steps = EOnboardingStep.IMAGE_UPLOAD;
+    } else if (this.userData && !this.userData.is_onboarded) {
+      this.steps = EOnboardingStep.COMPLETE;
+    }
   }
 
   get formCtrl() {
     return this.form.controls;
+  }
+
+  get phoneFormCtrl() {
+    return this.phoneForm.controls;
+  }
+
+  get verifyFormCtrl() {
+    return this.verifyForm.controls;
   }
 
   ngOnInit() {
@@ -119,9 +148,23 @@ export class AccountPage implements OnInit {
       url: new FormControl(null, [Validators.required]),
     });
 
+    this.phoneForm = new FormGroup({
+      code: new FormControl(null, [Validators.required]),
+      phone: new FormControl(null, [
+        Validators.required,
+        Validators.pattern(/\d{10}/),
+      ]),
+    });
+
+    this.verifyForm = new FormGroup({
+      code: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(6),
+      ]),
+    });
+
     this.form = this.fb.group({
-      code: [null, [Validators.required]],
-      phone: [null, [Validators.required, Validators.pattern(/\d{10}/)]],
       birthdate: [null, [Validators.required]],
       country: [null, [Validators.required]],
       state: [null, [Validators.required]],
@@ -142,7 +185,7 @@ export class AccountPage implements OnInit {
     };
     console.log(payload);
     await loader.present();
-    this.updateUserSub$ = this.authService
+    this.updateUserSub$ = this.usersService
       .updateUser(this.userData.id, payload)
       .pipe(finalize(async () => await loader.dismiss()))
       .subscribe({
@@ -158,11 +201,13 @@ export class AccountPage implements OnInit {
   }
 
   getUser() {
-    this.getUserSub$ = this.usersService.getUser(this.userData?.id).subscribe({
-      next: (user) => {
-        localStorage.setItem(STORAGE_VARIABLES.USER, JSON.stringify(user));
-      },
-    });
+    this.getUserSub$ = this.usersService
+      .getUserById(this.userData?.id)
+      .subscribe({
+        next: (user) => {
+          localStorage.setItem(STORAGE_VARIABLES.USER, JSON.stringify(user));
+        },
+      });
   }
 
   onSelectCountry({ detail: { value } }: any) {
@@ -348,5 +393,102 @@ export class AccountPage implements OnInit {
     this.getUserSub$?.unsubscribe();
     this.uploadImageSub$?.unsubscribe();
     this.updateUserSub$?.unsubscribe();
+  }
+
+  openFile(input: HTMLInputElement) {
+    input.click();
+  }
+
+  async verifyPhoneNumber(formValue: any) {
+    let payload: ISignIn = {
+      type: 'phone',
+      phone: `${formValue.code}${formValue.phone}`,
+    };
+    const load = await this.loadService.load();
+    await load.present();
+    this.authService
+      .resendOTPCode(payload)
+      .pipe(
+        finalize(async () => {
+          await load.dismiss();
+        })
+      )
+      .subscribe({
+        next: async (res) => {
+          await this.alertService.success(res);
+          this.steps = EOnboardingStep.VERIFY_PHONE;
+          this.startTimer();
+        },
+        error: async (err) => {
+          await this.alertService.error(err);
+        },
+      });
+  }
+
+  async verifyOtp(formPayload: any) {
+    const loader = await this.loadService.load();
+    await loader.present();
+    const payload: IVerifyOtp = {
+      type: 'phone',
+      code: formPayload['code'],
+      phone: `${this.phoneFormCtrl['code'].value}${this.phoneFormCtrl['phone'].value}`,
+    };
+    this.verifySub$ = this.authService
+      .verifyOtp(payload)
+      .pipe(
+        finalize(async () => {
+          await loader.dismiss();
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.alertService.success('Verification successfull');
+        },
+        error: async (err) => {
+          await this.alertService.error(err);
+        },
+      });
+  }
+
+  startTimer() {
+    if (this.timer < 1) this.timer = 60;
+    this.intervalSub$ = interval(1000)
+      .pipe()
+      .subscribe((res) => {
+        this.timer -= 1;
+        if (this.timer <= 0) {
+          this.intervalSub$.unsubscribe();
+          this.timer = 0;
+        }
+      });
+  }
+
+  async resendOTPCode() {
+    let payload: ISignIn = {
+      type: 'phone',
+    };
+    const loader = await this.loadService.load();
+    await loader.present();
+    this.resendSub$ = this.authService
+      .resendOTPCode(payload)
+      .pipe(
+        finalize(async () => {
+          await loader.dismiss();
+        })
+      )
+      .subscribe({
+        next: async (res) => {
+          await this.alertService.success(res);
+          if (!this.userData.profile_image) {
+            this.steps = EOnboardingStep.IMAGE_UPLOAD;
+          } else if (!this.userData.is_onboarded) {
+            this.steps = EOnboardingStep.COMPLETE;
+          }
+        },
+        error: async (err) => {
+          await this.alertService.error(err);
+          this.startTimer();
+        },
+      });
   }
 }

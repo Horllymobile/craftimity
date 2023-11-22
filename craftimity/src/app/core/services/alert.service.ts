@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertButton, AlertController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root',
@@ -8,20 +8,23 @@ import { AlertController } from '@ionic/angular';
 export class AlertService {
   constructor(private alertCtrl: AlertController, private router: Router) {}
 
-  async success(message: string, route?: string) {
+  async success(message: string, route?: string, buttons?: AlertButton[]) {
     const alert = await this.alertCtrl.create({
       message,
       animated: true,
-      buttons: [
-        {
-          text: 'OKAY',
-          ...(route && {
-            handler: (value) => {
-              this.router.navigateByUrl(route);
-            },
-          }),
-        },
-      ],
+      ...(buttons && { buttons }),
+      ...(!buttons && {
+        buttons: [
+          {
+            text: 'OKAY',
+            ...(route && {
+              handler: (value) => {
+                this.router.navigateByUrl(route);
+              },
+            }),
+          },
+        ],
+      }),
     });
     return await alert.present();
   }

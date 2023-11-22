@@ -51,3 +51,18 @@ export class UpdateUserDto {
   @IsOptional()
   password: string;
 }
+
+export class CreateUserDto {
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
+  @IsPhoneNumber()
+  @IsOptional()
+  phone?: string;
+
+  @Length(8, 16)
+  @IsString()
+  @IsOptional()
+  password: string;
+}

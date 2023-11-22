@@ -38,6 +38,7 @@
     "@supabase/supabase-js": "^2.38.1",
     "capacitor-native-settings": "^5.0.1",
     "firebase": "^10.5.2",
+    "hammerjs": "^2.0.8",
     "ionicons": "^7.0.0",
     "lodash": "^4.17.21",
     "mixpanel": "^0.18.0",

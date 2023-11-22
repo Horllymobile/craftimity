@@ -1,3 +1,4 @@
+import { UsersService } from 'src/app/core/services/users/users.service';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -52,6 +53,7 @@ export class OnboardingComponent implements OnInit {
   constructor(
     private supabaseService: SupaBaseService,
     private authService: AuthService,
+    private usersService: UsersService,
     private loadingCtrl: LoadingController,
     private fb: FormBuilder,
     private locationService: LocationService,
@@ -176,14 +178,17 @@ export class OnboardingComponent implements OnInit {
     });
 
     await loader.present();
-    const url = await this.supabaseService.uploadFile(this.croppedImage);
-    if (url) {
-      // this.updateImage(url, loader);
-    }
+    this.supabaseService.uploadFile(this.croppedImage).subscribe({
+      // next: (res) => {
+      //   this.updateImage(url, loader);
+      // }, error: (error) => {
+      //   this.alertService.error(error);
+      // }
+    });
   }
 
   async updateImage(url: string, loader: HTMLIonLoadingElement) {
-    this.authService
+    this.usersService
       .updateImageUrl(this.userData?.id, {
         profile_image: url,
       })
@@ -242,7 +247,7 @@ export class OnboardingComponent implements OnInit {
       city: Number(formData['city']),
     };
     await loader.present();
-    this.authService
+    this.usersService
       .updateUser(this.userData.id, payload)
       .pipe(
         finalize(async () => {

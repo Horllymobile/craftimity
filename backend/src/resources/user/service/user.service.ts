@@ -6,20 +6,21 @@ import {
   NotFoundException,
   Scope,
 } from "@nestjs/common";
-import { UserCheckDto } from "../dto/user-check.dto";
 import { IUserService } from "src/core/interfaces/services/IUserService";
 import { SuperbaseService } from "src/core/services/superbase/superbase.service";
 import { USERCHECKTYPE } from "src/core/enums/UserCheckType";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { IUser } from "src/core/interfaces/IUser";
 import { generateVerifcationCode } from "src/core/utils/verification-code";
-import { VerifyPhoneOtpDto, VerifyUserDto } from "../dto/verify-user.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
+import { CreateUserDto, UpdateUserDto } from "../dto/user.dto";
 import { ERole } from "src/core/enums/Role";
 import { JwtService } from "@nestjs/jwt";
 import { PhoneMessageService } from "src/core/services/phone.service";
 import { ElasticService } from "src/core/services/elastic.service";
 import { SchedulerRegistry } from "@nestjs/schedule";
+import { CreateUserIdentity } from "../dto/identity.dto";
+import { jwtConstants } from "src/resources/auth/constants/constants";
+import { UpdateUserAddress } from "../dto/dto";
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService implements IUserService {
@@ -31,22 +32,6 @@ export class UserService implements IUserService {
     private elasticService: ElasticService,
     private schedulerRegistry: SchedulerRegistry
   ) {}
-
-  async checkUser(payload: UserCheckDto): Promise<any> {
-    let user: IUser;
-    if (payload.type === USERCHECKTYPE.EMAIL) {
-      user = await this.findUserByEmail(payload.email);
-      if (!user) {
-        await this.sendVerificationCodeToEmail(payload.email);
-      }
-      return user;
-    }
-    user = await this.findUserByPhone(payload.phone);
-    if (!user) {
-      await this.sendVerificationCodeToPhone(payload.phone);
-    }
-    return user;
-  }
 
   async countUser() {
     let { data, count }: { data: IUser[]; count: number } =
@@ -68,9 +53,9 @@ export class UserService implements IUserService {
         .from("User")
         .select(
           `id,first_name,last_name, full_name, email, 
-        phone_number, address, active, enabled, email_verified, 
+        phone_number, active, enabled, email_verified, 
         phone_verified, role, created_at, 
-        updated_at, country_id, state_id, city_id, is_onboarded`
+        updated_at, is_onboarded, Address(*), birthdate, profile_image`
         )
         .ilike("idx_user_name", `%${name}%`)
         .limit(size)
@@ -83,9 +68,9 @@ export class UserService implements IUserService {
         .from("User")
         .select(
           `id,first_name,last_name, email, 
-        phone_number, address, active, enabled, email_verified, 
+        phone_number, active, enabled, email_verified, 
         phone_verified, role, created_at, 
-        updated_at, country_id, state_id, city_id, is_onboarded`
+        updated_at, Address(*) is_onboarded, birthdate, profile_image`
         )
         .limit(size)
         .eq("active", true)
@@ -103,10 +88,17 @@ export class UserService implements IUserService {
       .connect()
       .from("User")
       .select(
-        `id,first_name,last_name, full_name, email, 
-      phone_number, address, active, enabled, email_verified, 
-      phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, is_onboarded`
+        `
+        id,first_name,
+        last_name,full_name,
+        email,phone_number,
+        Address(*),
+        active, enabled,
+        email_verified, 
+        phone_verified, role,
+        created_at, updated_at,
+        is_onboarded, birthdate,
+        profile_image`
       )
       .eq("id", id)
       .single();
@@ -124,9 +116,9 @@ export class UserService implements IUserService {
       .from("User")
       .select(
         `id,first_name,last_name, full_name, email, 
-      phone_number, address, active, enabled, email_verified, 
+      phone_number, Address(*), active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, birthdate, is_onboarded`
+      updated_at, birthdate, is_onboarded, birthdate, profile_image`
       )
       .eq("email", email)
       .single();
@@ -143,9 +135,9 @@ export class UserService implements IUserService {
       .from("decrypted_User")
       .select(
         `id,first_name,last_name, full_name, email, 
-      phone_number, address, active, enabled, email_verified, 
+      phone_number, Address(*), active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, birthdate, password, decrypted_password, is_onboarded`
+      updated_at, birthdate, password, decrypted_password, is_onboarded, birthdate, profile_image`
       )
       .eq("email", email)
       .single();
@@ -162,9 +154,9 @@ export class UserService implements IUserService {
       .from("User")
       .select(
         `id,first_name,last_name, full_name, email, 
-      phone_number, address, active, enabled, email_verified, 
+      phone_number, Address(*), active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, password, is_onboarded`
+      updated_at, password, is_onboarded, birthdate, profile_image`
       )
       .eq("phone_number", phone)
       .single();
@@ -182,9 +174,9 @@ export class UserService implements IUserService {
       .from("decrypted_User")
       .select(
         `id,first_name,last_name, full_name, email, 
-      phone_number, address, active, enabled, email_verified, 
+      phone_number, Address(*), active, enabled, email_verified, 
       phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id, password, decrypted_password, is_onboarded`
+      updated_at, password, decrypted_password, is_onboarded, birthdate, profile_image`
       )
       .eq("phone_number", phone)
       .single();
@@ -199,7 +191,7 @@ export class UserService implements IUserService {
   async sendVerificationCodeToEmail(email: string) {
     const user = await this.findUserByEmail(email);
 
-    if (user.email_verified) {
+    if (user?.email_verified) {
       throw new ConflictException({
         status: EResponseStatus.FAILED,
         message: "Email already verified, proceed to login",
@@ -347,6 +339,13 @@ export class UserService implements IUserService {
   }
 
   async sendVerificationCodeToPhone(phone: string) {
+    const user = await this.findUserByPhone(phone);
+    if (user) {
+      throw new ConflictException({
+        status: EResponseStatus.FAILED,
+        message: "Phone number already in use",
+      });
+    }
     const code = generateVerifcationCode(6);
     console.log("Phone OTP code " + code);
     let res = await this.superBaseService
@@ -369,22 +368,67 @@ export class UserService implements IUserService {
         phone: phone,
         code,
       });
-    const job = this.schedulerRegistry.getCronJob("delete-code");
-    job.start();
-    this.phoneMessageService
-      .sendVerificationCode({ phoneNumber: phone, verifyCode: code })
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-        },
-        error: (err) => {
-          console.log(err);
-        },
-      });
+    // const job = this.schedulerRegistry.getCronJob("delete-code");
+    // job.start();
+    // this.phoneMessageService
+    //   .sendVerificationCode({ phoneNumber: phone, verifyCode: code })
+    //   .subscribe({
+    //     next: (res) => {
+    //       console.log(res);
+    //     },
+    //     error: (err) => {
+    //       console.log(err);
+    //     },
+    //   });
     if (error) {
       this.logger.error(error);
     }
     return;
+  }
+
+  async createUser(type: USERCHECKTYPE, payload: CreateUserDto) {
+    let user: IUser;
+    if (type === USERCHECKTYPE.EMAIL) {
+      let res = await this.superBaseService.connect().from("User").insert({
+        email: payload.email,
+        password: payload.password,
+        role: ERole.USER,
+      });
+
+      if (res.error) {
+        this.logger.error(res.error);
+      }
+
+      await this.sendVerificationCodeToEmail(payload.email);
+      user = await this.findUserByEmail(payload.email);
+    } else {
+      let res = await this.superBaseService.connect().from("User").insert({
+        phone: payload.phone,
+        password: payload.password,
+        role: ERole.USER,
+      });
+
+      if (res.error) {
+        this.logger.error(res.error);
+      }
+
+      await this.sendVerificationCodeToPhone(payload.phone);
+      user = await this.findUserByPhone(payload.phone);
+    }
+
+    const jwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const { password, decrypted_password, ...result } = user;
+    return {
+      data: result,
+      access_token: await this.jwtService.signAsync(jwtPayload, {
+        expiresIn: jwtConstants.expiresIn,
+      }),
+    };
   }
 
   async updateUser(
@@ -408,56 +452,17 @@ export class UserService implements IUserService {
       .connect()
       .from("User")
       .update({
-        country_id: payload.country,
-        state_id: payload.state,
-        city_id: payload.city,
-        birthdate: payload.birthdate,
-        address: payload.address,
-        password: payload.password,
-        phone_number: payload.phone,
-        profile_image: payload.profile_image,
-        is_onboarded: true,
+        first_name: payload.first_name ?? res.data.first_name,
+        last_name: payload.last_name ?? res.data.last_name,
+        full_name:
+          this.setFullName(payload.first_name, payload.last_name) ||
+          this.setFullName(res.data.first_name, res.data.last_name),
+        birthdate: payload.birthdate || payload.birthdate,
+        phone_number: payload.phone || payload.phone,
+        profile_image: payload.profile_image || res.data.profile_image,
+        is_onboarded: res.data.is_onboarded,
       })
       .eq("id", id);
-
-    res = await this.superBaseService
-      .connect()
-      .from("User")
-      .select(
-        "first_name, last_name, email, full_name, country_id, state_id, city_id, birthdate, address, password, profile_image"
-      )
-      .eq("id", id)
-      .single();
-    const onboardingCheck = Object.values(res.data).every(
-      (value) => value !== null
-    );
-    if (onboardingCheck) {
-      await this.superBaseService
-        .connect()
-        .from("User")
-        .update({
-          is_onboarded: true,
-        })
-        .eq("id", id);
-      let mail = await this.elasticService.sendEmailDynamic({
-        Recipients: {
-          To: [res.data.email],
-        },
-        Content: {
-          From: "info@craftimity.com",
-          TemplateName: "WELCOMING_EMAIL",
-          Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
-          Merge: {
-            full_name: res.data.full_name,
-            accountaddress: "info@craftimity.com",
-          },
-        },
-      });
-
-      if (mail.data) {
-        this.logger.log(mail.data);
-      }
-    }
 
     if (res.error) {
       this.logger.error(res.error);
@@ -470,37 +475,31 @@ export class UserService implements IUserService {
     return res.data;
   }
 
-  async forgotPassword(payload: {
-    email?: string;
-    phone?: string;
-    type: "email" | "phone";
-  }) {
-    let user: IUser;
-    if (payload.type === USERCHECKTYPE.EMAIL) {
-      user = await this.findUserByEmail(payload.email);
-      console.log(user);
-      if (!user)
-        throw new NotFoundException({
-          message: "User not found",
-          status: EResponseStatus.FAILED,
-        });
-      if (user) {
-        const sent = await this.sendForgotPasswordCodeToEmail(payload.email);
-        console.log(sent);
-      }
-      return user;
-    }
+  setFullName(first: string, last: string) {
+    return first && last && `${first} ${last}`;
+  }
 
-    user = await this.findUserByPhone(payload.phone);
-    if (!user)
+  async createUserLocation(user_id: string, payload: UpdateUserAddress) {
+    let res = await this.superBaseService
+      .connect()
+      .from("User")
+      .select("*")
+      .eq("id", user_id)
+      .single();
+
+    if (!res.data)
       throw new NotFoundException({
         message: "User not found",
         status: EResponseStatus.FAILED,
       });
-    if (user) {
-      await this.sendVerificationCodeToPhone(payload.phone);
-    }
-    return user;
+
+    await this.superBaseService
+      .connect()
+      .from("Address")
+      .insert({
+        ...payload,
+        user: user_id,
+      });
   }
 
   async updatePassword(
@@ -539,380 +538,63 @@ export class UserService implements IUserService {
     return res.data;
   }
 
-  async verifyOtpCode(payload: VerifyUserDto) {
-    let user: IUser;
+  async getUserIdentityInfo(user_id: string) {
     let { data, error } = await this.superBaseService
       .connect()
-      .from("verification_code")
-      .select("*")
-      .eq("code", payload.code)
+      .from("User_Identity")
+      .select(`id, type, live_image, residential_address, user_id, identity`)
+      .eq("user_id", user_id)
       .single();
 
-    if (!data)
-      throw new NotFoundException({
-        message: "Invalid verification code",
-        status: EResponseStatus.FAILED,
-      });
-
-    if (payload.type === "email") {
-      user = await this.updateEmail(payload);
-    } else {
-      user = await this.updatePhone(payload);
+    if (error) {
+      this.logger.log(error);
     }
 
-    await this.superBaseService
-      .connect()
-      .from("verification_code")
-      .delete()
-      .eq("code", payload.code);
-
-    const jwtPayload = {
-      sub: user.id,
-      ...(user.email && { email: user.email }),
-      ...(user.phone_number && { phone: user.phone_number }),
-      type: payload.type,
-    };
-
-    const token = await this.jwtService.signAsync(jwtPayload);
-
-    return {
-      user,
-      token: token,
-    };
+    return data;
   }
 
-  async verifyForgotPasswordOtpCode(payload: VerifyUserDto) {
-    let user: IUser;
+  async verifyUserIdentityInfo(payload: CreateUserIdentity) {
+    const user = await this.findUserById(payload.user_id);
+    if (!user) {
+      throw new NotFoundException({
+        status: EResponseStatus.FAILED,
+        message: "User not found",
+      });
+    }
+
     let { data, error } = await this.superBaseService
       .connect()
-      .from("verification_code")
-      .select("*")
-      .eq("code", payload.code)
-      .single();
-
-    if (!data)
-      throw new NotFoundException({
-        message: "Invalid verification code",
-        status: EResponseStatus.FAILED,
-      });
-
-    if (payload.type === "email") {
-      user = await this.findUserByEmail(payload.email);
-    } else {
-      user = await this.findUserByPhone(payload.phone);
-    }
-
-    await this.superBaseService
-      .connect()
-      .from("verification_code")
-      .delete()
-      .eq("code", payload.code);
-
-    const jwtPayload = {
-      sub: user.id,
-      ...(user.email && { email: user.email }),
-      ...(user.phone_number && { phone: user.phone_number }),
-      type: payload.type,
-    };
-
-    const token = await this.jwtService.signAsync(jwtPayload);
-
-    return {
-      user,
-      token: token,
-    };
-  }
-
-  private async updateEmail(payload: VerifyUserDto) {
-    let res: any;
-    let user: IUser;
-    if (payload.email === "horlamidex1@gmail.com") {
-      res = await this.superBaseService.connect().from("User").insert({
-        email: payload.email,
-        email_verified: true,
-        active: true,
-        enabled: true,
-        role: ERole.SUPER_ADMIN,
-      });
-    } else {
-      res = await this.superBaseService.connect().from("User").insert({
-        email: payload.email,
-        email_verified: true,
-        active: true,
-        enabled: true,
-        role: ERole.USER,
-      });
-    }
-
-    if (res.error) {
-      this.logger.error(res.error);
-      throw new InternalServerErrorException({
-        message: "Something went wrong not your fault",
-        status: EResponseStatus.ERROR,
-      });
-    }
-
-    if (res.error) {
-      this.logger.error(res.error);
-      throw new InternalServerErrorException({
-        message: "Something went wrong not your fault",
-        status: EResponseStatus.ERROR,
-      });
-    }
-
-    res = await this.superBaseService
-      .connect()
-      .from("User")
+      .from("User_Identity")
       .select(
-        `id,first_name,last_name, email, 
-      phone_number, address, active, enabled, email_verified, 
-      phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id`
+        `id, type, live_image, residential_address, user_id,
+        identity, live_image_approved, residential_approved, identity_approved`
       )
-      .eq("email", payload.email)
+      .eq("user_id", payload.user_id)
       .single();
 
-    user = res.data;
-
-    await this.activateAndEnableUser(payload);
-    return user;
-  }
-
-  private async updatePhone(payload: VerifyUserDto) {
-    let res: any;
-    let user: IUser;
-    if (payload.phone === "+2348095687112") {
-      res = await this.superBaseService.connect().from("User").insert({
-        phone_number: payload.phone,
-        phone_verified: true,
-        active: true,
-        enabled: true,
-        role: ERole.SUPER_ADMIN,
-      });
-    } else {
-      res = await this.superBaseService.connect().from("User").insert({
-        phone_number: payload.phone,
-        phone_verified: true,
-        active: true,
-        enabled: true,
-        role: ERole.USER,
-      });
+    if (error) {
+      this.logger.error(error);
     }
 
-    if (res.error) {
-      this.logger.error(res.error);
-      throw new InternalServerErrorException({
-        message: "Something went wrong not your fault",
-        status: EResponseStatus.ERROR,
-      });
-    }
-
-    if (res.error) {
-      this.logger.error(res.error);
-      throw new InternalServerErrorException({
-        message: "Something went wrong not your fault",
-        status: EResponseStatus.ERROR,
-      });
-    }
-
-    res = await this.superBaseService
-      .connect()
-      .from("User")
-      .select(
-        `id,first_name,last_name, email, 
-      phone_number, address, active, enabled, email_verified, 
-      phone_verified, role, created_at, 
-      updated_at, country_id, state_id, city_id`
-      )
-      .eq("phone_number", payload.phone)
-      .single();
-
-    console.log(res);
-
-    user = res.data;
-    return user;
-  }
-
-  async verifyPhoneOtpCode(payload: VerifyPhoneOtpDto) {
-    let { data, error } = await this.superBaseService
-      .connect()
-      .from("verification_code")
-      .select("*")
-      .eq("code", payload.code)
-      .single();
-
-    if (!data)
-      throw new NotFoundException({
-        message: "Invalid verification code",
+    if (
+      data &&
+      data.identity_approved &&
+      data.residential_approved &&
+      data.live_image_approved
+    ) {
+      throw new ConflictException({
         status: EResponseStatus.FAILED,
-      });
-
-    let res: any;
-
-    if (payload.phone === "+2348095687112") {
-      res = await this.superBaseService
-        .connect()
-        .from("User")
-        .update({
-          phone_number: payload.phone,
-          phone_verified: true,
-          role: ERole.SUPER_ADMIN,
-        })
-        .eq("email", payload.email);
-    } else {
-      res = await this.superBaseService
-        .connect()
-        .from("User")
-        .insert({
-          phone_number: payload.phone,
-          phone_verified: true,
-          role: ERole.USER,
-        })
-        .eq("email", payload.email);
-    }
-
-    if (res.error) {
-      this.logger.error(res.error);
-      throw new InternalServerErrorException({
-        message: "Something went wrong not your fault",
-        status: EResponseStatus.ERROR,
+        message: "User Identity already available and as been approved",
       });
     }
 
-    if (res.error) {
-      this.logger.error(res.error);
-      throw new InternalServerErrorException({
-        message: "Something went wrong not your fault",
-        status: EResponseStatus.ERROR,
-      });
-    }
-
-    await this.superBaseService
-      .connect()
-      .from("verification_code")
-      .delete()
-      .eq("code", payload.code);
-    return {
-      message: "Verification successfull",
-      status: EResponseStatus.SUCCESS,
-    };
-  }
-
-  async verifyEmailOtpCode(payload: VerifyPhoneOtpDto) {
-    let { data, error } = await this.superBaseService
-      .connect()
-      .from("verification_code")
-      .select("*")
-      .eq("code", payload.code)
-      .single();
-
-    if (!data)
-      throw new NotFoundException({
-        message: "Invalid verification code",
+    if (data) {
+      throw new ConflictException({
         status: EResponseStatus.FAILED,
-      });
-
-    let res: any;
-
-    if (payload.email === "horlamidex1@gmail.com") {
-      res = await this.superBaseService
-        .connect()
-        .from("User")
-        .update({
-          email: payload.email,
-          email_verified: true,
-          role: ERole.SUPER_ADMIN,
-        })
-        .eq("phone_number", payload.phone);
-    } else {
-      res = await this.superBaseService
-        .connect()
-        .from("User")
-        .update({
-          email: payload.email,
-          email_verified: true,
-          role: ERole.USER,
-        })
-        .eq("phone_number", payload.phone);
-    }
-
-    if (res.error) {
-      this.logger.error(res.error);
-      throw new InternalServerErrorException({
-        message: "Something went wrong not your fault",
-        status: EResponseStatus.ERROR,
+        message: "User Identity already available",
       });
     }
 
-    if (res.error) {
-      this.logger.error(res.error);
-      throw new InternalServerErrorException({
-        message: "Something went wrong not your fault",
-        status: EResponseStatus.ERROR,
-      });
-    }
-
-    await this.superBaseService
-      .connect()
-      .from("verification_code")
-      .delete()
-      .eq("code", payload.code);
-    return {
-      message: "Verification successfull",
-      status: EResponseStatus.SUCCESS,
-    };
-  }
-
-  private async activateAndEnableUser(payload: {
-    email?: string;
-    phone?: string;
-    type: "email" | "phone";
-  }) {
-    let res;
-
-    if (payload.type === "phone") {
-      res = await this.superBaseService
-        .connect()
-        .from("User")
-        .select("*")
-        .eq("phone_number", payload.phone)
-        .single();
-    } else {
-      res = await this.superBaseService
-        .connect()
-        .from("User")
-        .select("*")
-        .eq("email", payload.email)
-        .single();
-    }
-
-    if (!res) {
-      this.logger.error(res.error);
-      throw new InternalServerErrorException({
-        message: "Something went wrong not your fault",
-        status: EResponseStatus.ERROR,
-      });
-    }
-    if (res.data?.phone_verified && res.data?.email_verified) {
-      if (payload.type === "phone") {
-        res = await this.superBaseService
-          .connect()
-          .from("User")
-          .update({
-            active: true,
-            enabled: true,
-          })
-          .eq("phone_number", payload.phone);
-      } else {
-        res = await this.superBaseService
-          .connect()
-          .from("User")
-          .update({
-            active: true,
-            enabled: true,
-          })
-          .eq("email", payload.email);
-      }
-    }
+    await this.superBaseService.connect().from("User_Identity").insert(payload);
   }
 }

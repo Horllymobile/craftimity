@@ -1,13 +1,19 @@
 <ion-header>
-  <ion-toolbar class="py-3">
-    <ion-title size="medium">More</ion-title>
+  <ion-toolbar>
+    <ion-title>More</ion-title>
   </ion-toolbar>
 </ion-header>
 
+
 <ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">More</ion-title>
+    </ion-toolbar>
+  </ion-header>
   <ion-list>
     <ion-item-sliding>
-      <ion-item [detail]="true">
+      <ion-item [detail]="true" routerLink="account">
         <ion-label class="text-2xl">Account</ion-label>
       </ion-item>
 

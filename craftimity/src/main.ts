@@ -13,7 +13,7 @@ defineCustomElements(window);
 
 if (environment.production) {
   enableProdMode();
-  // console.log = () => {};
+  console.log = () => {};
 }
 
 register();

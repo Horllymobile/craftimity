@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -8,6 +9,7 @@ import {
   IsStrongPassword,
   Length,
 } from "class-validator";
+import { USERCHECKTYPE } from "src/core/enums/UserCheckType";
 
 export class VerifyCraftmanDto {
   @IsEmail()
@@ -58,4 +60,64 @@ export class RegisterCraftmanDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+}
+
+export class UserCheckDto {
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsEnum(USERCHECKTYPE)
+  @IsNotEmpty()
+  type: USERCHECKTYPE;
+
+  @IsOptional()
+  @IsPhoneNumber("NG")
+  phone?: string;
+}
+
+export class VerifyUserDto {
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
+  @Length(6, 6)
+  @IsString()
+  @IsNotEmpty()
+  code: string;
+
+  @IsPhoneNumber("NG")
+  @IsOptional()
+  phone?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: "email" | "phone";
+}
+
+export class VerifyPhoneOtpDto {
+  @IsEmail()
+  email?: string;
+
+  @Length(6, 6)
+  @IsString()
+  @IsNotEmpty()
+  code: string;
+
+  @IsPhoneNumber("NG")
+  phone?: string;
+}
+
+export class SendOTPDto {
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
+  @IsPhoneNumber("NG")
+  @IsOptional()
+  phone?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: "email" | "phone";
 }

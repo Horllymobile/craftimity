@@ -80,11 +80,13 @@ export class LoginComponent implements OnInit {
   initForm() {
     this.emailLoginForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
+      password: [null, [Validators.required]],
       type: ['email'],
     });
 
     this.phoneLoginForm = this.fb.group({
       code: [null, [Validators.required]],
+      password: [null, [Validators.required]],
       phone: [
         null,
         [
@@ -95,72 +97,6 @@ export class LoginComponent implements OnInit {
       ],
       type: ['phone'],
     });
-  }
-
-  async onSubmitCheckUser(formPayload: any) {
-    const loader = await this.loadingCtrl.create({
-      message: '',
-      animated: true,
-      duration: 5000,
-      spinner: 'lines-small',
-      cssClass: 'loader',
-    });
-    const payload: ISignIn = {
-      type: formPayload.type,
-      ...(formPayload.email && { email: formPayload.email }),
-      ...(formPayload.phone && {
-        phone: `${formPayload.code}${formPayload.phone}`,
-      }),
-    };
-
-    await loader.present();
-    this.authService
-      .check(payload)
-      .pipe(
-        finalize(async () => {
-          await loader.dismiss();
-        })
-      )
-      .subscribe({
-        next: async (res) => {
-          // this.alertService.success('User is found');
-
-          if (res === null) {
-            this.mixpanelService.track('Registeration Process', res);
-            await this.alertService.success(
-              `Verification code have been sent to ${
-                payload.type === 'email' ? payload.email : payload.phone
-              }`
-            );
-            this.navCtrl.navigateForward(
-              [
-                'auth/verify/',
-                payload.type === 'email' ? payload.email : payload.phone,
-              ],
-              { queryParams: { type: payload.type } }
-            );
-          } else {
-            this.mixpanelService.track('Login Process', res);
-            if (payload.type === 'email') {
-              this.emailLoginForm?.addControl(
-                'password',
-                new FormControl(null, [Validators.required])
-              );
-              this.showEmailFormPasswordField = true;
-            } else {
-              this.phoneLoginForm.addControl(
-                'password',
-                new FormControl(null, [Validators.required])
-              );
-              this.showPhoneFormPasswordField = true;
-            }
-          }
-        },
-        error: async (error: Error) => {
-          this.mixpanelService.track('Registeration Error', error);
-          await this.alertService.error(error.message);
-        },
-      });
   }
 
   async login(formPayload: any) {
@@ -183,7 +119,7 @@ export class LoginComponent implements OnInit {
 
     await loader.present();
     this.authService
-      .signin(payload)
+      .loginSignUp(payload)
       .pipe(
         finalize(async () => {
           await loader.dismiss();
@@ -193,14 +129,18 @@ export class LoginComponent implements OnInit {
         next: async (res) => {
           localStorage.setItem(
             STORAGE_VARIABLES.USER,
-            JSON.stringify(res.metaData)
+            JSON.stringify(res?.metaData)
           );
-          localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
+          localStorage.setItem(STORAGE_VARIABLES.TOKEN, res?.access_token);
 
           if (this.returnUrl !== '/') {
             this.goToReturnUrl(this.returnUrl);
           } else {
-            this.goToHome();
+            if (res.metaData.is_onboarded) {
+              this.goToHome();
+            } else {
+              this.goToOnboarding();
+            }
           }
           this.emailLoginForm.reset();
           this.phoneLoginForm.reset();
@@ -213,7 +153,7 @@ export class LoginComponent implements OnInit {
           this.mixpanelService.identify(res.metaData.id);
           this.mixpanelService.track('Login', res.metaData);
         },
-        error: async (error: Error) => {
+        error: async (error) => {
           this.mixpanelService.track('Login Error', error);
           await this.alertService.error(error.message);
           this.analytics.logEvent('login_failed', {
@@ -231,5 +171,9 @@ export class LoginComponent implements OnInit {
 
   goToHome() {
     this.router.navigate(['/craftimity/admin/']);
+  }
+
+  goToOnboarding() {
+    this.router.navigate(['/craftimity/admin/more/account']);
   }
 }

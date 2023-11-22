@@ -9,6 +9,8 @@ export enum EContactType {
 }
 
 export enum EOnboardingStep {
+  PHONE_VERIFICATION = 'phone_verification',
+  VERIFY_PHONE = 'verify_phone',
   IMAGE_UPLOAD = 'image_upload',
   COMPLETE = 'complete',
   CRAFTS_DETAILS = 'crafts_details',

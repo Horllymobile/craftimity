@@ -31,13 +31,89 @@
   <ng-container *ngIf="!this.userData?.is_onboarded" [ngSwitch]="segment">
     <ion-card *ngSwitchCase="'user_info'">
       <ion-card-header>
-        <ion-card-title>
+        <ion-card-title *ngIf="steps === EOnboardingStep.IMAGE_UPLOAD">
+          Profile Image Upload
+        </ion-card-title>
+        <ion-card-title *ngIf="steps === EOnboardingStep.PHONE_VERIFICATION">
+          Add Phone Number
+        </ion-card-title>
+        <ion-card-title *ngIf="steps === EOnboardingStep.COMPLETE">
           User Information
+        </ion-card-title>
+        <ion-card-title *ngIf="steps === EOnboardingStep.VERIFY_PHONE">
+          Verify Phone Number
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <form [formGroup]="imageForm" class="p-5" *ngIf="steps === EOnboardingStep.IMAGE_UPLOAD"
-          (ngSubmit)="submitImage()">
+        <form [formGroup]="phoneForm" (ngSubmit)="verifyPhoneNumber(phoneForm.value)"
+          *ngIf="!userData?.phone_verified && steps === EOnboardingStep.PHONE_VERIFICATION">
+          <div class="mb-5">
+            <ion-select formControlName="code"
+              class="w-full px-1 bg-white text-primary border border-primary rounded-tl-lg rounded-tr-lg"
+              label="Select Country" placeholder="Select country code">
+              <ng-container *ngFor="let country of countries$ | async">
+                <ion-select-option [value]="country.phone_code">{{ country.name }}({{ country.phone_code
+                  }})</ion-select-option>
+              </ng-container>
+            </ion-select>
+            <input type="text" placeholder="Phone Number ({{ phoneDigitSamplePlaceholder }})" formControlName="phone"
+              class="w-full p-3 bg-white text-primary border border-primary border-t-0 rounded-bl-lg rounded-br-lg">
+
+            <div *ngIf="phoneFormCtrl['code'].errors">
+              <ion-text color="danger"
+                *ngIf="phoneFormCtrl['code'].dirty && phoneFormCtrl['code'].hasError('required')">
+                Country code is required
+              </ion-text>
+            </div>
+
+            <div *ngIf="phoneFormCtrl['phone'].errors">
+              <ion-text color="danger"
+                *ngIf="phoneFormCtrl['phone'].dirty && phoneFormCtrl['phone'].hasError('required')">
+                Phone number is required
+              </ion-text>
+
+              <ion-text color="danger"
+                *ngIf="phoneFormCtrl['phone'].dirty && phoneFormCtrl['phone'].hasError('pattern') || phoneFormCtrl['phone'].hasError('pattern')">
+                Invalid Phone number
+              </ion-text>
+            </div>
+          </div>
+
+          <div class="w-full my-5">
+            <ion-button color="primary" type="submit" [disabled]="phoneForm.invalid" expand="full"
+              class="my-5 rounded">Submit</ion-button>
+          </div>
+        </form>
+        <form class="mt-5" [formGroup]="verifyForm"
+          *ngIf="!userData?.phone_verified && steps === EOnboardingStep.VERIFY_PHONE"
+          (ngSubmit)="verifyOtp(verifyForm.value)">
+          <div>
+            <ion-input placeholder="----------------" formControlName="code"
+              class="w-full p-3 bg-white text-center text-[#12427A] border border-[#12427A] rounded-lg"></ion-input>
+
+            <div *ngIf="verifyFormCtrl['code'].errors" class="mt-1">
+              <ion-text color="danger"
+                *ngIf="verifyFormCtrl['code'].dirty && verifyFormCtrl['code'].hasError('required')"
+                class="text-xs">Please
+                enter verification code to
+                procced</ion-text>
+              <ion-text color="danger" class="text-xs"
+                *ngIf="verifyFormCtrl['code'].dirty && (verifyFormCtrl['code'].hasError('maxlength') || verifyFormCtrl['code'].hasError('minlength'))">
+                Code must be 6 digit long
+              </ion-text>
+            </div>
+          </div>
+
+          <p class="text-[#12427A] underline self-center mt-2">
+            <span *ngIf="timer === 0" (click)="resendOTPCode()">Resend</span>
+            <span *ngIf="timer !== 0">Resend in {{ timer }}s</span>
+          </p>
+
+          <ion-button type="submit" [disabled]="verifyForm.invalid" expand="full" type="submit"
+            class="my-5 rounded">Submit</ion-button>
+        </form>
+        <form [formGroup]="imageForm" class="p-5"
+          *ngIf="!userData?.profile_image && steps === EOnboardingStep.IMAGE_UPLOAD" (ngSubmit)="submitImage()">
           <div class="p-5">
             <p class="text-sm text-center text-primary font-semibold">Step 2 of 2</p>
             <p class="text-sm text-primary text-center">Add a profile photo</p>
@@ -72,38 +148,8 @@
           <p class="text-center my-2"><a (click)="steps = EOnboardingStep.COMPLETE" class="underline">I'll do this
               later</a></p>
         </form>
-        <form *ngIf="steps === EOnboardingStep.COMPLETE" [formGroup]="form" (ngSubmit)="onSubmit(form.value)"
-          class="mt-5">
-          <div class="mb-5">
-            <ion-select formControlName="code"
-              class="w-full px-1 bg-white text-primary border border-primary rounded-tl-lg rounded-tr-lg"
-              label="Select Country" placeholder="Select country code">
-              <ng-container *ngFor="let country of countries$ | async">
-                <ion-select-option [value]="country.phone_code">{{ country.name }}({{ country.phone_code
-                  }})</ion-select-option>
-              </ng-container>
-            </ion-select>
-            <input type="text" placeholder="Phone Number ({{ phoneDigitSamplePlaceholder }})" formControlName="phone"
-              class="w-full p-3 bg-white text-primary border border-primary border-t-0 rounded-bl-lg rounded-br-lg">
-
-            <div *ngIf="formCtrl['code'].errors">
-              <ion-text color="danger" *ngIf="formCtrl['code'].dirty && formCtrl['code'].hasError('required')">
-                Country code is required
-              </ion-text>
-            </div>
-
-            <div *ngIf="formCtrl['phone'].errors">
-              <ion-text color="danger" *ngIf="formCtrl['phone'].dirty && formCtrl['phone'].hasError('required')">
-                Phone number is required
-              </ion-text>
-
-              <ion-text color="danger"
-                *ngIf="formCtrl['phone'].dirty && formCtrl['phone'].hasError('pattern') || formCtrl['phone'].hasError('pattern')">
-                Invalid Phone number
-              </ion-text>
-            </div>
-          </div>
-
+        <form *ngIf="!userData?.is_onboarded && steps === EOnboardingStep.COMPLETE" [formGroup]="form"
+          (ngSubmit)="onSubmit(form.value)" class="mt-5">
           <div class="w-full mb-5">
             <input type="date" formControlName="birthdate"
               class="w-full p-2 bg-white text-primary border border-primary rounded-lg" label="Select Country"
@@ -245,13 +291,12 @@
               </ion-item>
 
               <div *ngIf="identity_type">
-                <label for="id_upload">
-                  <ion-button expand="block" fill="outline" color="primary" class="mt-5">
-                    <ion-text>Upload your {{ identity_type }}</ion-text>
-                    <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
-                  </ion-button>
-                </label>
-                <input type="file" (change)="uploadFile($event)" id="id_upload" class="hidden"
+                <ion-button (click)="openFile(fileId)" expand="block" fill="outline" color="primary" class="mt-5">
+                  <ion-text>Upload your {{ identity_type }}</ion-text>
+                  <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
+                </ion-button>
+
+                <input type="file" #fileId (change)="uploadFile($event)" id="id_upload" class="hidden"
                   accept=".pdf, image/png, image/jpeg">
                 <ion-text class="text-xs" color="primary">
                   <ion-icon name="information-circle-outline"></ion-icon>
@@ -260,13 +305,12 @@
               </div>
 
               <div>
-                <label for="address_upload">
-                  <ion-button expand="block" fill="outline" color="primary" class="mt-5">
-                    <ion-text>Upload</ion-text>
-                    <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
-                  </ion-button>
-                </label>
-                <input type="file" (change)="uploadFile($event)" id="address_upload" class="hidden"
+                <ion-button (click)="openFile(fileAddress)" expand="block" fill="outline" color="primary" class="mt-5">
+                  <ion-text>Upload</ion-text>
+                  <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
+                </ion-button>
+
+                <input type="file" #fileAddress (change)="uploadFile($event)" id="address_upload" class="hidden"
                   accept=".pdf, image/png, image/jpeg">
                 <ion-text class="text-xs" color="primary">
                   <ion-icon name="information-circle-outline"></ion-icon>
@@ -328,13 +372,11 @@
               </ion-item>
 
               <div>
-                <label for="cert_upload">
-                  <ion-button expand="block" fill="outline" color="primary" class="mt-5">
-                    <ion-text>Artisan Certificate.</ion-text>
-                    <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
-                  </ion-button>
-                </label>
-                <input type="file" (change)="uploadFile($event)" id="cert_upload" class="hidden"
+                <ion-button (click)="openFile(fileCert)" expand="block" fill="outline" color="primary" class="mt-5">
+                  <ion-text>Artisan Certificate.</ion-text>
+                  <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
+                </ion-button>
+                <input type="file" #fileCert (change)="uploadFile($event)" id="cert" class="hidden"
                   accept=".pdf, image/png, image/jpeg">
                 <ion-text class="text-xs" color="primary">
                   <ion-icon name="information-circle-outline"></ion-icon>
@@ -343,13 +385,12 @@
               </div>
 
               <div>
-                <label for="work_id_upload">
-                  <ion-button expand="block" fill="outline" color="primary" class="mt-5">
-                    <ion-text>Work ID Card.</ion-text>
-                    <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
-                  </ion-button>
-                </label>
-                <input type="file" (change)="uploadFile($event)" id="work_id_upload" class="hidden"
+                <ion-button (click)="openFile(fileWork)" expand="block" fill="outline" color="primary" class="mt-5">
+                  <ion-text>Work ID Card.</ion-text>
+                  <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
+                </ion-button>
+
+                <input type="file" #fileWork (change)="uploadFile($event)" id="work_id" class="hidden"
                   accept=".pdf, image/png, image/jpeg">
                 <ion-text class="text-xs" color="primary">
                   <ion-icon name="information-circle-outline"></ion-icon>
