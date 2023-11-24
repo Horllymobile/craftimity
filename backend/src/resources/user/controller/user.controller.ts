@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -22,14 +23,14 @@ import { AuthGuard } from "src/core/guards/auth.guard";
 import { Request } from "express";
 import { ERole } from "src/core/enums/Role";
 import { CreateUserIdentity } from "../dto/identity.dto";
-import { UpdateUserAddress } from "../dto/dto";
+import { CreateUserAddressDto, UpdateUserAddressDto } from "../dto/dto";
 
 @ApiTags("User")
+@UseGuards(AuthGuard)
 @Controller("api/v1/users")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AuthGuard)
   @Get()
   async findUsers(
     @Query("page") page: number = 1,
@@ -49,7 +50,6 @@ export class UserController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Get(":id")
   async findUser(@Param("id") id: string): Promise<IResponse<IUser>> {
     const user = await this.userService.findUserById(id);
@@ -60,7 +60,6 @@ export class UserController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Put(":id")
   async updateUser(
     @Param("id") id: string,
@@ -86,7 +85,6 @@ export class UserController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Patch(":id/update-password")
   async updatePassword(
     @Param("id") id: string,
@@ -115,11 +113,46 @@ export class UserController {
   @Post(":id/address")
   async createUserLocation(
     @Param("id") user_id: string,
-    @Body() payload: UpdateUserAddress
+    @Body() payload: CreateUserAddressDto,
+    @Req() req: Request
   ): Promise<IResponse<any>> {
-    const data = await this.userService.createUserLocation(user_id, payload);
+    const user = req["user"];
+    const data = await this.userService.createUserLocation(
+      user_id,
+      payload,
+      user
+    );
     return {
-      message: "User address added successfully",
+      message: "Address added successfully",
+      status: EResponseStatus.SUCCESS,
+      data,
+    };
+  }
+
+  @Put(":id/address/:id")
+  async updateUserLocation(
+    @Param("id") id: string,
+    @Body() payload: UpdateUserAddressDto,
+    @Req() req: Request
+  ): Promise<IResponse<any>> {
+    const user = req["user"];
+    const data = await this.userService.updateUserLocation(id, payload, user);
+    return {
+      message: "Address updated successfully",
+      status: EResponseStatus.SUCCESS,
+      data,
+    };
+  }
+
+  @Delete(":id/address/:id")
+  async deleteUserLocation(
+    @Param("id") id: string,
+    @Req() req: Request
+  ): Promise<IResponse<any>> {
+    const user = req["user"];
+    const data = await this.userService.deleteUserLocation(id, user);
+    return {
+      message: "Address deleted successfully",
       status: EResponseStatus.SUCCESS,
       data,
     };
@@ -131,7 +164,7 @@ export class UserController {
   ): Promise<IResponse<any>> {
     await this.userService.verifyUserIdentityInfo(body);
     return {
-      message: "User Identity successfully created",
+      message: "User Identity successfully updated",
       status: EResponseStatus.SUCCESS,
     };
   }

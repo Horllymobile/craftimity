@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { IUser } from '../../models/user';
+import { IAddress, IUser } from '../../models/user';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { STORAGE_VARIABLES } from '../../constants/storage';
 import { IAPICallResponse, IAPIResponse } from '../../models/response';
@@ -12,20 +12,31 @@ import { IUpdateUser } from '../../models/auth';
 })
 export class UsersService {
   private baseUrl = environment.BASE_URL;
-  currentUser!: BehaviorSubject<IUser>;
+  currentUser: BehaviorSubject<IUser | null>;
   constructor(private http: HttpClient) {
     this.currentUser = new BehaviorSubject(
-      JSON.parse(
-        localStorage.getItem(STORAGE_VARIABLES.USER) || 'null'
-      ) as IUser
+      JSON.parse(localStorage.getItem(STORAGE_VARIABLES.USER) || 'null')
     );
   }
 
-  get userProfile() {
+  getUser() {
+    this.currentUser = new BehaviorSubject(
+      JSON.parse(localStorage.getItem(STORAGE_VARIABLES.USER) || 'null')
+    );
     return this.currentUser.value;
   }
 
-  getUserById(id: string): Observable<IUser> {
+  signout() {
+    localStorage.removeItem(STORAGE_VARIABLES.TOKEN);
+    localStorage.removeItem(STORAGE_VARIABLES.USER);
+    this.currentUser?.next(null);
+  }
+
+  get userProfile() {
+    return this.currentUser?.value;
+  }
+
+  getUserById(id?: string): Observable<IUser> {
     return this.http
       .get<IAPICallResponse<IUser>>(`${this.baseUrl}/users/${id}`)
       .pipe(map((res) => res.data));
@@ -37,9 +48,30 @@ export class UsersService {
       .pipe(map((res) => res.message));
   }
 
-  updateUser(id: string, payload: IUpdateUser): Observable<any> {
+  updateUser(id?: string, payload?: IUpdateUser): Observable<any> {
     return this.http
       .put<IAPIResponse>(`${this.baseUrl}/users/${id}`, payload)
+      .pipe(map((res) => res.message));
+  }
+
+  createUserAddress(id?: string, payload?: IAddress): Observable<any> {
+    return this.http
+      .post<IAPIResponse>(`${this.baseUrl}/users/${id}/address`, payload)
+      .pipe(map((res) => res.message));
+  }
+
+  updateUserAddress(id: string, payload: IAddress): Observable<any> {
+    return this.http
+      .put<IAPIResponse>(
+        `${this.baseUrl}/users/${payload?.user_id}/address/${id}`,
+        payload
+      )
+      .pipe(map((res) => res.message));
+  }
+
+  updateUserIdentity(payload: any): Observable<any> {
+    return this.http
+      .post<IAPIResponse>(`${this.baseUrl}/users/create-identity`, payload)
       .pipe(map((res) => res.message));
   }
 

@@ -1,13 +1,12 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { STORAGE_VARIABLES } from '../../constants/storage';
 
-export const AuthGuard: CanActivateFn = () => {
+export const AuthGuard: CanActivateFn = async () => {
   const app = localStorage.getItem(STORAGE_VARIABLES.APP);
   const router = inject(Router);
   const authService = inject(AuthService);
-  console.log(authService.isAuthenticated());
   if (!authService.isAuthenticated()) {
     localStorage.removeItem(STORAGE_VARIABLES.USER);
     localStorage.removeItem(STORAGE_VARIABLES.TOKEN);

@@ -5,7 +5,6 @@ import { AuthGuard } from '../core/guards/auth/auth.guard';
 import { PagePage } from './page/page.page';
 import { SessionGuard } from '../core/guards/session/session.guard';
 import { IonicModule } from '@ionic/angular';
-import { AuthCraftmanGuard } from '../core/guards/auth-craftman.guard';
 
 const routes: Routes = [
   {

@@ -6,15 +6,14 @@ import { IUser } from '../../models/user';
 import {
   IForgotPassword,
   ILoginResponse,
+  IRegister,
   ISignIn,
-  IUpdateUser,
   IVerifyOtp,
   IVerifyPhoneOtp,
 } from '../../models/auth';
 import { IAPICallResponse, IAPIResponse } from '../../models/response';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { STORAGE_VARIABLES } from '../../constants/storage';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -24,24 +23,22 @@ export class AuthService {
   headers = new HttpHeaders();
   constructor(
     private http: HttpClient,
-    private jwtHelperService: JwtHelperService,
-    private router: Router
+    private jwtHelperService: JwtHelperService
   ) {}
 
   isAuthenticated() {
-    return !this.jwtHelperService.isTokenExpired(
-      localStorage.getItem(STORAGE_VARIABLES.TOKEN)
-    );
+    const token = localStorage.getItem(STORAGE_VARIABLES.TOKEN);
+    return token && !this.jwtHelperService.isTokenExpired(token);
   }
 
   isAuthenticatedT(token: string) {
     return !this.jwtHelperService.isTokenExpired(token);
   }
 
-  loginSignUp(payload: ISignIn): Observable<ILoginResponse> {
+  register(payload: IRegister): Observable<IAPIResponse> {
     return this.http
-      .post<IAPICallResponse<ILoginResponse>>(
-        `${this.baseUrl}/auth/login_signup`,
+      .post<IAPICallResponse<IAPIResponse>>(
+        `${this.baseUrl}/auth/register`,
         payload
       )
       .pipe(map((res) => res.data));
@@ -56,11 +53,6 @@ export class AuthService {
       .pipe(map((res) => res.data));
   }
 
-  signout() {
-    localStorage.removeItem(STORAGE_VARIABLES.TOKEN);
-    localStorage.removeItem(STORAGE_VARIABLES.USER);
-  }
-
   registerCraftsman(payload: { email: string; password: string }) {
     return this.http
       .post<IAPICallResponse<IUser>>(
@@ -72,7 +64,7 @@ export class AuthService {
 
   verifyOtp(payload: IVerifyOtp): Observable<{ user: IUser; token: string }> {
     return this.http
-      .patch<IAPICallResponse<{ user: IUser; token: string }>>(
+      .post<IAPICallResponse<{ user: IUser; token: string }>>(
         `${this.baseUrl}/auth/verify`,
         payload
       )
@@ -81,7 +73,7 @@ export class AuthService {
 
   verifyCraftman(payload: IVerifyOtp) {
     return this.http
-      .put<IAPICallResponse<{ user: IUser; token: string }>>(
+      .post<IAPICallResponse<{ user: IUser; token: string }>>(
         `${this.baseUrl}/auth/verify-craftman`,
         payload
       )

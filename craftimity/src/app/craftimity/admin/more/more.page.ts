@@ -1,3 +1,4 @@
+import { UsersService } from 'src/app/core/services/users/users.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -8,12 +9,16 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
   styleUrls: ['./more.page.scss'],
 })
 export class MorePage implements OnInit {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private usersService: UsersService
+  ) {}
 
   ngOnInit() {}
 
   logout() {
-    this.authService.signout();
+    this.usersService.signout();
     this.router.navigateByUrl('/craftimity/page/auth/login');
   }
 }

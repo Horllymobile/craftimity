@@ -1,6 +1,7 @@
 import {
   IsDate,
   IsEmail,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPhoneNumber,
@@ -53,16 +54,19 @@ export class UpdateUserDto {
 }
 
 export class CreateUserDto {
-  @IsEmail()
-  @IsOptional()
-  email?: string;
-
-  @IsPhoneNumber()
-  @IsOptional()
-  phone?: string;
-
-  @Length(8, 16)
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
+  first_name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  last_name: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
   password: string;
 }

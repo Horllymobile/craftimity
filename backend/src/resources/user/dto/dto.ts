@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateImage {
   @IsString()
@@ -6,28 +6,58 @@ export class UpdateImage {
   profile_image: string;
 }
 
-export class UpdateUserAddress {
-  @IsString()
+export class CreateUserAddressDto {
+  @IsNumber()
   @IsOptional()
   floor: number;
 
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  house: string;
+  house: number;
 
   @IsString()
   @IsOptional()
   street: string;
 
+  @IsNumber()
+  @IsOptional()
+  country: number;
+
+  @IsNumber()
+  @IsOptional()
+  state: number;
+
+  @IsNumber()
+  @IsOptional()
+  city: number;
+}
+
+export class UpdateUserAddressDto {
   @IsString()
   @IsOptional()
-  country: any;
+  user_id: string;
+
+  @IsNumber()
+  @IsOptional()
+  floor: number;
+
+  @IsNumber()
+  @IsOptional()
+  house: number;
 
   @IsString()
   @IsOptional()
-  state: any;
+  street: string;
 
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  city: any;
+  country: number;
+
+  @IsNumber()
+  @IsOptional()
+  state: number;
+
+  @IsNumber()
+  @IsOptional()
+  city: number;
 }

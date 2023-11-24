@@ -1,123 +1,64 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
     <ion-title>Account</ion-title>
   </ion-toolbar>
-  <ion-progress-bar [value]="progress"></ion-progress-bar>
 </ion-header>
-
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-back-button></ion-back-button>
-      </ion-buttons>
-      <ion-title size="large">Account</ion-title>
+      <ion-title size="large">Account Information</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <ion-segment *ngIf="!this.userData?.is_onboarded" value="user_info" class="p-3" [(ngModel)]="segment">
+  <ion-segment value="user_info" class="p-3" [(ngModel)]="segment">
     <ion-segment-button value="user_info" class="p-1">
       <ion-label>User Info</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="location_info" class="p-1">
+      <ion-label>Location Info</ion-label>
     </ion-segment-button>
     <ion-segment-button value="identity_info" class="p-1">
       <ion-label>Identity Info</ion-label>
     </ion-segment-button>
   </ion-segment>
 
-  <ng-container *ngIf="!this.userData?.is_onboarded" [ngSwitch]="segment">
+  <ng-container [ngSwitch]="segment">
+    <ion-refresher slot="fixed" [pullFactor]="0.6" [pullMin]="100" [pullMax]="200" (ionRefresh)="handleRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
     <ion-card *ngSwitchCase="'user_info'">
       <ion-card-header>
-        <ion-card-title *ngIf="steps === EOnboardingStep.IMAGE_UPLOAD">
-          Profile Image Upload
-        </ion-card-title>
-        <ion-card-title *ngIf="steps === EOnboardingStep.PHONE_VERIFICATION">
-          Add Phone Number
-        </ion-card-title>
-        <ion-card-title *ngIf="steps === EOnboardingStep.COMPLETE">
+        <ion-card-title>
           User Information
         </ion-card-title>
-        <ion-card-title *ngIf="steps === EOnboardingStep.VERIFY_PHONE">
-          Verify Phone Number
-        </ion-card-title>
+        <ion-card-subtitle class="flex justify-end">
+          <ion-fab>
+            <ion-fab-button size="small" *ngIf="!edit" (click)="toogleEdit()">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button size="small" *ngIf="edit" color="danger" (click)="toogleEdit()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </ion-card-subtitle>
       </ion-card-header>
-      <ion-card-content>
-        <form [formGroup]="phoneForm" (ngSubmit)="verifyPhoneNumber(phoneForm.value)"
-          *ngIf="!userData?.phone_verified && steps === EOnboardingStep.PHONE_VERIFICATION">
-          <div class="mb-5">
-            <ion-select formControlName="code"
-              class="w-full px-1 bg-white text-primary border border-primary rounded-tl-lg rounded-tr-lg"
-              label="Select Country" placeholder="Select country code">
-              <ng-container *ngFor="let country of countries$ | async">
-                <ion-select-option [value]="country.phone_code">{{ country.name }}({{ country.phone_code
-                  }})</ion-select-option>
-              </ng-container>
-            </ion-select>
-            <input type="text" placeholder="Phone Number ({{ phoneDigitSamplePlaceholder }})" formControlName="phone"
-              class="w-full p-3 bg-white text-primary border border-primary border-t-0 rounded-bl-lg rounded-br-lg">
+      <ion-card-content *ngIf="userData">
+        <div class="w-28 grid mx-auto" *ngIf="!editImage">
+          <ion-avatar class="mx-auto w-28 h-28 mt-5">
+            <ion-img *ngIf="userData?.profile_image" [src]="userData.profile_image"></ion-img>
+            <ion-img *ngIf="!userData?.profile_image"
+              src="https://ionicframework.com/docs/img/demos/avatar.svg"></ion-img>
+          </ion-avatar>
+          <ion-fab>
+            <ion-fab-button size="small" *ngIf="!editImage" (click)="toogleEditImage()">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </div>
 
-            <div *ngIf="phoneFormCtrl['code'].errors">
-              <ion-text color="danger"
-                *ngIf="phoneFormCtrl['code'].dirty && phoneFormCtrl['code'].hasError('required')">
-                Country code is required
-              </ion-text>
-            </div>
-
-            <div *ngIf="phoneFormCtrl['phone'].errors">
-              <ion-text color="danger"
-                *ngIf="phoneFormCtrl['phone'].dirty && phoneFormCtrl['phone'].hasError('required')">
-                Phone number is required
-              </ion-text>
-
-              <ion-text color="danger"
-                *ngIf="phoneFormCtrl['phone'].dirty && phoneFormCtrl['phone'].hasError('pattern') || phoneFormCtrl['phone'].hasError('pattern')">
-                Invalid Phone number
-              </ion-text>
-            </div>
-          </div>
-
-          <div class="w-full my-5">
-            <ion-button color="primary" type="submit" [disabled]="phoneForm.invalid" expand="full"
-              class="my-5 rounded">Submit</ion-button>
-          </div>
-        </form>
-        <form class="mt-5" [formGroup]="verifyForm"
-          *ngIf="!userData?.phone_verified && steps === EOnboardingStep.VERIFY_PHONE"
-          (ngSubmit)="verifyOtp(verifyForm.value)">
+        <form [formGroup]="imageForm" *ngIf="editImage">
           <div>
-            <ion-input placeholder="----------------" formControlName="code"
-              class="w-full p-3 bg-white text-center text-[#12427A] border border-[#12427A] rounded-lg"></ion-input>
-
-            <div *ngIf="verifyFormCtrl['code'].errors" class="mt-1">
-              <ion-text color="danger"
-                *ngIf="verifyFormCtrl['code'].dirty && verifyFormCtrl['code'].hasError('required')"
-                class="text-xs">Please
-                enter verification code to
-                procced</ion-text>
-              <ion-text color="danger" class="text-xs"
-                *ngIf="verifyFormCtrl['code'].dirty && (verifyFormCtrl['code'].hasError('maxlength') || verifyFormCtrl['code'].hasError('minlength'))">
-                Code must be 6 digit long
-              </ion-text>
-            </div>
-          </div>
-
-          <p class="text-[#12427A] underline self-center mt-2">
-            <span *ngIf="timer === 0" (click)="resendOTPCode()">Resend</span>
-            <span *ngIf="timer !== 0">Resend in {{ timer }}s</span>
-          </p>
-
-          <ion-button type="submit" [disabled]="verifyForm.invalid" expand="full" type="submit"
-            class="my-5 rounded">Submit</ion-button>
-        </form>
-        <form [formGroup]="imageForm" class="p-5"
-          *ngIf="!userData?.profile_image && steps === EOnboardingStep.IMAGE_UPLOAD" (ngSubmit)="submitImage()">
-          <div class="p-5">
-            <p class="text-sm text-center text-primary font-semibold">Step 2 of 2</p>
-            <p class="text-sm text-primary text-center">Add a profile photo</p>
-
             <div *ngIf="imageChangedEvent">
 
               <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
@@ -127,120 +68,187 @@
                 (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()"
                 (cropperReady)="cropperReady($event)" (loadImageFailed)="loadImageFail()"></image-cropper>
 
-              <ion-icon (click)="deleteImage()" color="danger" name="trash-outline"></ion-icon>
+
+              <div>
+                <ion-button size="medium" color="danger" (click)="deleteImage()">
+                  <ion-icon slot="start" name="trash-outline"></ion-icon>
+                  Delete
+                </ion-button>
+                <ion-button size="medium" color="success" (click)="submitImage()">
+                  <ion-icon (click)="deleteImage()" slot="start" name="cloud-upload-outline"></ion-icon>
+                  Upload
+                </ion-button>
+              </div>
             </div>
 
             <div *ngIf="!imageChangedEvent" class="mt-5 flex justify-center">
-              <label for="image" class="mx-auto">
-                <ion-icon name="add-circle-outline" class="text-[6em] mx-auto text-primary "></ion-icon>
-                <!-- <img src="assets/imgs/add-profile.svg" class="mx-auto cursor-pointer w-[80%]" alt=""> -->
-              </label>
-              <input type="file" id="image" class="hidden" accept="image/*" formControlName="url"
-                (change)="uploadImage($event)">
+              <div class="w-28 grid mx-auto">
+                <ion-avatar class="mx-auto w-28 h-28 mt-5">
+                  <ion-img *ngIf="userData?.profile_image" [src]="userData.profile_image"></ion-img>
+                  <ion-img *ngIf="!userData?.profile_image"
+                    src="https://ionicframework.com/docs/img/demos/avatar.svg"></ion-img>
+                </ion-avatar>
+                <ion-fab>
+                  <ion-fab-button size="small" (click)="openImage(imageFile)" *ngIf="editImage">
+                    <ion-icon name="image-outline"></ion-icon>
+                  </ion-fab-button>
+                  <ion-fab-button size="small" color="danger" (click)="toogleEditImage()" *ngIf="editImage">
+                    <ion-icon name="close-outline"></ion-icon>
+                  </ion-fab-button>
+                </ion-fab>
+              </div>
+              <ion-input type="file" #imageFile id="image" class="hidden" accept="image/*" formControlName="url"
+                (change)="uploadImage($event)"></ion-input>
             </div>
-
-            <div class="w-full my-5">
-              <ion-button color="primary" type="submit" [disabled]="imageForm.invalid" expand="full"
-                class="my-5 rounded">Upload</ion-button>
-            </div>
-
           </div>
-          <p class="text-center my-2"><a (click)="steps = EOnboardingStep.COMPLETE" class="underline">I'll do this
-              later</a></p>
         </form>
-        <form *ngIf="!userData?.is_onboarded && steps === EOnboardingStep.COMPLETE" [formGroup]="form"
-          (ngSubmit)="onSubmit(form.value)" class="mt-5">
-          <div class="w-full mb-5">
-            <input type="date" formControlName="birthdate"
-              class="w-full p-2 bg-white text-primary border border-primary rounded-lg" label="Select Country"
-              placeholder="dd/mm/yyyy">
-            <div *ngIf="formCtrl['birthdate'].errors">
-              <ion-text color="danger"
-                *ngIf="formCtrl['birthdate'].dirty && formCtrl['birthdate'].hasError('required')">
-                Birthdate is required
-              </ion-text>
-            </div>
-            <p class="text-xs text-[#878484] my-2">To sign up, you need to be at least 18. Your birthday won't be
-              shared
-              with other people who use Craftimity</p>
-          </div>
 
+        <ion-list *ngIf="!edit">
+          <ion-item class="py-3">
+            <ion-text *ngIf="userData?.first_name">First Name: {{ userData.first_name}}</ion-text>
+            <ion-text *ngIf="!userData?.first_name">First Name</ion-text>
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.first_name">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
 
-          <div class="w-full mb-5">
-            <ion-input type="number" formControlName="house_number"
-              class="w-full p-2 bg-white text-primary placeholder:text-primary border border-primary rounded-lg"
-              placeholder="House Number"></ion-input>
-            <div *ngIf="formCtrl['house_number'].errors">
-              <ion-text color="danger"
-                *ngIf="formCtrl['house_number'].dirty && formCtrl['house_number'].hasError('required')">
-                House number is required
-              </ion-text>
-            </div>
+          <ion-item class="py-3">
+            <ion-text *ngIf="userData?.last_name">Last Name: {{ userData.last_name}}</ion-text>
+            <ion-text *ngIf="!userData?.last_name">Last Name</ion-text>
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.last_name">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
+
+          <ion-item class="py-3">
+            <ion-text *ngIf="userData.email">
+              Email: {{ userData.email}}
+            </ion-text>
+            <ion-text *ngIf="!userData.email">
+              Email
+            </ion-text>
+            <ion-chip slot="end" color="warning" *ngIf="userData.email && !userData.email_verified">
+              <ion-icon name="alert-outline"></ion-icon>
+              verify
+            </ion-chip>
+
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.email">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
+
+          <ion-item class="py-3">
+            <ion-text *ngIf="userData?.phone_number">Phone Number: {{ userData.phone_number}}</ion-text>
+            <ion-text *ngIf="!userData?.phone_number">Phone Number</ion-text>
+            <ion-chip slot="end" color="warning" *ngIf="userData.phone_number && !userData.phone_verified">
+              <ion-icon name="alert-outline"></ion-icon>
+              Verify
+            </ion-chip>
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.phone_number">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
+
+          <ion-item class="py-3" lines="none">
+            <ion-text *ngIf="userData?.birthdate">Birthdate: {{ userData.birthdate | date }}</ion-text>
+            <ion-text *ngIf="!userData?.birthdate">Birthdate</ion-text>
+            <ion-chip (click)="toogleEdit()" *ngIf="!userData?.birthdate" color="warning" slot="end">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
+        </ion-list>
+        <form *ngIf="edit" [formGroup]="form" (ngSubmit)="onSubmitUserInfo(form.value)">
+          <div class="w-full my-5">
+            <ion-item>
+              <ion-input label="First Name" type="text" name="first_name" formControlName="first_name"
+                class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="First Name"></ion-input>
+            </ion-item>
           </div>
 
           <div class="w-full my-5">
-            <ion-input type="text" formControlName="street_name"
-              class="w-full p-2 bg-white text-primary placeholder:text-primary border border-primary rounded-lg"
-              placeholder="Street Name"></ion-input>
-            <div *ngIf="formCtrl['street_name'].errors">
-              <ion-text color="danger"
-                *ngIf="formCtrl['street_name'].dirty && formCtrl['street_name'].hasError('required')">
-                Street name is required
-              </ion-text>
-            </div>
+            <ion-item>
+              <ion-input label="Last Name" type="text" name="last_name" formControlName="last_name"
+                class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Last Name"></ion-input>
+            </ion-item>
           </div>
 
-          <div class="mb-5">
-            <ion-select formControlName="country"
-              class="w-full px-1 text-xs bg-white text-primary border border-primary rounded-lg" label="Select Country"
-              placeholder="Select country code" (ionChange)="onSelectCountry($event)">
-              <ng-container *ngFor="let country of countries$ | async">
-                <ion-select-option class="w-10" [value]="country.id">{{ country.name }}</ion-select-option>
-              </ng-container>
-            </ion-select>
-            <div *ngIf="formCtrl['country'].errors">
-              <ion-text color="danger" *ngIf="formCtrl['country'].dirty && formCtrl['country'].hasError('required')">
-                State is required
-              </ion-text>
-            </div>
+          <div class="w-full my-5" *ngIf="!userData.email">
+            <ion-item>
+              <ion-input label="Email" type="text" name="email" formControlName="last_name"
+                class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Email"></ion-input>
+            </ion-item>
           </div>
 
-          <div class="mb-5">
-            <ion-select formControlName="state"
-              class="w-full text-xs px-1 bg-white text-primary border border-primary rounded-lg" label="Select State"
-              placeholder="Select country code" (ionChange)="onSelectState($event)">
-              <ng-container *ngFor="let state of states$ | async">
-                <ion-select-option class="w-10" [value]="state.id">{{ state.name }}</ion-select-option>
-              </ng-container>
-            </ion-select>
-            <div *ngIf="formCtrl['state'].errors">
-              <ion-text color="danger" *ngIf="formCtrl['state'].dirty && formCtrl['state'].hasError('required')">
-                State is required
-              </ion-text>
-            </div>
+          <div class="w-full mb-5" *ngIf="!userData.phone_number">
+            <ion-item formGroupName="phone">
+              <ion-select class="w-28 px-1 bg-white text-primary" formControlName="code" placeholder="Code">
+                <ng-container *ngFor="let country of countries$ | async">
+                  <ion-select-option [value]="country.phone_code">
+                    {{ country.name }} - {{ country.phone_code }}
+                  </ion-select-option>
+                </ng-container>
+              </ion-select>
+              <ion-input type="text" placeholder="Phone number ({{ phoneDigitSamplePlaceholder }})"
+                formControlName="number" class="w-full p-3 bg-white text-primary placeholder:text-xs">
+              </ion-input>
+            </ion-item>
           </div>
 
-          <div class="mb-5">
-            <ion-select formControlName="city"
-              class="w-full px-1 text-xs bg-white text-primary border border-primary rounded-lg" label="Select City"
-              placeholder="Select country code">
-              <ng-container *ngFor="let city of cities$ | async">
-                <ion-select-option class="w-10" [value]="city.id">{{ city.name }}</ion-select-option>
-              </ng-container>
-            </ion-select>
-            <div *ngIf="formCtrl['city'].errors">
-              <ion-text color="danger" *ngIf="formCtrl['city'].dirty && formCtrl['city'].hasError('required')">
-                State is required
-              </ion-text>
-            </div>
+          <div class="w-full my-5">
+            <ion-item>
+              <ion-input label="Birthdate" type="date" name="birthdate" formControlName="birthdate"
+                class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Birthdate"></ion-input>
+            </ion-item>
           </div>
 
-          <div class="w-full mb-5">
-            <ion-button color="primary" [disabled]="form.invalid" type="submit" expand="full"
-              class="my-5 rounded">Save</ion-button>
-            <ion-button color="medium" type="button" expand="full" class="my-5 rounded">Cancel</ion-button>
-          </div>
+          <ion-button color="primary" type="submit" expand="full" class="my-5 rounded">
+            Save
+          </ion-button>
         </form>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngSwitchCase="'location_info'">
+      <ion-card-header>
+        <ion-card-title>
+          Addresses
+        </ion-card-title>
+        <ion-card-subtitle class="flex justify-end">
+          <ion-fab>
+            <ion-fab-button size="small" (click)="openModal(createEditAddressComponent, { action: 'add' })">
+              <ion-icon name="add-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content class="mt-12" *ngIf="userData">
+        <ion-text class="text-center" *ngIf="userData && !userData.Address?.length">
+          No address, click the button to add one
+        </ion-text>
+        <ion-fab-button class="text-center mx-auto" *ngIf="userData && !userData.Address?.length" size="small"
+          (click)="openModal(createEditAddressComponent, { action: 'add' })">
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-list *ngIf="userData && userData.Address?.length">
+          <ion-item-sliding class="mb-5 py-1" *ngFor="let address of userData.Address">
+            <ion-item detail="true">
+              <ion-text>
+                {{ address?.house }} {{ address?.street
+                }}, {{ address?.Country?.name }} {{
+                address?.State?.name }}, {{ address?.City?.name }}</ion-text>
+            </ion-item>
+            <ion-item-options>
+              <ion-item-option
+                (click)="openModal(createEditAddressComponent, { action: 'edit', address })">Edit</ion-item-option>
+              <ion-item-option color="danger">Delete</ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        </ion-list>
       </ion-card-content>
     </ion-card>
 
@@ -271,56 +279,119 @@
               of both yourself and our customers.
             </ion-text>
 
-            <ion-button *ngIf="!liveImageUploaded" (click)="takePicture()" expand="full" class="mx-auto mt-5 p-3">
+            <ion-button *ngIf="!userData.User_Identity?.live_image" (click)="takePicture()" expand="full"
+              class="mx-auto mt-5 p-3">
               Take a Live Selfie of yourself
               <ion-icon size="large" slot="start" color="light" name="camera-outline"></ion-icon>
             </ion-button>
 
-            <ion-button *ngIf="liveImageUploaded" expand="full" color="warning" class="mt-5">
-              <ion-text>Uploaded Awaiting Approval</ion-text>
-              <ion-icon size="large" slot="start" name="reload-circle-outline"></ion-icon>
-            </ion-button>
-            <form class="mt-5">
-              <ion-item>
-                <ion-label>Select Identity Type</ion-label>
-                <ion-select label="Select Identity Type" name="identity_type" [(ngModel)]="identity_type">
-                  <ion-select-option value="National ID"> National ID </ion-select-option>
-                  <ion-select-option value="Drivers License"> Drivers License </ion-select-option>
-                  <ion-select-option value="Passport"> Passport </ion-select-option>
-                </ion-select>
-              </ion-item>
+            <div *ngIf="userData.User_Identity?.live_image" [ngSwitch]="userData.User_Identity?.live_image_approved">
+              <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
+                class="mt-5">
+                <ion-text>Image awaiting approval</ion-text>
+                <ion-icon size="large" slot="start" name="reload-circle-outline"></ion-icon>
+              </ion-button>
 
-              <div *ngIf="identity_type">
-                <ion-button (click)="openFile(fileId)" expand="block" fill="outline" color="primary" class="mt-5">
-                  <ion-text>Upload your {{ identity_type }}</ion-text>
-                  <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
-                </ion-button>
+              <ion-button color="danger" *ngSwitchCase="ApprovalStatus.REJECTED" fill="outline" expand="block"
+                class="mt-5">
+                <ion-text>Image rejected retry</ion-text>
+                <ion-icon size="large" slot="start" name="close-outline"></ion-icon>
+              </ion-button>
 
-                <input type="file" #fileId (change)="uploadFile($event)" id="id_upload" class="hidden"
-                  accept=".pdf, image/png, image/jpeg">
-                <ion-text class="text-xs" color="primary">
-                  <ion-icon name="information-circle-outline"></ion-icon>
-                  Please ensure that your file is in .pdf, .jpg, or .png format, and its size does not exceed 5MB.
-                </ion-text>
+              <ion-button color="success" *ngSwitchCase="ApprovalStatus.APPROVED" fill="outline" expand="block"
+                class="mt-5">
+                <ion-text>Image Approved</ion-text>
+                <ion-icon size="large" slot="start" name="checkmark-circle-outline"></ion-icon>
+              </ion-button>
+            </div>
+
+            <div class="mt-5">
+              <div *ngIf="!userData.User_Identity?.identity">
+                <ion-item>
+                  <ion-label>Select Identity Type</ion-label>
+                  <ion-select label="Select Identity Type" name="identity_type" [(ngModel)]="identity_type">
+                    <ion-select-option value="National ID"> National ID </ion-select-option>
+                    <ion-select-option value="Drivers License"> Drivers License </ion-select-option>
+                    <ion-select-option value="Passport"> Passport </ion-select-option>
+                  </ion-select>
+                </ion-item>
+
+                <div *ngIf="identity_type">
+                  <ion-button expand="block" (click)="openFile(fileId)" fill="outline" color="primary" class="mt-5">
+                    <ion-text>Upload your {{ identity_type }}</ion-text>
+                    <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
+                  </ion-button>
+
+                  <input type="file" (change)="uploadFile($event, identity_type, 'identity')" #fileId id="id_upload"
+                    class="hidden" accept=".pdf, image/png, image/jpeg">
+                  <ion-text class="text-xs" color="primary">
+                    <ion-icon name="information-circle-outline"></ion-icon>
+                    Please ensure that your file is in .pdf, .jpg, or .png format, and its size does not exceed 5MB.
+                  </ion-text>
+                </div>
               </div>
 
-              <div>
-                <ion-button (click)="openFile(fileAddress)" expand="block" fill="outline" color="primary" class="mt-5">
-                  <ion-text>Upload</ion-text>
+              <div *ngIf="userData.User_Identity?.identity" [ngSwitch]="userData.User_Identity?.identity_approved">
+                <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
+                  class="mt-5">
+                  <ion-text>Identity awaiting ppproval</ion-text>
+                  <ion-icon size="large" slot="start" name="reload-circle-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button color="danger" *ngSwitchCase="ApprovalStatus.REJECTED" fill="outline" expand="block"
+                  class="mt-5">
+                  <ion-text>Identity rejected retry</ion-text>
+                  <ion-icon size="large" slot="start" name="close-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button color="success" *ngSwitchCase="ApprovalStatus.APPROVED" fill="outline" expand="block"
+                  class="mt-5">
+                  <ion-text>Identity Approved</ion-text>
+                  <ion-icon size="large" slot="start" name="checkmark-circle-outline"></ion-icon>
+                </ion-button>
+              </div>
+
+
+            </div>
+
+            <div class="mt-5">
+              <div *ngIf="!userData.User_Identity?.residential_address">
+                <ion-button expand="block" (click)="openFile(fileAddress)" fill="outline" color="primary" class="mt-5">
+                  <ion-text>Upload Residential Proof</ion-text>
                   <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
                 </ion-button>
 
-                <input type="file" #fileAddress (change)="uploadFile($event)" id="address_upload" class="hidden"
-                  accept=".pdf, image/png, image/jpeg">
+                <input type="file" #fileAddress (change)="uploadFile($event, 'Residential Proof', 'address')"
+                  id="address_upload" class="hidden" accept=".pdf, image/png, image/jpeg">
                 <ion-text class="text-xs" color="primary">
                   <ion-icon name="information-circle-outline"></ion-icon>
                   Kindly upload proof of your residential address, which may include an electricity bill,
                   proof of tenancy, or a bank statement indicating your house address.
                   Please ensure that your file is in .pdf, .jpg, or .png format, and its size does not exceed 5MB.
                 </ion-text>
-
               </div>
-            </form>
+
+              <div *ngIf="userData.User_Identity?.residential_address"
+                [ngSwitch]="userData.User_Identity?.residential_approved">
+                <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
+                  class="mt-5">
+                  <ion-text>Address awaiting approval</ion-text>
+                  <ion-icon size="large" slot="start" name="reload-circle-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button color="danger" *ngSwitchCase="ApprovalStatus.REJECTED" fill="outline" expand="block"
+                  class="mt-5">
+                  <ion-text>Address rejected retry</ion-text>
+                  <ion-icon size="large" slot="start" name="close-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button color="success" *ngSwitchCase="ApprovalStatus.APPROVED" fill="outline" expand="block"
+                  class="mt-5">
+                  <ion-text>Address approved</ion-text>
+                  <ion-icon size="large" slot="start" name="checkmark-circle-outline"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
           </ion-card-content>
         </ion-card>
 
@@ -330,53 +401,98 @@
               Artisan Skill Information & Verification
             </ion-card-title>
           </ion-card-header>
-          <ion-card-content>
+          <ion-card-content *ngIf="userData.Artisan">
+            <ion-list>
+              <ion-item class="py-3">
+                <ion-text>{{ userData.Artisan.name }}</ion-text>
+              </ion-item>
+
+              <ion-item class="py-3">
+                <ion-text>{{ userData.Artisan.business_name }}</ion-text>
+              </ion-item>
+
+              <ion-item class="py-3">
+                <ion-thumbnail>
+                  <ion-img [src]="userData.Artisan.category?.icon"
+                    [alt]="'Service Category' + userData.Artisan.category?.name"></ion-img>
+                </ion-thumbnail>
+                <ion-text>{{ userData.Artisan.category?.name }}</ion-text>
+              </ion-item>
+
+              <div *ngIf="userData.Artisan.certificate" [ngSwitch]="userData.Artisan.certificate_approved">
+                <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
+                  class="mt-5">
+                  <ion-text>Certificate awaiting approval</ion-text>
+                  <ion-icon size="large" slot="start" name="reload-circle-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button color="danger" *ngSwitchCase="ApprovalStatus.REJECTED" fill="outline" expand="block"
+                  class="mt-5">
+                  <ion-text>Certificate rejected retry</ion-text>
+                  <ion-icon size="large" slot="start" name="close-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button color="success" *ngSwitchCase="ApprovalStatus.APPROVED" fill="outline" expand="block"
+                  class="mt-5">
+                  <ion-text>Certificate Approved</ion-text>
+                  <ion-icon size="large" slot="start" name="checkmark-circle-outline"></ion-icon>
+                </ion-button>
+              </div>
+
+              <div *ngIf="userData.Artisan.work_id" [ngSwitch]="userData.Artisan.work_id_approved">
+                <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
+                  class="mt-5">
+                  <ion-text>Work ID awaiting approval</ion-text>
+                  <ion-icon size="large" slot="start" name="reload-circle-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button color="danger" *ngSwitchCase="ApprovalStatus.REJECTED" fill="outline" expand="block"
+                  class="mt-5">
+                  <ion-text>Work ID rejected retry</ion-text>
+                  <ion-icon size="large" slot="start" name="close-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button color="success" *ngSwitchCase="ApprovalStatus.APPROVED" fill="outline" expand="block"
+                  class="mt-5">
+                  <ion-text>Work ID approved</ion-text>
+                  <ion-icon size="large" slot="start" name="checkmark-circle-outline"></ion-icon>
+                </ion-button>
+              </div>
+
+            </ion-list>
+          </ion-card-content>
+          <ion-card-content *ngIf="!userData.Artisan">
             <ion-text>
               To validate your artisan skills, we will need to collect either your Work ID or Certificate of Work, along
               with proof of your work address.
             </ion-text>
 
-            <form class="mt-5">
+            <form class="mt-5" [formGroup]="artisanForm" (ngSubmit)="onSubmitArtisanIdentity(artisanForm.value)">
               <div>
-                <input type="text" placeholder="Service Name"
+                <input formControlName="name" type="text" placeholder="Service Name"
                   class="w-full p-3 bg-white text-primary placeholder:text-primary border border-primary rounded-lg">
-                <!-- <div *ngIf="formControl['email'].errors">
-                  <ion-text color="danger"
-                    *ngIf="formControl['email'].dirty && formControl['email'].hasError('required')">Email address is
-                    required</ion-text>
-                  <ion-text color="danger"
-                    *ngIf="formControl['email'].dirty && formControl['email'].hasError('email')">Invalide email
-                    address</ion-text>
-                </div> -->
               </div>
 
               <div class="mt-5">
-                <input type="text" placeholder="Registered Business Name(Optional)"
+                <input formControlName="business_name" type="text" placeholder="Registered Business Name(Optional)"
                   class="w-full p-3 bg-white text-primary placeholder:text-primary border border-primary rounded-lg">
-                <!-- <div *ngIf="formControl['email'].errors">
-                  <ion-text color="danger"
-                    *ngIf="formControl['email'].dirty && formControl['email'].hasError('required')">Email address is
-                    required</ion-text>
-                  <ion-text color="danger"
-                    *ngIf="formControl['email'].dirty && formControl['email'].hasError('email')">Invalide email
-                    address</ion-text>
-                </div> -->
               </div>
 
               <ion-item class="mt-5">
                 <ion-label>Select Service Category</ion-label>
-                <ion-select label="Select Service Category">
+                <ion-select formControlName="category" label="Select Service Category">
                   <ion-select-option [value]="category.id" *ngFor="let category of categories$ | async">{{ category.name
                     }}</ion-select-option>
                 </ion-select>
               </ion-item>
 
               <div>
-                <ion-button (click)="openFile(fileCert)" expand="block" fill="outline" color="primary" class="mt-5">
+                <ion-button expand="block" fill="outline" (click)="openFile(fileCert)" color="primary" class="mt-5">
                   <ion-text>Artisan Certificate.</ion-text>
                   <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
                 </ion-button>
-                <input type="file" #fileCert (change)="uploadFile($event)" id="cert" class="hidden"
+                <input type="text" formControlName="certificate" class="hidden">
+                <input type="file" #fileCert (change)="uploadFile($event, undefined, 'certificate')" class="hidden"
                   accept=".pdf, image/png, image/jpeg">
                 <ion-text class="text-xs" color="primary">
                   <ion-icon name="information-circle-outline"></ion-icon>
@@ -385,22 +501,29 @@
               </div>
 
               <div>
-                <ion-button (click)="openFile(fileWork)" expand="block" fill="outline" color="primary" class="mt-5">
+                <ion-button expand="block" fill="outline" (click)="openFile(fileWork)" color="primary" class="mt-5">
                   <ion-text>Work ID Card.</ion-text>
                   <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
                 </ion-button>
 
-                <input type="file" #fileWork (change)="uploadFile($event)" id="work_id" class="hidden"
-                  accept=".pdf, image/png, image/jpeg">
+                <input type="file" #fileWork id="work_id" (change)="uploadFile($event, undefined, 'work_id')"
+                  class="hidden" accept=".pdf, image/png, image/jpeg">
+                <input type="text" formControlName="work_id" class="hidden">
                 <ion-text class="text-xs" color="primary">
                   <ion-icon name="information-circle-outline"></ion-icon>
                   Please ensure that your file is in .pdf, .jpg, or .png format, and its size does not exceed 5MB.
                 </ion-text>
               </div>
+
+              <ion-button color="primary" [disabled]="artisanForm.invalid" type="submit" expand="full"
+                class="my-5 rounded">
+                Save
+              </ion-button>
             </form>
           </ion-card-content>
         </ion-card>
       </ng-container>
     </ng-container>
   </ng-container>
+
 </ion-content>

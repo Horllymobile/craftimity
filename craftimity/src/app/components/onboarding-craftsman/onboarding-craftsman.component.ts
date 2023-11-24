@@ -1,7 +1,6 @@
 import { UsersService } from './../../core/services/users/users.service';
 import { AlertService } from './../../core/services/alert.service';
 import { MixpanelService } from './../../core/services/mixpanel.service';
-import { AuthService } from './../../core/services/auth/auth.service';
 import { SupaBaseService } from './../../core/services/supabase.service';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
@@ -68,7 +67,6 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
     private locationService: LocationService,
     private loadService: LoaderService,
     private supaBaseService: SupaBaseService,
-    private authService: AuthService,
     private mixpanelService: MixpanelService,
     private alertService: AlertService,
     private usersService: UsersService,
@@ -138,7 +136,7 @@ export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
     this.getUserSub$ = this.usersService
       .getUserById(this.userData?.id)
       .subscribe({
-        next: (user) => {
+        next: async (user) => {
           localStorage.setItem(STORAGE_VARIABLES.USER, JSON.stringify(user));
         },
       });

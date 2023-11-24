@@ -63,6 +63,10 @@ export class OnboardingComponent implements OnInit {
     private analytics: AngularFireAnalytics,
     private mixpanelService: MixpanelService
   ) {
+    this.getData();
+  }
+
+  async getData() {
     const user = localStorage.getItem(STORAGE_VARIABLES.USER);
     if (user) {
       this.userData = JSON.parse(user) as IUser;
@@ -255,7 +259,7 @@ export class OnboardingComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (res) => {
+        next: async (res) => {
           const user = JSON.parse(
             localStorage.getItem(STORAGE_VARIABLES.USER) ?? ''
           );

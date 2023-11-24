@@ -1,32 +1,12 @@
-import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-  UrlTree,
-} from '@angular/router';
-import { Observable } from 'rxjs';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { STORAGE_VARIABLES } from '../constants/storage';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class CraftimiyGuard implements CanActivate {
-  constructor(private router: Router) {}
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ):
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree>
-    | boolean
-    | UrlTree {
-    const app = localStorage.getItem(STORAGE_VARIABLES.APP);
-    if (app && app === STORAGE_VARIABLES.CRAFTIMITY) {
-      this.router.navigate(['/', 'craftimity']);
-      return false;
-    }
-    return true;
+export const CraftimiyGuard: CanActivateFn = async () => {
+  const router = inject(Router);
+  const app = localStorage.getItem(STORAGE_VARIABLES.APP);
+  if (app && app === STORAGE_VARIABLES.CRAFTIMITY) {
+    return router.navigate(['/', 'craftimity']);
   }
-}
+  return router.navigate(['/', 'select-app']);
+};

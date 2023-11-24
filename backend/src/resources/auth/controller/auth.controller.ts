@@ -14,7 +14,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { IResponse } from "src/core/interfaces/IResponse";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import {
-  RegisterCraftmanDto,
+  RegisterDto,
   SendOTPDto,
   UpdateCraft,
   UserCheckDto,
@@ -22,7 +22,6 @@ import {
   VerifyPhoneOtpDto,
   VerifyUserDto,
 } from "../dto/dto";
-import { AuthGuard } from "src/core/guards/auth.guard";
 
 @ApiTags("Authentication")
 @Controller("api/v1/auth")
@@ -45,18 +44,15 @@ export class AuthController {
     };
   }
 
-  @Post("/login_signup")
+  @Post("/register")
   async loginOrSignUp(
-    @Body() payload: LoginDto
+    @Body() payload: RegisterDto
   ): Promise<IResponse<{ metaData: IUser; access_token: string }>> {
-    const user = await this.authService.loginOrSignUp(payload);
+    await this.authService.registerUser(payload);
     return {
-      message: "User login successfully",
+      message: `Verification code has been sent to ${payload.email}`,
       status: EResponseStatus.SUCCESS,
-      data: {
-        metaData: user.data,
-        access_token: user.access_token,
-      },
+      data: null,
     };
   }
 
@@ -77,7 +73,7 @@ export class AuthController {
 
   @Post("/register-craftman")
   async registerCraftman(
-    @Body() payload: RegisterCraftmanDto
+    @Body() payload: RegisterDto
   ): Promise<IResponse<{ metaData: IUser; access_token: string }>> {
     await this.authService.registerCraftman(payload);
     return {
@@ -86,7 +82,7 @@ export class AuthController {
     };
   }
 
-  @Put("verify-craftman")
+  @Post("verify-craftman")
   async verifyCraftmanOtpCode(
     @Body() payload: VerifyCraftmanDto
   ): Promise<IResponse<any>> {
@@ -98,7 +94,7 @@ export class AuthController {
     };
   }
 
-  @Patch("verify")
+  @Post("verify")
   async verifyOtpCode(@Body() payload: VerifyUserDto): Promise<IResponse<any>> {
     const req = await this.authService.verifyOtpCode(payload);
     return {

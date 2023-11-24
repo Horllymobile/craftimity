@@ -10,6 +10,7 @@ import { SharedModule } from 'src/app/core/shared/shared.module';
 import { SessionGuard } from 'src/app/core/guards/session/session.guard';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
+import { RegisterComponent } from './register/register.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,11 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    // canActivate: [SessionGuard],
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
     // canActivate: [SessionGuard],
   },
   {
@@ -45,6 +51,7 @@ const routes: Routes = [
     VerifyComponent,
     OnboardingComponent,
     ForgotPasswordComponent,
+    RegisterComponent,
   ],
   imports: [
     CommonModule,

@@ -1,21 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController, NavController, isPlatform } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import { Observable, finalize, map } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { ISignIn } from 'src/app/core/models/auth';
 import { ICountry } from 'src/app/core/models/location';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
 import { MixpanelService } from 'src/app/core/services/mixpanel.service';
+import { UsersService } from 'src/app/core/services/users/users.service';
 import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
@@ -44,7 +41,8 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private locationService: LocationService,
     private authService: AuthService,
-    private loadingCtrl: LoadingController,
+    private userService: UsersService,
+    private loaderService: LoaderService,
     private alertService: AlertService,
     private navCtrl: NavController,
     private route: ActivatedRoute,
@@ -84,66 +82,52 @@ export class LoginComponent implements OnInit {
       type: ['email'],
     });
 
-    this.phoneLoginForm = this.fb.group({
-      code: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-      phone: [
-        null,
-        [
-          Validators.required,
-          Validators.minLength(10),
-          Validators.maxLength(10),
-        ],
-      ],
-      type: ['phone'],
-    });
+    // this.phoneLoginForm = this.fb.group({
+    //   code: [null, [Validators.required]],
+    //   password: [null, [Validators.required]],
+    //   phone: [
+    //     null,
+    //     [
+    //       Validators.required,
+    //       Validators.minLength(10),
+    //       Validators.maxLength(10),
+    //     ],
+    //   ],
+    //   type: ['phone'],
+    // });
   }
 
   async login(formPayload: any) {
-    const loader = await this.loadingCtrl.create({
-      message: '',
-      animated: true,
-      duration: 5000,
-      spinner: 'lines-small',
-      cssClass: 'loader',
-    });
+    const load = await this.loaderService.load();
     const payload: ISignIn = {
       type: formPayload.type,
       password: formPayload.password,
-      ...(formPayload.email && { email: formPayload.email }),
-      ...(formPayload.phone && {
-        phone: `${formPayload.code}${formPayload.phone}`,
-      }),
+      email: formPayload.email,
+      // ...(formPayload.email && { email: formPayload.email }),
+      // ...(formPayload.phone && {
+      //   phone: `${formPayload.code}${formPayload.phone}`,
+      // }),
       // remember: formPayload.remember,
     };
 
-    await loader.present();
+    await load.present();
     this.authService
-      .loginSignUp(payload)
+      .signin(payload)
       .pipe(
         finalize(async () => {
-          await loader.dismiss();
+          await load.dismiss();
         })
       )
       .subscribe({
         next: async (res) => {
           localStorage.setItem(
             STORAGE_VARIABLES.USER,
-            JSON.stringify(res?.metaData)
+            JSON.stringify(res.metaData)
           );
-          localStorage.setItem(STORAGE_VARIABLES.TOKEN, res?.access_token);
 
-          if (this.returnUrl !== '/') {
-            this.goToReturnUrl(this.returnUrl);
-          } else {
-            if (res.metaData.is_onboarded) {
-              this.goToHome();
-            } else {
-              this.goToOnboarding();
-            }
-          }
+          localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
+
           this.emailLoginForm.reset();
-          this.phoneLoginForm.reset();
           this.analytics.logEvent('login_sucessfull', {
             ...(payload.email && { email: payload.email }),
             ...(payload.phone && { phone: payload.phone }),
@@ -151,12 +135,21 @@ export class LoginComponent implements OnInit {
             ...(res.metaData.full_name && { name: res.metaData.full_name }),
           });
           this.mixpanelService.identify(res.metaData.id);
-          this.mixpanelService.track('Login', res.metaData);
+          this.mixpanelService.track('Login', {
+            ...(payload.email && { email: payload.email }),
+            ...(res.metaData.full_name && { name: res.metaData.full_name }),
+          });
+          if (this.returnUrl !== '/') {
+            this.goToReturnUrl(this.returnUrl);
+          } else {
+            this.goToHome();
+          }
         },
         error: async (error) => {
-          this.mixpanelService.track('Login Error', error);
-          await this.alertService.error(error.message);
+          await this.alertService.error(error);
+          this.mixpanelService.track('Login Error', { message: error });
           this.analytics.logEvent('login_failed', {
+            message: error,
             ...(payload.email && { email: payload.email }),
             ...(payload.phone && { phone: payload.phone }),
             platform: getPlaform(),

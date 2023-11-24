@@ -4,9 +4,10 @@ import { OnboardingCraftsmanComponent } from './onboarding-craftsman/onboarding-
 import { IonicModule } from '@ionic/angular';
 import { SharedModule } from '../core/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CreateEditAddressComponent } from './create-edit-address/create-edit-address.component';
 
 @NgModule({
-  declarations: [OnboardingCraftsmanComponent],
+  declarations: [OnboardingCraftsmanComponent, CreateEditAddressComponent],
   imports: [
     CommonModule,
     IonicModule,
@@ -14,6 +15,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
     FormsModule,
   ],
-  exports: [OnboardingCraftsmanComponent],
+  exports: [OnboardingCraftsmanComponent, CreateEditAddressComponent],
 })
 export class ComponentsModule {}

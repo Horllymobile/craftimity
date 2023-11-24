@@ -44,7 +44,7 @@ export class UpdateCraft {
   service_category: number;
 }
 
-export class RegisterCraftmanDto {
+export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   first_name: string;

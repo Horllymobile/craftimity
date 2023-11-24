@@ -11,7 +11,7 @@ import { OnboardingCraftsmanComponent } from 'src/app/components/onboarding-craf
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  userData!: IUser;
+  userData!: IUser | null;
   constructor(
     private usersService: UsersService,
     private alertController: AlertController,
@@ -27,12 +27,8 @@ export class HomePage implements OnInit {
       componentProps: {
         user: this.userData,
       },
-      animated: true,
       // initialBreakpoint: 0.9,
       // breakpoints: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-      backdropDismiss: true,
-      canDismiss: true,
-      showBackdrop: true,
     });
     const alert = await this.alertController.create({
       header: 'Incomplete Registration Alert!',

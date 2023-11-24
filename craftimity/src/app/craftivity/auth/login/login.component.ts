@@ -11,6 +11,7 @@ import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { MixpanelService } from 'src/app/core/services/mixpanel.service';
+import { UsersService } from 'src/app/core/services/users/users.service';
 import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
@@ -28,9 +29,9 @@ export class LoginComponent implements OnInit {
     private loaderService: LoaderService,
     private fb: FormBuilder,
     private authService: AuthService,
+    private userService: UsersService,
     private analytics: AngularFireAnalytics,
     private mixpanelService: MixpanelService,
-    private alertService: AlertService,
     private alertCtrl: AlertController,
     private router: Router
   ) {}
@@ -74,7 +75,7 @@ export class LoginComponent implements OnInit {
         {
           text: 'Go to Craftimity',
           handler: (value) => {
-            this.authService.signout();
+            this.userService.signout();
             this.goTo('/craftimity');
           },
         },

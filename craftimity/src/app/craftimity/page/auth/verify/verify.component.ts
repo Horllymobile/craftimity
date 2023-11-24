@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { Subscription, finalize, interval, map } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { ISignIn, IVerifyOtp } from 'src/app/core/models/auth';
@@ -30,8 +30,7 @@ export class VerifyComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private route: Router,
     private loadingCtrl: LoadingController,
-    private alertService: AlertService,
-    private alertCtrl: AlertController
+    private alertService: AlertService
   ) {}
 
   get formData() {
@@ -54,8 +53,6 @@ export class VerifyComponent implements OnInit, OnDestroy {
     this.startTimer();
   }
 
-  submit() {}
-
   async verifyOtp(formPayload: { [key: string]: string }) {
     const loader = await this.loadingCtrl.create({
       message: '',
@@ -71,7 +68,6 @@ export class VerifyComponent implements OnInit, OnDestroy {
       ...(this.type === 'email' && { email: this.data }),
       ...(this.type === 'phone' && { phone: this.data }),
     };
-
     this.verifySub$ = this.authService
       .verifyOtp(payload)
       .pipe(
@@ -80,30 +76,12 @@ export class VerifyComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe({
-        next: (res) => {
-          localStorage.setItem(
-            STORAGE_VARIABLES.USER,
-            JSON.stringify(res.user)
-          );
-          localStorage.setItem(
-            STORAGE_VARIABLES.REGISTERATION_TOKEN,
-            res.token
-          );
-          this.route.navigate(['/craftimity/page/auth/onboarding'], {
-            queryParams: {
-              email: payload.email,
-              type: payload.type,
-            },
-          });
+        next: async (res) => {
+          localStorage.removeItem(STORAGE_VARIABLES.SIGNUP_DATA);
+          this.route.navigate(['/craftimity/page/auth/login']);
         },
         error: async (err) => {
-          let alert = await this.alertCtrl.create({
-            header: 'Error',
-            message: err?.error?.message,
-            animated: true,
-            buttons: ['Okay'],
-          });
-          await alert.present();
+          await this.alertService.error(err);
         },
       });
   }

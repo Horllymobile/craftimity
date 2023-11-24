@@ -21,7 +21,8 @@ import { LoaderService } from 'src/app/core/services/loader.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
 import { UsersService } from 'src/app/core/services/users/users.service';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
-import { IonInput } from '@ionic/angular';
+import { IonInput, ModalController } from '@ionic/angular';
+import { CreateEditAddressComponent } from 'src/app/components/create-edit-address/create-edit-address.component';
 
 @Component({
   selector: 'app-account',
@@ -39,7 +40,7 @@ export class AccountPage implements OnInit, OnDestroy {
   transform: ImageTransform = {};
 
   segment = 'user_info';
-  userData!: IUser;
+  userData!: IUser | null;
   edit = false;
   editImage = false;
   editLocation = false;
@@ -53,7 +54,6 @@ export class AccountPage implements OnInit, OnDestroy {
   countryCode = '';
 
   form!: FormGroup;
-  locationForm!: FormGroup;
   imageForm!: FormGroup;
 
   isEditing = false;
@@ -63,15 +63,18 @@ export class AccountPage implements OnInit, OnDestroy {
   distroy$ = new Subject<void>();
 
   @ViewChild('imageFile') imageFile!: HTMLInputElement;
+
+  createEditAddressComponent = CreateEditAddressComponent;
   constructor(
     private usersService: UsersService,
     private locationService: LocationService,
     private fb: FormBuilder,
     private alertService: AlertService,
     private loaderService: LoaderService,
-    private supaBaseService: SupaBaseService
+    private supaBaseService: SupaBaseService,
+    private modalController: ModalController
   ) {
-    this.userData = this.usersService.userProfile;
+    this.userData = this.usersService.getUser();
   }
 
   ngOnInit() {
@@ -80,7 +83,7 @@ export class AccountPage implements OnInit, OnDestroy {
       .pipe(map((res) => res));
   }
 
-  initForm(user?: IUser) {
+  initForm(user?: IUser | null) {
     this.imageForm = new FormGroup({
       url: new FormControl(null, [Validators.required]),
     });
@@ -89,15 +92,6 @@ export class AccountPage implements OnInit, OnDestroy {
       first_name: [user?.first_name],
       last_name: [user?.last_name],
       birthdate: [user?.birthdate],
-    });
-
-    this.locationForm = this.fb.group({
-      floor: [user?.address?.floor],
-      house: [user?.address?.house],
-      street: [user?.address?.street],
-      country: [user?.address?.country],
-      state: [user?.address?.state],
-      city: [user?.address?.city],
     });
 
     if (!user?.email) {
@@ -154,10 +148,10 @@ export class AccountPage implements OnInit, OnDestroy {
 
   getUser() {
     this.usersService
-      .getUserById(this.userData.id)
+      .getUserById(this.userData?.id)
       .pipe(takeUntil(this.distroy$))
       .subscribe({
-        next: (res) => {
+        next: async (res) => {
           localStorage.setItem(STORAGE_VARIABLES.USER, JSON.stringify(res));
           this.userData = res;
         },
@@ -176,7 +170,7 @@ export class AccountPage implements OnInit, OnDestroy {
     const loader = await this.loaderService.load();
     await loader.present();
     this.usersService
-      .updateUser(this.userData.id, payload)
+      .updateUser(this.userData?.id, payload)
       .pipe(
         takeUntil(this.distroy$),
         finalize(async () => await loader.dismiss())
@@ -240,27 +234,25 @@ export class AccountPage implements OnInit, OnDestroy {
     }
   }
 
-  async toogleLocationEdit() {
-    if (this.isEdittingLocation) {
-      await this.alertService.success(
-        'Are you sure you want to quit editting?',
-        undefined,
-        [
-          {
-            text: 'Yes',
-            handler: (value) => {
-              this.editLocation = !this.editLocation;
-              if (this.edit) this.initForm(this.userData);
-            },
-          },
-          {
-            text: 'No',
-          },
-        ]
-      );
-    } else {
-      this.editLocation = !this.editLocation;
-      if (this.editLocation) this.initForm(this.userData);
+  async openModal(modalComponent: any, options?: any) {
+    const modal = await this.modalController.create({
+      component: modalComponent,
+      breakpoints: [0.3, 0.4, 0.5, 0.6, 0.7],
+      initialBreakpoint: 0.7,
+      backdropDismiss: true,
+      animated: true,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        ...options,
+      },
+    });
+
+    await modal.present();
+
+    const dismis = await modal.onDidDismiss();
+    if (dismis.role === 'success') {
+      this.getUser();
     }
   }
 
@@ -292,6 +284,8 @@ export class AccountPage implements OnInit, OnDestroy {
   }
 
   async submitImage() {
+    const load = await this.loaderService.load();
+    await load.present();
     this.supaBaseService
       .uploadFile(this.croppedImage, this.userData?.full_name)
       .pipe(
@@ -303,13 +297,14 @@ export class AccountPage implements OnInit, OnDestroy {
           this.imageForm.reset();
           if (value !== null) {
             this.usersService
-              .updateUser(this.userData.id, { profile_image: value })
+              .updateUser(this.userData?.id, { profile_image: value })
               .pipe(takeUntil(this.distroy$))
               .subscribe({
                 next: async (value) => {
                   this.getUser();
                   this.isEditingImage = false;
                   await this.toogleEditImage();
+                  await load.dismiss();
                 },
               });
           }

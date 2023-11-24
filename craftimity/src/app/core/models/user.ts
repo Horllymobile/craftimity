@@ -1,4 +1,7 @@
+import { ApprovalStatus } from '../enums/approval-status';
 import { ERole } from '../enums/role';
+import { IArtisan } from './artisans';
+import { ICity, ICountry, IState } from './location';
 
 export interface IUser {
   id: string;
@@ -6,7 +9,9 @@ export interface IUser {
   last_name: string;
   email: string;
   phone_number: string;
-  address?: IAddress;
+  Address?: IAddress[];
+  Artisan?: IArtisan;
+  User_Identity?: IUserIdentity;
   active: boolean;
   enabled: boolean;
   role: ERole;
@@ -22,13 +27,27 @@ export interface IUser {
 }
 
 export interface IAddress {
+  id?: string;
+  user_id: string;
   floor?: number;
   house?: number;
   street?: string;
-  country?: any;
-  state?: any;
-  city?: any;
+  Country?: ICountry;
+  State?: IState;
+  City?: ICity;
   created_at?: string;
   updated_at?: string;
   updated_by?: string;
+}
+
+export interface IUserIdentity {
+  id?: string;
+  live_image: string;
+  residential_address: string;
+  live_image_approved?: ApprovalStatus;
+  identity: string;
+  residential_approved?: ApprovalStatus;
+  identity_approved?: ApprovalStatus;
+  created_at?: string;
+  updated_at?: string;
 }

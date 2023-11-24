@@ -23,6 +23,9 @@
   <ng-container [ngSwitch]="segment">
     <ion-card *ngSwitchCase="'user_info'">
       <ion-card-header>
+        <ion-card-title>
+          User Information
+        </ion-card-title>
         <ion-card-subtitle class="flex justify-end">
           <ion-fab>
             <ion-fab-button size="small" *ngIf="!edit" (click)="toogleEdit()">
@@ -34,7 +37,7 @@
           </ion-fab>
         </ion-card-subtitle>
       </ion-card-header>
-      <ion-card-content>
+      <ion-card-content *ngIf="userData">
         <div class="w-28 grid mx-auto" *ngIf="!editImage">
           <ion-avatar class="mx-auto w-28 h-28 mt-5">
             <ion-img *ngIf="userData?.profile_image" [src]="userData.profile_image"></ion-img>
@@ -61,11 +64,11 @@
 
 
               <div>
-                <ion-button size="small" color="danger" (click)="deleteImage()">
+                <ion-button size="medium" color="danger" (click)="deleteImage()">
                   <ion-icon slot="start" name="trash-outline"></ion-icon>
                   Delete
                 </ion-button>
-                <ion-button size="small" color="success" (click)="submitImage()">
+                <ion-button size="medium" color="success" (click)="submitImage()">
                   <ion-icon (click)="deleteImage()" slot="start" name="cloud-upload-outline"></ion-icon>
                   Upload
                 </ion-button>
@@ -83,7 +86,7 @@
                   <ion-fab-button size="small" (click)="openImage(imageFile)" *ngIf="editImage">
                     <ion-icon name="image-outline"></ion-icon>
                   </ion-fab-button>
-                  <ion-fab-button size="small" (click)="toogleEditImage()" *ngIf="editImage">
+                  <ion-fab-button size="small" color="danger" (click)="toogleEditImage()" *ngIf="editImage">
                     <ion-icon name="close-outline"></ion-icon>
                   </ion-fab-button>
                 </ion-fab>
@@ -96,7 +99,8 @@
 
         <ion-list *ngIf="!edit">
           <ion-item class="py-3">
-            {{ userData.first_name || 'First Name'}}
+            <ion-text *ngIf="userData?.first_name">First Name: {{ userData.first_name}}</ion-text>
+            <ion-text *ngIf="!userData?.first_name">First Name</ion-text>
             <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.first_name">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
@@ -104,7 +108,8 @@
           </ion-item>
 
           <ion-item class="py-3">
-            {{ userData.last_name || 'Last Name'}}
+            <ion-text *ngIf="userData?.last_name">Last Name: {{ userData.last_name}}</ion-text>
+            <ion-text *ngIf="!userData?.last_name">Last Name</ion-text>
             <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.last_name">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
@@ -112,8 +117,11 @@
           </ion-item>
 
           <ion-item class="py-3">
-            <ion-text>
-              {{ userData.email || 'Required'}}
+            <ion-text *ngIf="userData.email">
+              Email: {{ userData.email}}
+            </ion-text>
+            <ion-text *ngIf="!userData.email">
+              Email
             </ion-text>
             <ion-chip slot="end" color="warning" *ngIf="userData.email && !userData.email_verified">
               <ion-icon name="alert-outline"></ion-icon>
@@ -127,7 +135,8 @@
           </ion-item>
 
           <ion-item class="py-3">
-            {{ userData.phone_number || 'Phone Number' }}
+            <ion-text *ngIf="userData?.phone_number">Phone Number: {{ userData.phone_number}}</ion-text>
+            <ion-text *ngIf="!userData?.phone_number">Phone Number</ion-text>
             <ion-chip slot="end" color="warning" *ngIf="userData.phone_number && !userData.phone_verified">
               <ion-icon name="alert-outline"></ion-icon>
               Verify
@@ -139,8 +148,9 @@
           </ion-item>
 
           <ion-item class="py-3" lines="none">
-            {{ userData.birthdate || 'Birthdate' }}
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end">
+            <ion-text *ngIf="userData?.birthdate">Birthdate: {{ userData.birthdate | date }}</ion-text>
+            <ion-text *ngIf="!userData?.birthdate">Birthdate</ion-text>
+            <ion-chip (click)="toogleEdit()" *ngIf="!userData?.birthdate" color="warning" slot="end">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
@@ -149,21 +159,21 @@
         <form *ngIf="edit" [formGroup]="form" (ngSubmit)="onSubmitUserInfo(form.value)">
           <div class="w-full my-5">
             <ion-item>
-              <ion-input type="text" name="first_name" formControlName="first_name"
+              <ion-input label="First Name" type="text" name="first_name" formControlName="first_name"
                 class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="First Name"></ion-input>
             </ion-item>
           </div>
 
           <div class="w-full my-5">
             <ion-item>
-              <ion-input type="text" name="last_name" formControlName="last_name"
+              <ion-input label="Last Name" type="text" name="last_name" formControlName="last_name"
                 class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Last Name"></ion-input>
             </ion-item>
           </div>
 
           <div class="w-full my-5" *ngIf="!userData.email">
             <ion-item>
-              <ion-input type="text" name="email" formControlName="last_name"
+              <ion-input label="Email" type="text" name="email" formControlName="last_name"
                 class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Email"></ion-input>
             </ion-item>
           </div>
@@ -185,7 +195,7 @@
 
           <div class="w-full my-5">
             <ion-item>
-              <ion-input type="date" name="birthdate" formControlName="birthdate"
+              <ion-input label="Birthdate" type="date" name="birthdate" formControlName="birthdate"
                 class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Birthdate"></ion-input>
             </ion-item>
           </div>
@@ -199,134 +209,36 @@
 
     <ion-card *ngSwitchCase="'location_info'">
       <ion-card-header>
+        <ion-card-title>
+          Addresses
+        </ion-card-title>
         <ion-card-subtitle class="flex justify-end">
           <ion-fab>
-            <ion-fab-button size="small" *ngIf="!edit" (click)="toogleLocationEdit()">
-              <ion-icon name="create-outline"></ion-icon>
+            <ion-fab-button size="small" (click)="openModal(createEditAddressComponent, { action: 'add' })">
+              <ion-icon name="add-outline"></ion-icon>
             </ion-fab-button>
-            <ion-fab-button size="small" *ngIf="edit" color="danger" (click)="toogleLocationEdit()">
+            <!-- <ion-fab-button size="small" *ngIf="edit" color="danger" (click)="toogleLocationEdit()">
               <ion-icon name="close-outline"></ion-icon>
-            </ion-fab-button>
+            </ion-fab-button> -->
           </ion-fab>
         </ion-card-subtitle>
       </ion-card-header>
-      <ion-card-content class="mt-12">
-        <ion-list *ngIf="!editLocation">
-          <ion-item>
-            {{ userData.address?.floor || 'Floor'}}
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.address?.house">
-              required
-              <ion-icon name="alert-circle-outline"></ion-icon>
-            </ion-chip>
-          </ion-item>
-          <ion-item>
-            {{ userData.address?.house || 'House'}}
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.address?.house">
-              required
-              <ion-icon name="alert-circle-outline"></ion-icon>
-            </ion-chip>
-          </ion-item>
-
-          <ion-item>
-            {{ userData.address?.street || 'Street'}}
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.address?.street">
-              required
-              <ion-icon name="alert-circle-outline"></ion-icon>
-            </ion-chip>
-          </ion-item>
-
-
-          <ion-item>
-            {{ userData.address?.country || 'Country'}}
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.address?.country">
-              required
-              <ion-icon name="alert-circle-outline"></ion-icon>
-            </ion-chip>
-          </ion-item>
-
-          <ion-item>
-            {{ userData.address?.state || 'State'}}
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.address?.state">
-              required
-              <ion-icon name="alert-circle-outline"></ion-icon>
-            </ion-chip>
-          </ion-item>
-
-          <ion-item>
-            <ion-text>
-              {{ userData.address?.city || 'City'}}
-            </ion-text>
-            <ion-chip slot="end" color="warning" *ngIf="userData?.address?.city">
-              <ion-icon name="alert-outline"></ion-icon>
-              verify
-            </ion-chip>
-
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData?.address?.city">
-              required
-              <ion-icon name="alert-circle-outline"></ion-icon>
-            </ion-chip>
-          </ion-item>
-
-          <ion-item>
-            {{ userData.address || 'Address' }}
-            <ion-button slot="end" color="warning" *ngIf="userData.address && !userData.address">
-              <ion-icon name="alert-circle-outline"></ion-icon>
-              Verify
-            </ion-button>
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.address">
-              required
-              <ion-icon name="alert-circle-outline"></ion-icon>
-            </ion-chip>
-          </ion-item>
+      <ion-card-content class="mt-12" *ngIf="userData">
+        <ion-list>
+          <ion-item-sliding class="mb-5 py-1" *ngFor="let address of userData.Address">
+            <ion-item detail="true">
+              <ion-text>
+                {{ address?.house }} {{ address?.street
+                }}, {{ address?.Country?.name }} {{
+                address?.State?.name }}, {{ address?.City?.name }}</ion-text>
+            </ion-item>
+            <ion-item-options>
+              <ion-item-option
+                (click)="openModal(createEditAddressComponent, { action: 'edit', address })">Edit</ion-item-option>
+              <ion-item-option color="danger">Delete</ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
         </ion-list>
-        <form *ngIf="editLocation" [formGroup]="locationForm">
-
-          <div class="w-full my-5">
-            <ion-item>
-              <ion-input type="number" formControlName="house"
-                class="w-full p-2 bg-white text-primary placeholder:text-primary"
-                placeholder="House number"></ion-input>
-            </ion-item>
-          </div>
-
-          <div class="w-full my-5">
-            <ion-item>
-              <ion-input type="text" formControlName="street"
-                class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Street name"></ion-input>
-            </ion-item>
-          </div>
-
-          <div class="w-full my-5">
-            <ion-select formControlName="country" class="w-full px-1 text-xs bg-white text-primary"
-              label="Select Country" placeholder="Select country" (ionChange)="onSelectCountry($event)">
-              <ng-container *ngFor="let country of countries$ | async">
-                <ion-select-option [value]="country.id">{{ country.name }}</ion-select-option>
-              </ng-container>
-            </ion-select>
-          </div>
-
-          <div class="w-full my-5">
-            <ion-select formControlName="state" class="w-full text-xs px-1 bg-white text-primary" label="Select State"
-              placeholder="Select country" (ionChange)="onSelectState($event)">
-              <ng-container *ngFor="let state of states$ | async">
-                <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
-              </ng-container>
-            </ion-select>
-          </div>
-
-          <div class="w-full my-5">
-            <ion-select formControlName="city" class="w-full px-1 text-xs bg-white text-primary" label="Select City"
-              placeholder="Select country">
-              <ng-container *ngFor="let city of cities$ | async">
-                <ion-select-option [value]="city.id">{{ city.name }}</ion-select-option>
-              </ng-container>
-            </ion-select>
-          </div>
-
-          <ion-button color="primary" type="submit" expand="full" class="my-5 rounded">
-            Save
-          </ion-button>
-        </form>
       </ion-card-content>
     </ion-card>
   </ng-container>

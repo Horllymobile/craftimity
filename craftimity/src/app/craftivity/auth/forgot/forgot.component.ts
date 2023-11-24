@@ -121,7 +121,7 @@ export class ForgotComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (res) => {
+        next: async (res) => {
           this.step = 'change';
           localStorage.removeItem(STORAGE_VARIABLES.FORGOT_PASSWORD_DATA);
           localStorage.setItem(

@@ -31,10 +31,10 @@ export class SupaBaseService {
     return this.http.request(req);
   }
 
-  uploadVerificationImage(file: any, username?: string) {
+  uploadVerificationFiles(file: any, username?: string) {
     const url = `${
       environment.SUPABASE_URL
-    }/storage/v1/object/Images/verification/${
+    }/storage/v1/object/Files/Verifications/${
       username
         ? username.toLocaleLowerCase().replace(' ', '-') + '-' + Date.now()
         : `IMG-${Date.now()}`

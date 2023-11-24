@@ -14,7 +14,7 @@ import { JwtService } from "@nestjs/jwt";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { ERole } from "src/core/enums/Role";
 import {
-  RegisterCraftmanDto,
+  RegisterDto,
   UserCheckDto,
   VerifyCraftmanDto,
   VerifyPhoneOtpDto,
@@ -50,67 +50,26 @@ export class AuthService {
     return user;
   }
 
-  async loginOrSignUp(payload: LoginDto) {
-    let user: IUser;
-
-    if (payload.type === USERCHECKTYPE.EMAIL) {
-      user = await this.usersService.findUserByEmail(payload.email);
-      if (user) {
-        return await this.signIn(payload);
-      }
-
-      let mail = await this.elasticService.sendEmailDynamic({
-        Recipients: {
-          To: [payload?.email],
-        },
-        Content: {
-          From: "info@craftimity.com",
-          TemplateName: "WELCOMING_EMAIL",
-          Subject: "Welcome to Craftimity - Let's Get Crafty Together!",
-          Merge: {
-            full_name: "",
-            accountaddress: "info@craftimity.com",
-          },
-        },
-      });
-
-      if (mail.data) {
-        this.logger.log(mail.data);
-      }
-      return await this.usersService.createUser(payload.type as USERCHECKTYPE, {
-        email: payload.email,
-        password: payload.password,
-        phone: null,
-      });
-    }
-    user = await this.usersService.findUserByPhone(payload.phone);
-
-    if (user) return await this.signIn(payload);
-    return await this.usersService.createUser(payload.type as USERCHECKTYPE, {
-      email: null,
-      password: payload.password,
-      phone: payload.phone,
-    });
-  }
-
   async signIn(
     payload: LoginDto
   ): Promise<{ data: IUser; access_token: string }> {
     let user: IUser;
     if (payload.type === "email") {
       user = await this.usersService.findUserByEmailDecrypted(payload.email);
-      // if (user.role === ERole.CRAFTMAN) {
-      //   throw new UnauthorizedException({
-      //     message: "This email ",
-      //     status: EResponseStatus.FAILED,
-      //   })
-      // }
       if (!user) {
         throw new UnauthorizedException({
           message: "Invalid user cridentials",
           status: EResponseStatus.FAILED,
         });
       }
+
+      // if (user && !user.active) {
+      //   throw new UnauthorizedException({
+      //     status: EResponseStatus.FAILED,
+      //     message: "Your account is yet to be verified",
+      //   });
+      // }
+
       const compare = this.comparePasswords(
         payload.password,
         user.decrypted_password
@@ -168,42 +127,12 @@ export class AuthService {
     };
   }
 
-  private async registerUser(payload: LoginDto) {
-    let res = await this.superbaseService.connect().from("User").insert({
-      email: payload.email,
-      password: payload.password,
-      role: ERole.CRAFTMAN,
-    });
-    if (res.error) {
-      this.logger.error(res.error);
-    }
-    await this.usersService.sendVerificationCodeToEmail(payload.email);
+  async registerUser(payload: RegisterDto) {
+    await this.usersService.createUser(payload);
   }
 
-  async registerCraftman(payload: RegisterCraftmanDto) {
-    const user = await this.usersService.findUserByEmail(payload.email);
-    if (user) {
-      throw new ConflictException({
-        status: EResponseStatus.FAILED,
-        message: "User with email already exist",
-      });
-    }
-
-    let res = await this.superbaseService
-      .connect()
-      .from("User")
-      .insert({
-        first_name: payload.first_name,
-        last_name: payload.last_name,
-        full_name: `${payload.first_name ?? ""} ${payload.last_name ?? ""}`,
-        email: payload.email,
-        password: payload.password,
-        role: ERole.CRAFTMAN,
-      });
-    if (res.error) {
-      this.logger.error(res.error);
-    }
-    await this.usersService.sendVerificationCodeToEmail(payload.email);
+  async registerCraftman(payload: RegisterDto) {
+    await this.usersService.createUser(payload, ERole.CRAFTMAN);
   }
 
   async verifyOtpCode(payload: VerifyUserDto) {
@@ -222,30 +151,39 @@ export class AuthService {
       });
 
     if (payload.type === "email") {
-      user = await this.updateEmail(payload);
-    } else {
-      user = await this.updatePhone(payload);
+      let res = await this.superbaseService
+        .connect()
+        .from("User")
+        .update({
+          email_verified: true,
+          active: true,
+          enabled: true,
+        })
+        .eq("email", payload.email);
+
+      if (res.error) {
+        this.logger.error(res.error);
+      }
     }
+
+    if (error) {
+      this.logger.error(error);
+    }
+
+    // if (payload.type === "email") {
+    //   user = await this.updateEmail(payload);
+    // } else {
+    //   user = await this.updatePhone(payload);
+    // }
+
+    user = await this.usersService.findUserByEmail(payload.email);
+    await this.usersService.sendWelcomingEmail(user);
 
     await this.superbaseService
       .connect()
       .from("verification_code")
       .delete()
       .eq("code", payload.code);
-
-    const jwtPayload = {
-      sub: user.id,
-      ...(user.email && { email: user.email }),
-      ...(user.phone_number && { phone: user.phone_number }),
-      type: payload.type,
-    };
-
-    const token = await this.jwtService.signAsync(jwtPayload);
-
-    return {
-      user,
-      token: token,
-    };
   }
 
   async verifyCraftmanOtpCode(payload: VerifyCraftmanDto) {

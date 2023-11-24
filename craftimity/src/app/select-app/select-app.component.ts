@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Navigation } from 'swiper/modules';
-import { SwiperOptions } from 'swiper/types';
 import { STORAGE_VARIABLES } from '../core/constants/storage';
 import { Router } from '@angular/router';
 
@@ -14,12 +12,12 @@ export class SelectAppComponent implements OnInit {
 
   ngOnInit() {}
 
-  goToCraftimity() {
+  async goToCraftimity() {
     localStorage.setItem(STORAGE_VARIABLES.APP, STORAGE_VARIABLES.CRAFTIMITY);
     this.router.navigateByUrl('/craftimity');
   }
 
-  goToCraftivity() {
+  async goToCraftivity() {
     localStorage.setItem(STORAGE_VARIABLES.APP, STORAGE_VARIABLES.CRAFTIVITY);
     this.router.navigateByUrl('/craftivity');
   }

@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule, inject } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
@@ -17,9 +17,10 @@ import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { AngularFireModule } from '@angular/fire/compat';
 import { SelectAppComponent } from './select-app/select-app.component';
 import { RequestInterceptor } from './core/interceptors/http.interceptor';
+import { STORAGE_VARIABLES } from './core/constants/storage';
 
-export function tokenGetter() {
-  return localStorage.getItem('ACCESS_TOKEN');
+export async function tokenGetter() {
+  return localStorage.getItem(STORAGE_VARIABLES.TOKEN);
 }
 @NgModule({
   declarations: [AppComponent, SelectAppComponent],

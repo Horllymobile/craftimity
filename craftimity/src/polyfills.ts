@@ -49,7 +49,7 @@ import './zone-flags';
  */
 import 'zone.js'; // Included with Angular CLI.
 
-import 'hammerjs';
+// import 'hammerjs';
 
 /***************************************************************************************************
  * APPLICATION IMPORTS

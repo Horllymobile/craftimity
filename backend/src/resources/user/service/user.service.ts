@@ -8,7 +8,6 @@ import {
 } from "@nestjs/common";
 import { IUserService } from "src/core/interfaces/services/IUserService";
 import { SuperbaseService } from "src/core/services/superbase/superbase.service";
-import { USERCHECKTYPE } from "src/core/enums/UserCheckType";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { IUser } from "src/core/interfaces/IUser";
 import { generateVerifcationCode } from "src/core/utils/verification-code";
@@ -19,8 +18,12 @@ import { PhoneMessageService } from "src/core/services/phone.service";
 import { ElasticService } from "src/core/services/elastic.service";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { CreateUserIdentity } from "../dto/identity.dto";
-import { jwtConstants } from "src/resources/auth/constants/constants";
-import { UpdateUserAddress } from "../dto/dto";
+import { CreateUserAddressDto, UpdateUserAddressDto } from "../dto/dto";
+import {
+  userDecryptedReturnString,
+  userReturnString,
+} from "src/core/shared/data";
+import { ApprovalStatus } from "src/core/enums/approval-status";
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService implements IUserService {
@@ -51,12 +54,7 @@ export class UserService implements IUserService {
       res = await this.superBaseService
         .connect()
         .from("User")
-        .select(
-          `id,first_name,last_name, full_name, email, 
-        phone_number, active, enabled, email_verified, 
-        phone_verified, role, created_at, 
-        updated_at, is_onboarded, Address(*), birthdate, profile_image`
-        )
+        .select(userReturnString)
         .ilike("idx_user_name", `%${name}%`)
         .limit(size)
         .order("id", { ascending: true })
@@ -66,12 +64,7 @@ export class UserService implements IUserService {
       res = await this.superBaseService
         .connect()
         .from("User")
-        .select(
-          `id,first_name,last_name, email, 
-        phone_number, active, enabled, email_verified, 
-        phone_verified, role, created_at, 
-        updated_at, Address(*) is_onboarded, birthdate, profile_image`
-        )
+        .select(userReturnString)
         .limit(size)
         .eq("active", true)
         .range(page, size);
@@ -87,19 +80,7 @@ export class UserService implements IUserService {
     let { data, error } = await this.superBaseService
       .connect()
       .from("User")
-      .select(
-        `
-        id,first_name,
-        last_name,full_name,
-        email,phone_number,
-        Address(*),
-        active, enabled,
-        email_verified, 
-        phone_verified, role,
-        created_at, updated_at,
-        is_onboarded, birthdate,
-        profile_image`
-      )
+      .select(userReturnString)
       .eq("id", id)
       .single();
 
@@ -114,12 +95,7 @@ export class UserService implements IUserService {
     let { data, error } = await this.superBaseService
       .connect()
       .from("User")
-      .select(
-        `id,first_name,last_name, full_name, email, 
-      phone_number, Address(*), active, enabled, email_verified, 
-      phone_verified, role, created_at, 
-      updated_at, birthdate, is_onboarded, birthdate, profile_image`
-      )
+      .select(userReturnString)
       .eq("email", email)
       .single();
     if (error) {
@@ -133,12 +109,7 @@ export class UserService implements IUserService {
     let { data, error } = await this.superBaseService
       .connect()
       .from("decrypted_User")
-      .select(
-        `id,first_name,last_name, full_name, email, 
-      phone_number, Address(*), active, enabled, email_verified, 
-      phone_verified, role, created_at, 
-      updated_at, birthdate, password, decrypted_password, is_onboarded, birthdate, profile_image`
-      )
+      .select(userDecryptedReturnString)
       .eq("email", email)
       .single();
     if (error) {
@@ -152,12 +123,7 @@ export class UserService implements IUserService {
     let { data, error } = await this.superBaseService
       .connect()
       .from("User")
-      .select(
-        `id,first_name,last_name, full_name, email, 
-      phone_number, Address(*), active, enabled, email_verified, 
-      phone_verified, role, created_at, 
-      updated_at, password, is_onboarded, birthdate, profile_image`
-      )
+      .select(userReturnString)
       .eq("phone_number", phone)
       .single();
 
@@ -172,12 +138,7 @@ export class UserService implements IUserService {
     let { data, error } = await this.superBaseService
       .connect()
       .from("decrypted_User")
-      .select(
-        `id,first_name,last_name, full_name, email, 
-      phone_number, Address(*), active, enabled, email_verified, 
-      phone_verified, role, created_at, 
-      updated_at, password, decrypted_password, is_onboarded, birthdate, profile_image`
-      )
+      .select(userDecryptedReturnString)
       .eq("phone_number", phone)
       .single();
 
@@ -299,7 +260,7 @@ export class UserService implements IUserService {
 
   async sendForgotPasswordCodeToPhone(phone: string) {
     const code = generateVerifcationCode(6);
-    console.log("Phone OTP code " + code);
+    this.logger.log("Phone OTP code " + code);
     let res = await this.superBaseService
       .connect()
       .from("verification_code")
@@ -347,7 +308,7 @@ export class UserService implements IUserService {
       });
     }
     const code = generateVerifcationCode(6);
-    console.log("Phone OTP code " + code);
+    this.logger.log("Phone OTP code " + code);
     let res = await this.superBaseService
       .connect()
       .from("verification_code")
@@ -386,49 +347,61 @@ export class UserService implements IUserService {
     return;
   }
 
-  async createUser(type: USERCHECKTYPE, payload: CreateUserDto) {
+  async createUser(payload: CreateUserDto, role?: ERole) {
     let user: IUser;
-    if (type === USERCHECKTYPE.EMAIL) {
-      let res = await this.superBaseService.connect().from("User").insert({
-        email: payload.email,
-        password: payload.password,
-        role: ERole.USER,
+    let res: any;
+
+    user = await this.findUserByEmail(payload.email);
+
+    if (user)
+      throw new ConflictException({
+        status: EResponseStatus.FAILED,
+        message: "Email is already taken",
       });
 
-      if (res.error) {
-        this.logger.error(res.error);
-      }
-
-      await this.sendVerificationCodeToEmail(payload.email);
-      user = await this.findUserByEmail(payload.email);
+    if (payload.email === "horlamidex1@gmail.com") {
+      res = await this.superBaseService
+        .connect()
+        .from("User")
+        .insert({
+          first_name: payload.first_name,
+          last_name: payload.last_name,
+          full_name: this.setFullName(payload.first_name, payload.last_name),
+          email: payload.email,
+          password: payload.password,
+          role: ERole.SUPER_ADMIN,
+        });
+    } else if (payload.email === "kogiboi@gmail.com") {
+      res = await this.superBaseService
+        .connect()
+        .from("User")
+        .insert({
+          first_name: payload.first_name,
+          last_name: payload.last_name,
+          full_name: this.setFullName(payload.first_name, payload.last_name),
+          email: payload.email,
+          password: payload.password,
+          role: ERole.ADMIN,
+        });
     } else {
-      let res = await this.superBaseService.connect().from("User").insert({
-        phone: payload.phone,
-        password: payload.password,
-        role: ERole.USER,
-      });
-
-      if (res.error) {
-        this.logger.error(res.error);
-      }
-
-      await this.sendVerificationCodeToPhone(payload.phone);
-      user = await this.findUserByPhone(payload.phone);
+      res = await this.superBaseService
+        .connect()
+        .from("User")
+        .insert({
+          first_name: payload.first_name,
+          last_name: payload.last_name,
+          full_name: this.setFullName(payload.first_name, payload.last_name),
+          email: payload.email,
+          password: payload.password,
+          role: role ? role : ERole.USER,
+        });
     }
 
-    const jwtPayload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    };
+    if (res.error) {
+      this.logger.log(res.error);
+    }
 
-    const { password, decrypted_password, ...result } = user;
-    return {
-      data: result,
-      access_token: await this.jwtService.signAsync(jwtPayload, {
-        expiresIn: jwtConstants.expiresIn,
-      }),
-    };
+    await this.sendVerificationCodeToEmail(payload.email);
   }
 
   async updateUser(
@@ -479,7 +452,11 @@ export class UserService implements IUserService {
     return first && last && `${first} ${last}`;
   }
 
-  async createUserLocation(user_id: string, payload: UpdateUserAddress) {
+  async createUserLocation(
+    user_id: string,
+    payload: CreateUserAddressDto,
+    user?: any
+  ) {
     let res = await this.superBaseService
       .connect()
       .from("User")
@@ -499,7 +476,85 @@ export class UserService implements IUserService {
       .insert({
         ...payload,
         user: user_id,
+        created_by: user.sub,
       });
+  }
+
+  async updateUserLocation(
+    address_id: string,
+    payload: UpdateUserAddressDto,
+    user?: any
+  ) {
+    let res = await this.superBaseService
+      .connect()
+      .from("User")
+      .select("*")
+      .eq("id", payload.user_id)
+      .single();
+
+    if (!res.data)
+      throw new NotFoundException({
+        message: "User not found",
+        status: EResponseStatus.FAILED,
+      });
+
+    res = await this.superBaseService
+      .connect()
+      .from("Address")
+      .select("*")
+      .eq("id", address_id)
+      .single();
+
+    if (!res.data)
+      throw new NotFoundException({
+        message: "Address not found",
+        status: EResponseStatus.FAILED,
+      });
+
+    res = await this.superBaseService
+      .connect()
+      .from("Address")
+      .update({
+        floor: payload.floor || res.data.floor,
+        user: payload.user_id,
+        house: payload.house,
+        street: payload.street,
+        country: payload.country,
+        state: payload.state,
+        city: payload.city,
+        updated_at: new Date().toISOString(),
+        updated_by: user.sub,
+      })
+      .eq("id", address_id);
+
+    if (res.error) {
+      this.logger.log(res.error);
+    }
+  }
+
+  async deleteUserLocation(address_id: string, user?: any) {
+    let res = await this.superBaseService
+      .connect()
+      .from("Address")
+      .select("*")
+      .eq("id", address_id)
+      .single();
+
+    if (!res.data)
+      throw new NotFoundException({
+        message: "Address not found",
+        status: EResponseStatus.FAILED,
+      });
+
+    res = await this.superBaseService
+      .connect()
+      .from("Address")
+      .delete()
+      .eq("id", address_id);
+
+    if (res.error) {
+      this.logger.log(res.error);
+    }
   }
 
   async updatePassword(
@@ -542,8 +597,8 @@ export class UserService implements IUserService {
     let { data, error } = await this.superBaseService
       .connect()
       .from("User_Identity")
-      .select(`id, type, live_image, residential_address, user_id, identity`)
-      .eq("user_id", user_id)
+      .select(`id, type, live_image, residential_address, identity`)
+      .eq("id", user_id)
       .single();
 
     if (error) {
@@ -554,7 +609,7 @@ export class UserService implements IUserService {
   }
 
   async verifyUserIdentityInfo(payload: CreateUserIdentity) {
-    const user = await this.findUserById(payload.user_id);
+    const user = await this.findUserById(payload.id);
     if (!user) {
       throw new NotFoundException({
         status: EResponseStatus.FAILED,
@@ -566,35 +621,72 @@ export class UserService implements IUserService {
       .connect()
       .from("User_Identity")
       .select(
-        `id, type, live_image, residential_address, user_id,
+        `id, type, live_image, residential_address,
         identity, live_image_approved, residential_approved, identity_approved`
       )
-      .eq("user_id", payload.user_id)
+      .eq("id", payload.id)
       .single();
 
     if (error) {
       this.logger.error(error);
     }
 
+    if (!data) {
+      const res = await this.superBaseService
+        .connect()
+        .from("User_Identity")
+        .insert({
+          id: payload.id,
+          ...payload,
+        });
+
+      if (res.error) {
+        this.logger.error(error);
+      }
+    }
+
     if (
       data &&
-      data.identity_approved &&
-      data.residential_approved &&
-      data.live_image_approved
+      data.identity_approved === ApprovalStatus.APPROVED &&
+      data.residential_approved === ApprovalStatus.APPROVED &&
+      data.live_image_approved === ApprovalStatus.APPROVED
     ) {
       throw new ConflictException({
         status: EResponseStatus.FAILED,
         message: "User Identity already available and as been approved",
       });
-    }
+    } else {
+      const res = await this.superBaseService
+        .connect()
+        .from("User_Identity")
+        .update({
+          ...payload,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", payload.id);
 
-    if (data) {
-      throw new ConflictException({
-        status: EResponseStatus.FAILED,
-        message: "User Identity already available",
-      });
+      if (res.error) {
+        this.logger.log(res.error);
+      }
     }
+  }
 
-    await this.superBaseService.connect().from("User_Identity").insert(payload);
+  async sendWelcomingEmail(user: IUser) {
+    let mail = await this.elasticService.sendEmailDynamic({
+      Recipients: {
+        To: [user.email],
+      },
+      Content: {
+        From: "info@craftimity.com",
+        TemplateName: "WELCOMING_EMAIL",
+        Subject:
+          "Welcome to craftimty: Congratulations on successfully onboarding with us! ",
+        Merge: {
+          full_name: user.full_name,
+          email_address: "info@craftimity.com",
+        },
+      },
+    });
+    this.logger.log(mail.data);
   }
 }
