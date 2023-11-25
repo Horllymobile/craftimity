@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
     private userService: UsersService,
     private analytics: AngularFireAnalytics,
     private mixpanelService: MixpanelService,
-    private alertCtrl: AlertController,
+    private alertService: AlertService,
     private router: Router
   ) {}
 
@@ -67,27 +67,6 @@ export class LoginComponent implements OnInit {
       email: formPayload.email,
       remember: formPayload.remember,
     };
-    const alert = await this.alertCtrl.create({
-      header: 'Account Notice',
-      message: `We've observed that your account is currently registered as a user account.
-       Are you interested in becoming a Craftsman?`,
-      buttons: [
-        {
-          text: 'Go to Craftimity',
-          handler: (value) => {
-            this.userService.signout();
-            this.goTo('/craftimity');
-          },
-        },
-        {
-          text: 'Create Page',
-          handler: (value) => {
-            this.goToHome();
-          },
-        },
-      ],
-      animated: true,
-    });
 
     const loader = await this.loaderService.load();
     await loader.present();
@@ -102,19 +81,12 @@ export class LoginComponent implements OnInit {
         next: async (res) => {
           this.sucess = 'Login successfully';
           if (res.metaData.role === ERole.USER) {
-            localStorage.setItem(
-              STORAGE_VARIABLES.USER,
-              JSON.stringify(res.metaData)
-            );
-
-            localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
-            await alert.present();
+            this.validateLoggedInUser();
           } else {
             localStorage.setItem(
               STORAGE_VARIABLES.USER,
               JSON.stringify(res.metaData)
             );
-
             localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
             this.goToHome();
           }
@@ -141,6 +113,28 @@ export class LoginComponent implements OnInit {
           // });
         },
       });
+  }
+
+  validateLoggedInUser() {
+    this.alertService.success(
+      `Your account is currently listed as a user account. Would you like to become a Craftsman?`,
+      undefined,
+      [
+        {
+          text: 'No',
+          handler: (value) => {
+            this.userService.signout();
+            this.goTo('/craftimity');
+          },
+        },
+        {
+          text: 'Yes',
+          handler: (value) => {
+            // this.goToHome();
+          },
+        },
+      ]
+    );
   }
 
   goTo(url: string) {

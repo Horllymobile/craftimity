@@ -1,3 +1,4 @@
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { ApprovalStatus } from './../../../../core/enums/approval-status';
 import { SupaBaseService } from 'src/app/core/services/supabase.service';
 import { AlertService } from './../../../../core/services/alert.service';
@@ -34,6 +35,7 @@ import { CreateArtisan } from 'src/app/core/models/artisans';
   selector: 'app-account',
   templateUrl: './account.page.html',
   styleUrls: ['./account.page.scss'],
+  providers: [],
 })
 export class AccountPage implements OnInit, OnDestroy {
   imageChangedEvent: any = '';
@@ -103,7 +105,8 @@ export class AccountPage implements OnInit, OnDestroy {
     private supaBaseService: SupaBaseService,
     private modalController: ModalController,
     private categothryService: CategoryService,
-    private artisanService: ArtisanService
+    private artisanService: ArtisanService,
+    private activatedRoute: ActivatedRoute
   ) {
     const user = this.usersService.getUser();
     if (user) {
@@ -120,6 +123,8 @@ export class AccountPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const segment = this.activatedRoute.snapshot.queryParamMap.get('segment');
+    if (segment) this.segment = segment;
     this.countries$ = this.locationService
       .getCountries()
       .pipe(map((res) => res));

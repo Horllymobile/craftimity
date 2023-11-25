@@ -39,6 +39,11 @@
                 "output": "/"
               },
               {
+                "glob": "google957e14168e53f221.html",
+                "input": "src",
+                "output": "/"
+              },
+              {
                 "glob": "site.webmanifest",
                 "input": "src",
                 "output": "/"

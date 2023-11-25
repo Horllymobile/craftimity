@@ -5,8 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Observable, finalize, map } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
-import { ISignIn } from 'src/app/core/models/auth';
+import { ERole } from 'src/app/core/enums/role';
+import { ILoginResponse, ISignIn } from 'src/app/core/models/auth';
 import { ICountry } from 'src/app/core/models/location';
+import { IUser } from 'src/app/core/models/user';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
@@ -120,12 +122,20 @@ export class LoginComponent implements OnInit {
       )
       .subscribe({
         next: async (res) => {
-          localStorage.setItem(
-            STORAGE_VARIABLES.USER,
-            JSON.stringify(res.metaData)
-          );
-
-          localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
+          if (res.metaData.role === ERole.CRAFTMAN) {
+            this.validateLoggedInUser(res);
+          } else {
+            localStorage.setItem(
+              STORAGE_VARIABLES.USER,
+              JSON.stringify(res.metaData)
+            );
+            localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
+            if (this.returnUrl !== '/') {
+              this.goToReturnUrl(this.returnUrl);
+            } else {
+              this.goToHome();
+            }
+          }
 
           this.emailLoginForm.reset();
           this.analytics.logEvent('login_sucessfull', {
@@ -139,11 +149,6 @@ export class LoginComponent implements OnInit {
             ...(payload.email && { email: payload.email }),
             ...(res.metaData.full_name && { name: res.metaData.full_name }),
           });
-          if (this.returnUrl !== '/') {
-            this.goToReturnUrl(this.returnUrl);
-          } else {
-            this.goToHome();
-          }
         },
         error: async (error) => {
           await this.alertService.error(error);
@@ -156,6 +161,50 @@ export class LoginComponent implements OnInit {
           });
         },
       });
+  }
+
+  validateLoggedInUser(res: ILoginResponse) {
+    this.alertService.success(
+      `We've noticed you're a craftsman. Would you like to explore Craftivity or Craftimity?`,
+      undefined,
+      [
+        {
+          text: 'Craftivity',
+          handler: (value) => {
+            localStorage.setItem(
+              STORAGE_VARIABLES.APP,
+              STORAGE_VARIABLES.CRAFTIVITY
+            );
+            // this.userService.signout();
+            this.goTo('/craftivity');
+            localStorage.setItem(
+              STORAGE_VARIABLES.USER,
+              JSON.stringify(res.metaData)
+            );
+            localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
+          },
+        },
+        {
+          text: 'Contniue',
+          handler: (value) => {
+            if (this.returnUrl !== '/') {
+              this.goToReturnUrl(this.returnUrl);
+            } else {
+              this.goToHome();
+            }
+            localStorage.setItem(
+              STORAGE_VARIABLES.USER,
+              JSON.stringify(res.metaData)
+            );
+            localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
+          },
+        },
+      ]
+    );
+  }
+
+  goTo(url: string) {
+    this.router.navigateByUrl(url);
   }
 
   goToReturnUrl(url: string) {

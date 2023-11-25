@@ -1,9 +1,8 @@
-import { AlertController, ModalController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { IUser } from 'src/app/core/models/user';
 import { UsersService } from 'src/app/core/services/users/users.service';
-import { Router } from '@angular/router';
-import { OnboardingCraftsmanComponent } from 'src/app/components/onboarding-craftsman/onboarding-craftsman.component';
 
 @Component({
   selector: 'craftivity-home',
@@ -11,45 +10,53 @@ import { OnboardingCraftsmanComponent } from 'src/app/components/onboarding-craf
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  userData!: IUser | null;
+  userData!: IUser;
   constructor(
     private usersService: UsersService,
-    private alertController: AlertController,
-    private router: Router,
-    private modalController: ModalController
+    private toastController: ToastController,
+    private router: Router
   ) {
-    this.userData = this.usersService.userProfile;
-  }
-
-  async ngOnInit() {
-    const modal = await this.modalController.create({
-      component: OnboardingCraftsmanComponent,
-      componentProps: {
-        user: this.userData,
-      },
-      // initialBreakpoint: 0.9,
-      // breakpoints: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-    });
-    const alert = await this.alertController.create({
-      header: 'Incomplete Registration Alert!',
-      message: `Finish your sign-up now to unlock all the features designed for craftsmen.
-      Complete registration for immediate access to our app's functionalities.`,
-      buttons: [
-        'CLOSE',
-        {
-          text: 'Continue',
-          handler: async (value) => {
-            await alert.dismiss();
-            this.router.navigate(['craftivity/pages/more/account']);
-          },
-        },
-      ],
-    });
-
-    if (!this.userData?.is_onboarded) {
-      await alert.present();
+    const user = this.usersService.getUser();
+    if (user) {
+      this.userData = user;
     }
   }
 
-  openCreateStoreModal() {}
+  public toastButtons = [
+    {
+      text: 'Complete',
+      role: 'info',
+      handler: () => {
+        this.router.navigate(['/craftivity/pages/more/account'], {
+          queryParams: { segment: 'identity_info' },
+        });
+      },
+    },
+    {
+      text: 'Later',
+      role: 'cancel',
+      handler: async () => {
+        await this.toastController.dismiss();
+      },
+    },
+  ];
+
+  async ngOnInit() {
+    if (!this.userData.User_Identity) {
+      this.presentToast('top');
+    }
+  }
+
+  async presentToast(position: 'top' | 'middle' | 'bottom') {
+    const toast = await this.toastController.create({
+      message: `Your identity verification is still pending completion.`,
+      duration: 5000,
+      color: 'warning',
+      position: position,
+      cssClass: 'toast',
+      buttons: this.toastButtons,
+    });
+
+    await toast.present();
+  }
 }
