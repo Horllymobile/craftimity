@@ -1,0 +1,17 @@
+<div class="p-5 flex lg:flex-wrap flex-col md:flex-wrap xl:flex-wrap justify-between">
+    <section class="w-full">
+        <h3>Activities</h3>
+    </section>
+    <section class="w-full lg:w-5/12 md:w-5/12 xl:w-5/12">
+        <mat-card>
+            <mat-card-header class="p-0 relative" [ngStyle]="{ 'background-image': 'url(https://picsum.photos/300)', 
+                'background-size': 'cover', 'background-repeat': 'no-repeat', 'height': '20vh'}">
+                <button class="absolute z-50 w-10 h-10 right-5 text-white bg-gray-700 top-5 rounded-full">
+                    <mat-icon class="text-lg">edit</mat-icon>
+                </button>
+                <img class="w-30 absolute top-[50%] left-[40%] rounded-full" src="https://picsum.photos/100">
+            </mat-card-header>
+            <mat-card-content></mat-card-content>
+        </mat-card>
+    </section>
+</div>

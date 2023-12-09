@@ -1,9 +1,11 @@
+import { AuthService } from "src/app/core/services/auth/auth.service";
 import { Breakpoints } from "@angular/cdk/layout";
 import { Component, ElementRef, Renderer2, ViewChild } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
 import { LoginComponent } from "src/app/components/login/login.component";
 import { LayoutService } from "src/app/core/services/layout-service/layout.service";
+import { MatMenu } from "@angular/material/menu";
 
 @Component({
   selector: "craft-navbar",
@@ -13,28 +15,15 @@ import { LayoutService } from "src/app/core/services/layout-service/layout.servi
 export class NavbarComponent {
   Breakpoints = Breakpoints;
   isMenuOpen = false;
-  @ViewChild("toogleMenuButton") toogleMenuButton!: ElementRef;
-  @ViewChild("menu") menu!: ElementRef;
+  isAuth = this.authService.isAuth;
   constructor(
     public layoutService: LayoutService,
     private matDialog: MatDialog,
     private routes: ActivatedRoute,
     private router: Router,
-    private renderer: Renderer2
-  ) {
-    this.renderer.listen("window", "click", (e: Event) => {
-      if (
-        e.target !== this.toogleMenuButton?.nativeElement &&
-        e.target !== this.menu?.nativeElement
-      ) {
-        this.isMenuOpen = false;
-      }
-    });
-  }
-
-  toogleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
-  }
+    private renderer: Renderer2,
+    private authService: AuthService
+  ) {}
 
   openModal() {
     const login = this.routes.snapshot.url.findIndex(
@@ -47,9 +36,6 @@ export class NavbarComponent {
         closeOnNavigation: true,
         disableClose: true,
       });
-      this.toogleMenu();
-    } else {
-      this.toogleMenu();
     }
   }
 
@@ -61,5 +47,10 @@ export class NavbarComponent {
     // console.log(this.router.getCurrentNavigation());
     return "";
     // return this.routes.snapshot.url[this.routes.snapshot.url.length - 1].path;
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigateByUrl("/auth/login");
   }
 }

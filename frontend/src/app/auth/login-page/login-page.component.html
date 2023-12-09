@@ -1,153 +1,123 @@
-<div *ngIf="openLoginWithEmail"
-    class="lg:w-[512px] lg:mt-16 mb-16 mx-auto rounded-lg lg:border-[0.4pt] lg:border-gray-500 xl:border-[0.4pt] xl:border-gray-500 md:border-[0.4pt] md:border-gray-500">
-    <section>
-        <section class="w-full p-5 text-center border-b border-b-[#878484]">
-            <span class="text-center font-semibold">Log in or Sign up</span>
+<div class="w-full h-screen flex flex-col justify-center align-middle">
+    <div
+        class="lg:w-[512px] lg:mt-16 mb-16 mx-auto rounded-lg lg:border-[0.4pt] lg:border-gray-500 xl:border-[0.4pt] xl:border-gray-500 md:border-[0.4pt] md:border-gray-500">
+        <section>
+            <section class="w-full p-5 text-center border-b border-b-[rgb(135,132,132)]">
+                <span class="text-center font-semibold">Log in</span>
+            </section>
+            <ng-container [ngSwitch]="login_type">
+                <ng-container *ngSwitchCase="'email'" [ngTemplateOutlet]="email_form"></ng-container>
+                <ng-container *ngSwitchCase="'phone'" [ngTemplateOutlet]="phone_form"></ng-container>
+            </ng-container>
+            <p class="text-center">Don't have an account? <span class="text-primary-700 underline cursor-pointer"
+                    routerLink="/auth/register">Register</span></p>
         </section>
-
-        <form class="p-8" [formGroup]="emailLoginForm"
-            (ngSubmit)="showPasswordInput ? onSubmit(emailLoginFormControl) : onSubmitEmail(emailLoginFormControl)">
-            <p class="text-lg mb-8">Welcome to Conhect</p>
-            <div class="w-full mb-5">
-                <input formControlName="email" class="w-full p-3 border-[0.4pt] mb-1 rounded-lg border-[#878484]"
-                    type="text" placeholder="Email">
-                <p class="text-red-500"
-                    *ngIf="emailLoginFormControl['email'].dirty && emailLoginFormControl['email'].hasError('required')">
-                    Please enter email address
-                </p>
-                <p class="text-red-500"
-                    *ngIf="emailLoginFormControl['email'].dirty && emailLoginFormControl['email'].hasError('email')">
-                    Please enter a valid email address
-                </p>
-            </div>
-
-            <div class="w-full mb-2" *ngIf="showPasswordInput">
-                <div class="relative">
-                    <input formControlName="password" style="border-radius: 0.5em;"
-                        class="w-full  mt-3 p-3 border-[0.4pt] mb-2 rounded-lg border-[#878484]"
-                        [type]="showPassword ? 'text' : 'password'" placeholder="Password">
-                    <span (click)="onShowPassword()"
-                        class="text-sm text-[#878484] mb-2 absolute top-6 right-3 cursor-pointer"
-                        [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
-                </div>
-            </div>
-
-            <div class="w-full mb-5">
-                <button *ngIf="!isLoadingEmail" [disabled]="emailLoginForm.invalid"
-                    [ngClass]="emailLoginForm.valid ? 'bg-[#E78614] text-white' : 'bg-[#e8e5e1] text-black'"
-                    type="submit" class="w-full p-2 rounded-lg text-lg">Continue</button>
-                <mat-spinner *ngIf="isLoadingEmail" class="mx-auto" diameter="24" strokeWidth="3"
-                    color="warn"></mat-spinner>
-            </div>
-
-            <!-- <div class="w-full mb-5">
-                <button type="button"
-                    class="border-[0.3pt] text-lg border-[#878484] w-full p-2 rounded-lg flex gap-2 justify-center text-[#878484]">
-                    <i class="fa-brands fa-google text-sm md:text-lg lg:text-lg text-red-600"></i>
-                    <span class="text-sm md:text-lg lg:text-lg">Continue with Google</span>
-                </button>
-            </div>
-
-            <div class="w-full mb-5">
-                <button type="button"
-                    class="border-[0.3pt] border-[#878484] w-full p-2 flex gap-2 justify-center rounded-lg text-[#878484]">
-                    <i class="fa-brands fa-facebook text-sm md:text-lg lg:text-lg text-blue-700"></i>
-                    <span class="text-sm md:text-lg lg:text-lg">Continue with Facebook</span>
-                </button>
-            </div> -->
-
-            <div class="w-full mb-5">
-                <button type="button" (click)="toogle()"
-                    class="border-[0.3pt] border-[#878484] w-full p-2 flex gap-2 justify-center rounded-lg text-[#878484]">
-                    <i class="fa-solid fa-phone text-sm md:text-lg lg:text-lg"></i>
-                    <span class="text-sm md:text-lg lg:text-lg">Continue with Phone</span>
-                </button>
-            </div>
-        </form>
-    </section>
+    </div>
 </div>
 
-<div *ngIf="openLoginWithPhone"
-    class="lg:w-[512px] lg:mt-12 mx-auto rounded-lg lg:border-[0.4pt] lg:border-gray-500 xl:border-[0.4pt] xl:border-gray-500 md:border-[0.4pt] md:border-gray-500 overflow-y-scroll mb-16">
-    <section class="mb-16">
-        <section class="w-full p-5 text-center border-b border-b-[#878484]">
-            <span class="text-center font-semibold">Log in or Sign up</span>
-        </section>
 
-        <form class="p-8" [formGroup]="phoneLoginForm"
-            (ngSubmit)="showPasswordInput ? onSubmit(phoneLoginFormControl) : onSubmitPhone(phoneLoginFormControl)">
-            <h2 class="text-lg text-gray-800">Welcome to Conhect</h2>
-            <div class="w-full">
-                <select formControlName="code" style="border-top-left-radius: 0.5em; border-top-right-radius: 0.5em;"
-                    class="w-full p-3 border-[0.4pt] border-[#878484] focus:outline-none" type="text">
-                    <ng-container *ngFor="let country of countries$ | async">
-                        <option [value]="country.phone_code">({{ country.name }}) ({{ country.phone_code}})</option>
-                    </ng-container>
-                </select>
+<ng-template #email_form>
+    <form class="p-8" [formGroup]="emailLoginForm" (ngSubmit)="onSubmitEmail(emailLoginFormData)">
+        <p class="text-lg mb-8">Welcome back to Craftimity</p>
+        <div class="w-full mb-5">
+            <input formControlName="email" class="w-full p-3 border-[0.4pt] mb-1 rounded-lg border-[#878484]"
+                type="email" placeholder="Email">
+            <p class="text-red-500"
+                *ngIf="emailLoginFormControl['email'].dirty && emailLoginFormControl['email'].hasError('required')">
+                Please enter email address
+            </p>
+            <p class="text-red-500"
+                *ngIf="emailLoginFormControl['email'].dirty && emailLoginFormControl['email'].hasError('email')">
+                Please enter a valid email address
+            </p>
+        </div>
+
+        <div class="w-full mb-2">
+            <div class="relative">
+                <input formControlName="password" style="border-radius: 0.5em;"
+                    class="w-full  mt-3 p-3 border-[0.4pt] mb-2 rounded-lg border-[#878484]"
+                    [type]="showPassword ? 'text' : 'password'" placeholder="Password">
+                <span (click)="onShowPassword()"
+                    class="text-sm text-[#878484] mb-2 absolute top-6 right-3 cursor-pointer"
+                    [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
             </div>
-            <div class="w-full mb-5">
-                <input formControlName="phone" [ngClass]="phoneLoginForm.errors ? 'outline-red-500' : ''"
-                    style="border-bottom-left-radius: 0.5em; border-bottom-right-radius: 0.5em;"
-                    class="w-full p-3 border-[0.4pt] border-[#878484] mb-3 focus:outline-none" type="text"
-                    placeholder="Phone Number">
-                <p class="text-red-500 mb-3"
-                    *ngIf="phoneLoginFormControl['phone'].dirty && phoneLoginFormControl['phone'].hasError('required')">
-                    Please enter phone number
-                </p>
-                <p class="text-red-500 mb-3" *ngIf="phoneLoginFormControl['phone'].dirty && phoneLoginFormControl['phone'].hasError('minlength') 
+        </div>
+
+        <div class="w-full mb-5">
+            <button *ngIf="!isLoadingEmail"
+                [ngClass]="emailLoginForm.valid ? 'bg-primary text-white' : 'bg-[#e8e5e1] text-black'" type="submit"
+                class="w-full p-2 rounded-lg text-lg">Login</button>
+            <mat-spinner *ngIf="isLoadingEmail" class="mx-auto" diameter="24" strokeWidth="3"
+                color="warn"></mat-spinner>
+        </div>
+
+        <!-- <div class="w-full mb-1">
+            <button type="button" (click)="onLoginWith('phone')"
+                class="border-[0.3pt] border-[#878484] w-full p-2 flex gap-2 justify-center rounded-lg text-[#878484]">
+                <i class="fa-solid fa-phone text-sm md:text-lg lg:text-lg"></i>
+                <span class="text-sm md:text-lg lg:text-lg">Login with Phone</span>
+            </button>
+        </div> -->
+    </form>
+</ng-template>
+
+<ng-template #phone_form>
+    <form class="p-8" [formGroup]="phoneLoginForm" (ngSubmit)="onSubmitPhone(phoneLoginFormData)">
+        <h2 class="text-lg text-gray-800">Welcome to Conhect</h2>
+        <div class="w-full">
+            <select formControlName="code" style="border-top-left-radius: 0.5em; border-top-right-radius: 0.5em;"
+                class="w-full p-3 border-[0.4pt] border-[#878484] focus:outline-none" type="text">
+                <ng-container *ngFor="let country of countries$ | async">
+                    <option [value]="country.phone_code">({{ country.name }}) ({{ country.phone_code}})</option>
+                </ng-container>
+            </select>
+        </div>
+        <div class="w-full mb-2">
+            <input formControlName="phone" [ngClass]="phoneLoginForm.errors ? 'outline-red-500' : ''"
+                style="border-bottom-left-radius: 0.5em; border-bottom-right-radius: 0.5em;"
+                class="w-full p-3 border-[0.4pt] border-[#878484] mb-3 focus:outline-none" type="text"
+                placeholder="Phone Number">
+            <p class="text-red-500 mb-3"
+                *ngIf="phoneLoginFormControl['phone'].dirty && phoneLoginFormControl['phone'].hasError('required')">
+                Please enter phone number
+            </p>
+            <p class="text-red-500 mb-3" *ngIf="phoneLoginFormControl['phone'].dirty && phoneLoginFormControl['phone'].hasError('minlength') 
                     || phoneLoginFormControl['phone'].hasError('maxlength')">
-                    Phone digits must be ten
-                </p>
-                <p class="text-gray-500 lg:w-[85%] text-xs lg:text-sm">We'll call or text you to confirm your
-                    number.
-                    Standard message and
-                    data rates
-                    apply. <a href="/" class="underline">Privacy
-                        Policy</a></p>
-            </div>
+                Phone digits must be ten
+            </p>
+            <p class="text-gray-500 lg:w-[85%] text-xs lg:text-sm">We'll call or text you to confirm your
+                number.
+                Standard message and
+                data rates
+                apply. <a href="/" class="underline">Privacy
+                    Policy</a></p>
+        </div>
 
-            <div class="w-full mb-2" *ngIf="showPasswordInput">
-                <div class="relative">
-                    <input formControlName="password" style="border-radius: 0.5em;"
-                        class="w-full  mt-3 p-3 border-[0.4pt] mb-2 rounded-lg border-[#878484]"
-                        [type]="showPassword ? 'text' : 'password'" placeholder="Password">
-                    <span (click)="onShowPassword()"
-                        class="text-sm text-[#878484] mb-2 absolute top-6 right-3 cursor-pointer"
-                        [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
-                </div>
+        <div class="w-full mb-2">
+            <div class="relative">
+                <input formControlName="password" style="border-radius: 0.5em;"
+                    class="w-full  mt-3 p-3 border-[0.4pt] mb-2 rounded-lg border-[#878484]"
+                    [type]="showPassword ? 'text' : 'password'" placeholder="Password">
+                <span (click)="onShowPassword()"
+                    class="text-sm text-[#878484] mb-2 absolute top-6 right-3 cursor-pointer"
+                    [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
             </div>
+        </div>
 
-            <div class="w-full mb-5">
-                <button *ngIf="!isLoadingPhone" [disabled]="phoneLoginForm.invalid"
-                    [ngClass]="!phoneLoginForm.invalid ? 'bg-[#E78614] text-white' : 'bg-[#e8e5e1] text-black'"
-                    type="submit" class="w-full p-2 text-lg rounded-lg">Continue</button>
-                <mat-spinner *ngIf="isLoadingPhone" class="mx-auto" diameter="24" strokeWidth="3"
-                    color="warn"></mat-spinner>
-            </div>
+        <div class="w-full mb-5">
+            <button *ngIf="!isLoadingPhone" [disabled]="phoneLoginForm.invalid"
+                [ngClass]="!phoneLoginForm.invalid ? 'bg-[#E78614] text-white' : 'bg-[#e8e5e1] text-black'"
+                type="submit" class="w-full p-2 text-lg rounded-lg">Login</button>
+            <mat-spinner *ngIf="isLoadingPhone" class="mx-auto" diameter="24" strokeWidth="3"
+                color="warn"></mat-spinner>
+        </div>
 
-            <!-- <div class="w-full mb-5">
-                <button type="button"
-                    class="border-[0.3pt] text-lg border-[#878484] w-full p-2 rounded-lg flex gap-2 justify-center text-[#878484]">
-                    <i class="fa-brands fa-google text-sm md:text-lg lg:text-lg text-red-600"></i>
-                    <span class="text-sm md:text-lg lg:text-lg">Continue with Google</span>
-                </button>
-            </div>
-
-            <div class="w-full mb-5">
-                <button type="button"
-                    class="border-[0.3pt] border-[#878484] w-full p-2 flex gap-2 justify-center rounded-lg text-[#878484]">
-                    <i class="fa-brands fa-facebook text-sm md:text-lg lg:text-lg text-blue-700"></i>
-                    <span class="text-sm md:text-lg lg:text-lg">Continue with Facebook</span>
-                </button>
-            </div> -->
-
-            <div class="w-full mb-5">
-                <button type="button" (click)="toogle()"
-                    class="border-[0.3pt] border-[#878484] w-full p-2 flex gap-2 justify-center rounded-lg text-[#878484]">
-                    <i class="fa-solid fa-phone text-sm md:text-lg lg:text-lg"></i>
-                    <span class="text-sm md:text-lg lg:text-lg">Continue with Email</span>
-                </button>
-            </div>
-        </form>
-    </section>
-</div>
+        <div class="w-full mb-1">
+            <button type="button" (click)="onLoginWith('email')"
+                class="border-[0.3pt] border-[#878484] w-full p-2 flex gap-2 justify-center rounded-lg text-[#878484]">
+                <i class="fa-solid fa-phone text-sm md:text-lg lg:text-lg"></i>
+                <span class="text-sm md:text-lg lg:text-lg">Login with Email</span>
+            </button>
+        </div>
+    </form>
+</ng-template>

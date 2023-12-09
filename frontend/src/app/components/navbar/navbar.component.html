@@ -1,20 +1,19 @@
 <nav class="p-3" style="z-index: 50; border-bottom: 0.1pt solid gray;" *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Large)) 
 || layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Medium))">
     <section class="w-[90%] mx-auto flex justify-between align-middle">
-        <div class="self-center cursor-pointer" routerLink="/home">
+        <div class="self-center cursor-pointer w-full" routerLink="/home">
             <img src="assets/svg/craftimity-blue.svg">
         </div>
 
-        <div class="self-center" *ngIf="getCurrentPath() !== 'login'">
+        <div class="self-center w-full" *ngIf="getCurrentPath() !== 'login'">
             <craft-search></craft-search>
         </div>
 
-        <section class="flex gap-5" (click)="toogleMenu()">
+        <section class="flex gap-5 w-full justify-end">
             <a href="" class="self-center text-gray-500">Render your service</a>
-            <button #toogleMenuButton
-                class="flex justify-between align-middle p-2 gap-3 rounded-full border border-gray-400">
-                <i class="fa-solid fa-bars self-center"></i>
-                <img src="https://picsum.photos/200" class="w-8 rounded-full">
+            <button mat-fab [matMenuTriggerFor]="menu" color="secondary"
+                class="flex flex-wrap justify-between align-middle p-2 rounded-full border border-gray-400">
+                <img src="https://picsum.photos/200" class="w-full p-1 rounded-full">
             </button>
         </section>
     </section>
@@ -31,7 +30,7 @@
         </div>
         <section class="flex gap-5">
             <a href="" class="self-center text-gray-500">Render your service</a>
-            <button (click)="toogleMenu()" #toogleMenuButton
+            <button #toogleMenuButton
                 class="flex justify-between align-middle p-2 gap-3 rounded-full border border-gray-400">
                 <i class="fa-solid fa-bars self-center"></i>
                 <img src="https://picsum.photos/200" class="w-8 rounded-full">
@@ -40,9 +39,10 @@
     </section>
 </nav>
 
-<nav class="w-full p-3 fixed bottom-0 border-t bg-white border-t-black" *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XSmall)) 
-    || layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Small))">
-    <section class="flex justify-between gap-5 align-middle w-[60%] mx-auto">
+<nav class="w-full p-3 fixed bottom-0 border-t bg-white border-t-black"
+    *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XSmall)) 
+    || layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Small)) || layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.HandsetPortrait))">
+    <section class="flex justify-between gap-5 align-middle w-[60%] mx-auto" *ngIf="!isAuth()">
         <a type="button" routerLink="/home" [routerLinkActive]="['active']"
             class="flex flex-col justify-center align-middle" [routerLinkActiveOptions]="{ exact: true }">
             <i class="fa-solid fa-magnifying-glass self-center text-lg"></i>
@@ -62,16 +62,41 @@
         </button>
 
     </section>
+
+    <section class="flex justify-between gap-5 align-middle w-[60%] mx-auto" *ngIf="isAuth()">
+        <a type="button" routerLink="/home" [routerLinkActive]="['active']"
+            class="flex flex-col justify-center align-middle" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fa-solid fa-home self-center text-lg"></i>
+            <span class="text-xs">Home</span>
+        </a>
+
+        <!-- <a type="button" routerLink="/home" [routerLinkActive]="['active']"
+            class="flex flex-col justify-center align-middle" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fa-solid fa-magnifying-glass self-center text-lg"></i>
+            <span class="text-xs">Home</span>
+        </a> -->
+
+        <a type="button" routerLink="/orders" [routerLinkActive]="['active']" #rla="routerLinkActive"
+            class="flex flex-col justify-center align-middle" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fa-solid fa-list self-center text-lg"></i>
+            <span class="text-xs">Orders</span>
+        </a>
+
+        <button type="button" [routerLink]="['/profile']" [routerLinkActive]="['active']"
+            class="flex flex-col justify-center align-middle" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fa-regular fa-user self-center text-lg"></i>
+            <span class="text-xs">Profile</span>
+        </button>
+    </section>
 </nav>
 
-<ng-container *ngIf="isMenuOpen">
-    <div #menu
-        class="absolute bg-white right-15 top-16  xl:right-[10%] xl:top-16 shadow overflow-visible rounded-xl w-[20%]">
+<mat-menu #menu="matMenu" class="bg-white rounded-xl w-[300px]">
+    <section *ngIf="!isAuth()">
         <div class="w-full">
-            <button class="hover:bg-gray-300 p-3 block w-full text-left" (click)="openModal()">
+            <button class="hover:bg-gray-300 p-3 block w-full text-left" (click)="navigateToLogin()">
                 Login
             </button>
-            <button class="hover:bg-gray-300 p-3 block w-full text-left" (click)="openModal()">
+            <button class="hover:bg-gray-300 p-3 block w-full text-left" [routerLink]="['/auth/register']">
                 Sign up
             </button>
         </div>
@@ -84,5 +109,31 @@
                 Help Center
             </button>
         </div>
-    </div>
-</ng-container>
+    </section>
+
+    <section *ngIf="isAuth()">
+        <div class="w-full">
+            <button class="hover:bg-gray-300 p-3 block w-full text-left" [routerLink]="['/home']">
+                Home
+            </button>
+            <button class="hover:bg-gray-300 p-3 block w-full text-left" [routerLink]="['/orders']">
+                Orders
+            </button>
+            <button class="hover:bg-gray-300 p-3 block w-full text-left" [routerLink]="['/account']">
+                Account
+            </button>
+        </div>
+        <hr class="w-full p-0">
+        <div class="w-full">
+            <button class="hover:bg-gray-300 p-3 block w-full text-left">
+                Conhect your service
+            </button>
+            <button class="hover:bg-gray-300 p-3 block w-full text-left">
+                Help Center
+            </button>
+            <button class="hover:bg-gray-300 p-3 block w-full text-left" (click)="logout()">
+                Logout
+            </button>
+        </div>
+    </section>
+</mat-menu>

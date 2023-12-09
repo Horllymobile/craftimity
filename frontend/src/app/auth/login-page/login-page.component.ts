@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import {
   AbstractControl,
@@ -7,7 +8,8 @@ import {
 } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ToastrService } from "ngx-toastr";
-import { Observable, map } from "rxjs";
+import { Observable, finalize, map } from "rxjs";
+import { STORAGE_VARIABLES } from "src/app/core/constants/storage";
 import { EContactType, ELogin } from "src/app/core/enums/auth";
 import { ISignIn } from "src/app/core/models/auth";
 import { ICountry } from "src/app/core/models/location";
@@ -20,8 +22,7 @@ import { CountryService } from "src/app/core/services/country/country.service";
   styleUrls: ["./login-page.component.scss"],
 })
 export class LoginPageComponent implements OnInit {
-  openLoginWithEmail = true;
-  openLoginWithPhone = false;
+  login_type = "email";
 
   emailLoginForm!: FormGroup;
   phoneLoginForm!: FormGroup;
@@ -68,12 +69,26 @@ export class LoginPageComponent implements OnInit {
 
   initForm() {
     this.emailLoginForm = this.fb.group({
-      email: [null, [Validators.required, Validators.email]],
+      email: ["kogiboi12@gmail.com", [Validators.required, Validators.email]],
+      password: [
+        "horlly442",
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.maxLength(16),
+        ],
+      ],
       type: ["email"],
     });
 
     this.phoneLoginForm = this.fb.group({
       code: [null, [Validators.required]],
+      password: [
+        null,
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(16),
+      ],
       phone: [
         null,
         [
@@ -94,41 +109,42 @@ export class LoginPageComponent implements OnInit {
     console.log(formPayload);
   }
 
-  onSubmitEmail(formPayload: { [key: string]: AbstractControl }) {
+  onSubmitEmail(formPayload: any) {
     this.isLoadingEmail = true;
     const payload: ISignIn = {
       type: EContactType.EMAIL,
-      email: formPayload["email"].value,
+      password: formPayload.password,
+      email: formPayload.email,
     };
-    this.authService.sigin(payload).subscribe({
-      next: (res) => {
-        if (res === null) {
-          this.toastrService.success(
-            `Verification code have been sent to ${payload.email}`
+    this.authService
+      .sigin(payload)
+      .pipe(finalize(() => (this.isLoadingEmail = false)))
+      .subscribe({
+        next: (res) => {
+          this.authService.isAuth.update(
+            (value) =>
+              (value = this.authService.isAuthenticatedT(res.data.access_token))
           );
-          this.router.navigate(["auth/verify-email/", payload.email]);
-        } else {
-          this.emailLoginForm?.addControl("password", [
-            null,
-            [Validators.required],
-          ]);
-          this.showPasswordInput = true;
-        }
-        this.isLoadingEmail = false;
-      },
-      error: (err) => {
-        console.log(err);
-        this.toastrService.error(err.message);
-        this.isLoadingEmail = false;
-      },
-    });
+          localStorage.setItem(
+            STORAGE_VARIABLES.USER,
+            JSON.stringify(res.data.metaData)
+          );
+          localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.data.access_token);
+          this.toastrService.success(res.message);
+          this.router.navigate(["/home"]);
+        },
+        error: (err) => {
+          this.toastrService.error(err);
+        },
+      });
   }
 
-  onSubmitPhone(formPayload: { [key: string]: AbstractControl }) {
+  onSubmitPhone(formPayload: any) {
     this.isLoadingPhone = true;
     const payload: ISignIn = {
       type: EContactType.PHONE,
-      phone: `${formPayload["code"].value}${formPayload["phone"].value}`,
+      phone: `${formPayload.code}${formPayload.phone}`,
+      password: formPayload.password,
     };
     this.authService.sigin(payload).subscribe({
       next: (res) => {
@@ -137,12 +153,6 @@ export class LoginPageComponent implements OnInit {
             `Verification code have been sent to ${payload.phone}`
           );
           this.router.navigate(["auth/verify-phone/", payload.phone]);
-        } else {
-          this.phoneLoginForm.addControl("password", [
-            null,
-            [Validators.required],
-          ]);
-          this.showPasswordInput = true;
         }
         this.isLoadingPhone = false;
       },
@@ -154,10 +164,7 @@ export class LoginPageComponent implements OnInit {
     });
   }
 
-  toogle() {
-    if (this.route.snapshot.url.find((value) => value.path !== "/login")) {
-      this.openLoginWithEmail = !this.openLoginWithEmail;
-      this.openLoginWithPhone = !this.openLoginWithPhone;
-    }
+  onLoginWith(type: "email" | "phone") {
+    this.login_type = type;
   }
 }

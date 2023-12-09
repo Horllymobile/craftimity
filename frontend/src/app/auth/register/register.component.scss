@@ -1,0 +1,12 @@
+input[type=radio] {
+    width: 1rem;
+}
+
+input[type=checkbox] {
+    width: 2rem;
+}
+
+input[type=radio]:checked:before {
+    content: '';
+    background:  red //#12427A;
+}

@@ -1,0 +1,121 @@
+<div class="w-full h-screen flex flex-col justify-center align-middle">
+    <div
+        class="lg:w-[512px] lg:mt-10 mx-auto rounded-lg lg:border-[0.4pt] lg:border-gray-500 xl:border-[0.4pt] xl:border-gray-500 md:border-[0.4pt] md:border-gray-500">
+        <section>
+            <section class="w-full p-5 text-center border-b border-b-[rgb(135,132,132)]">
+                <span class="text-center font-semibold">Register</span>
+            </section>
+            <form class="p-5" [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+                <div class="w-full mb-3">
+                    <input formControlName="first_name"
+                        class="w-full p-3 border-[0.4pt] mb-1 rounded-lg border-[#878484]" type="text"
+                        placeholder="First Name">
+                    <p class="text-red-500"
+                        *ngIf="formCtrl['first_name'].dirty && formCtrl['first_name'].hasError('required')">
+                        Please enter first name
+                    </p>
+                </div>
+                <div class="w-full mb-3">
+                    <input formControlName="last_name"
+                        class="w-full p-3 border-[0.4pt] mb-1 rounded-lg border-[#878484]" type="text"
+                        placeholder="Last Name">
+                    <p class="text-red-500"
+                        *ngIf="formCtrl['last_name'].dirty && formCtrl['last_name'].hasError('required')">
+                        Please enter last name
+                    </p>
+                </div>
+                <div class="w-full mb-3">
+                    <input formControlName="email" class="w-full p-3 border-[0.4pt] mb-1 rounded-lg border-[#878484]"
+                        type="text" placeholder="Email">
+                    <p class="text-red-500" *ngIf="formCtrl['email'].dirty && formCtrl['email'].hasError('required')">
+                        Please enter email address
+                    </p>
+                    <p class="text-red-500" *ngIf="formCtrl['email'].dirty && formCtrl['email'].hasError('email')">
+                        Please enter a valid email address
+                    </p>
+                </div>
+
+
+                <div class="w-full  gap-2 mb-3">
+                    <p for="role">Are you an artisan?</p>
+                    <div class="flex  gap-2">
+                        <div class="flex gap-1">
+                            <label for="yes">Yes</label>
+                            <input type="radio" id="yes" [value]="true" formControlName="is_artisan">
+                        </div>
+                        <div class="flex gap-1">
+                            <label for="no">No</label>
+                            <input type="radio" id="no" [value]="false" formControlName="is_artisan">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div formGroupName="phone">
+                    <div class="w-full">
+                        <select formControlName="code" [value]="''"
+                            style="border-top-left-radius: 0.5em; border-top-right-radius: 0.5em;"
+                            class="w-full p-3 border-[0.4pt] border-[#878484] focus:outline-none" type="text">
+                            <option value="">Select Country</option>
+                            <ng-container *ngFor="let country of countries$ | async">
+                                <option [value]="country.phone_code">{{ country.name }} - {{ country.phone_code}}
+                                </option>
+                            </ng-container>
+                        </select>
+                    </div>
+                    <div class="w-full mb-2">
+                        <input formControlName="number" [ngClass]="form.errors ? 'outline-red-500' : ''"
+                            style="border-bottom-left-radius: 0.5em; border-bottom-right-radius: 0.5em;"
+                            class="w-full p-3 border-[0.4pt] border-[#878484] mb-3 focus:outline-none" type="text"
+                            placeholder="Phone Number">
+                        <p class="text-red-500 mb-3"
+                            *ngIf="formPhoneGroup.get('number')?.dirty && formPhoneGroup.get('number')?.hasError('required')">
+                            Please enter phone number
+                        </p>
+                        <p class="text-red-500 mb-3" *ngIf="formPhoneGroup.get('number')?.dirty && formPhoneGroup.get('number')?.hasError('minlength') 
+                            || formPhoneGroup.get('number')?.hasError('maxlength')">
+                            Phone digits must be ten
+                        </p>
+                        <p class="text-gray-500 lg:w-[85%] text-xs lg:text-sm">We'll call or text you to confirm your
+                            number.
+                            Standard message and
+                            data rates
+                            apply. <a href="/" class="underline">Privacy
+                                Policy</a></p>
+                    </div>
+                </div>
+
+                <div class="w-full mb-2">
+                    <div class="relative">
+                        <input formControlName="password" style="border-radius: 0.5em;"
+                            class="w-full  mt-3 p-3 border-[0.4pt] mb-2 rounded-lg border-[#878484]"
+                            [type]="showPassword ? 'text' : 'password'" placeholder="Password">
+                        <span (click)="onShowPassword()"
+                            class="text-sm text-[#878484] mb-2 absolute top-6 right-3 cursor-pointer"
+                            [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
+                    </div>
+                </div>
+
+                <div class="w-full mb-2 flex flex-row gap-3">
+                    <input type="checkbox" id="agree" formControlName="agree">
+                    <label for="agree" class="text-xs">By selecting Agree and Continue, I agree to <span
+                            class="text-primary underline">Service's Terms of
+                            Service, Payments
+                            Terms of Service,</span>
+                        and <span class="text-primary underline">Nondiscrimination Policy</span>. and acknowledge the
+                        <span class="text-primary underline">Privacy Policy.</span></label>
+                </div>
+
+                <div class="w-full mb-2">
+                    <button *ngIf="!isLoading"
+                        [ngClass]="form.valid ? 'bg-primary text-white' : 'bg-[#e8e5e1] text-black'" type="submit"
+                        class="w-full p-2 rounded-lg text-lg" [disabled]="!isFormValid(form)">Register</button>
+                    <mat-spinner *ngIf="isLoading" class="mx-auto" diameter="24" strokeWidth="3"
+                        color="warn"></mat-spinner>
+                </div>
+            </form>
+            <p class="text-center">Already have an account? <span class="text-primary-700 underline cursor-pointer"
+                    routerLink="/auth/login">Login</span></p>
+        </section>
+    </div>
+</div>
