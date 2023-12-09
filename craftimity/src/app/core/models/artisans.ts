@@ -17,7 +17,7 @@ export interface IArtisan {
 }
 
 export interface CreateArtisan {
-  user_id: string;
+  user_id?: string;
   name: string;
   business_name: string;
   category: number;

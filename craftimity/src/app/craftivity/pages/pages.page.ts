@@ -8,10 +8,8 @@ import { UsersService } from 'src/app/core/services/users/users.service';
   styleUrls: ['./pages.page.scss'],
 })
 export class PagesPage implements OnInit {
-  userData!: IUser | null;
-  constructor(private usersService: UsersService) {
-    this.userData = this.usersService.userProfile;
-  }
+  userData = this.usersService.userData;
+  constructor(private usersService: UsersService) {}
 
   async ngOnInit() {}
 }

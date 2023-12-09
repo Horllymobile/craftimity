@@ -13,7 +13,7 @@ import { Navigation } from 'swiper/modules';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  userData!: IUser | null;
+  userData = this.usersService.userData;
   categories$!: Observable<ICategory[]>;
   selectedCategory!: ICategory;
   page = 1;
@@ -44,9 +44,7 @@ export class HomePage implements OnInit {
   constructor(
     private usersService: UsersService,
     private categothryService: CategoryService
-  ) {
-    this.userData = this.usersService.getUser();
-  }
+  ) {}
 
   ngOnInit() {
     this.categories$ = this.categothryService

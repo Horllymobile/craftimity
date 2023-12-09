@@ -8,7 +8,6 @@ import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { ERole } from 'src/app/core/enums/role';
 import { ILoginResponse, ISignIn } from 'src/app/core/models/auth';
 import { ICountry } from 'src/app/core/models/location';
-import { IUser } from 'src/app/core/models/user';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
@@ -81,6 +80,7 @@ export class LoginComponent implements OnInit {
     this.emailLoginForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
       password: [null, [Validators.required]],
+      remember: [null, [Validators.required]],
       type: ['email'],
     });
 
@@ -104,6 +104,7 @@ export class LoginComponent implements OnInit {
     const payload: ISignIn = {
       type: formPayload.type,
       password: formPayload.password,
+      remember: formPayload.remember,
       email: formPayload.email,
       // ...(formPayload.email && { email: formPayload.email }),
       // ...(formPayload.phone && {

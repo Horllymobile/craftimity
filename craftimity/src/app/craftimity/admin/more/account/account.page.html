@@ -37,11 +37,11 @@
           </ion-fab>
         </ion-card-subtitle>
       </ion-card-header>
-      <ion-card-content *ngIf="userData">
+      <ion-card-content *ngIf="userData()">
         <div class="w-28 grid mx-auto" *ngIf="!editImage">
           <ion-avatar class="mx-auto w-28 h-28 mt-5">
-            <ion-img *ngIf="userData?.profile_image" [src]="userData.profile_image"></ion-img>
-            <ion-img *ngIf="!userData?.profile_image"
+            <ion-img *ngIf="userData()?.profile_image" [src]="userData()?.profile_image"></ion-img>
+            <ion-img *ngIf="!userData()?.profile_image"
               src="https://ionicframework.com/docs/img/demos/avatar.svg"></ion-img>
           </ion-avatar>
           <ion-fab>
@@ -78,8 +78,8 @@
             <div *ngIf="!imageChangedEvent" class="mt-5 flex justify-center">
               <div class="w-28 grid mx-auto">
                 <ion-avatar class="mx-auto w-28 h-28 mt-5">
-                  <ion-img *ngIf="userData?.profile_image" [src]="userData.profile_image"></ion-img>
-                  <ion-img *ngIf="!userData?.profile_image"
+                  <ion-img *ngIf="userData()?.profile_image" [src]="userData()?.profile_image"></ion-img>
+                  <ion-img *ngIf="!userData()?.profile_image"
                     src="https://ionicframework.com/docs/img/demos/avatar.svg"></ion-img>
                 </ion-avatar>
                 <ion-fab>
@@ -99,58 +99,59 @@
 
         <ion-list *ngIf="!edit">
           <ion-item class="py-3">
-            <ion-text *ngIf="userData?.first_name">First Name: {{ userData.first_name}}</ion-text>
-            <ion-text *ngIf="!userData?.first_name">First Name</ion-text>
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.first_name">
+            <ion-text *ngIf="userData()?.first_name">First Name: {{ userData()?.first_name}}</ion-text>
+            <ion-text *ngIf="!userData()?.first_name">First Name</ion-text>
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData()?.first_name">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
           </ion-item>
 
           <ion-item class="py-3">
-            <ion-text *ngIf="userData?.last_name">Last Name: {{ userData.last_name}}</ion-text>
-            <ion-text *ngIf="!userData?.last_name">Last Name</ion-text>
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.last_name">
+            <ion-text *ngIf="userData()?.last_name">Last Name: {{ userData()?.last_name}}</ion-text>
+            <ion-text *ngIf="!userData()?.last_name">Last Name</ion-text>
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData()?.last_name">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
           </ion-item>
 
           <ion-item class="py-3">
-            <ion-text *ngIf="userData.email">
-              Email: {{ userData.email}}
+            <ion-text *ngIf="userData()?.email">
+              Email: {{ userData()?.email}}
             </ion-text>
-            <ion-text *ngIf="!userData.email">
+            <ion-text *ngIf="!userData()?.email">
               Email
             </ion-text>
-            <ion-chip slot="end" color="warning" *ngIf="userData.email && !userData.email_verified">
+            <ion-chip slot="end" color="warning" *ngIf="userData()?.email && !userData()?.email_verified">
               <ion-icon name="alert-outline"></ion-icon>
               verify
             </ion-chip>
 
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.email">
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData()?.email">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
           </ion-item>
 
           <ion-item class="py-3">
-            <ion-text *ngIf="userData?.phone_number">Phone Number: {{ userData.phone_number}}</ion-text>
-            <ion-text *ngIf="!userData?.phone_number">Phone Number</ion-text>
-            <ion-chip slot="end" color="warning" *ngIf="userData.phone_number && !userData.phone_verified">
+            <ion-text *ngIf="userData()?.phone_number">Phone Number: {{ userData()?.phone_number}}</ion-text>
+            <ion-text *ngIf="!userData()?.phone_number">Phone Number</ion-text>
+            <ion-chip (click)="openModal(verifyComponent, { user: userData() })" slot="end" color="warning"
+              *ngIf="userData()?.phone_number && !userData()?.phone_verified">
               <ion-icon name="alert-outline"></ion-icon>
               Verify
             </ion-chip>
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.phone_number">
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData()?.phone_number">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
           </ion-item>
 
           <ion-item class="py-3" lines="none">
-            <ion-text *ngIf="userData?.birthdate">Birthdate: {{ userData.birthdate | date }}</ion-text>
-            <ion-text *ngIf="!userData?.birthdate">Birthdate</ion-text>
-            <ion-chip (click)="toogleEdit()" *ngIf="!userData?.birthdate" color="warning" slot="end">
+            <ion-text *ngIf="userData()?.birthdate">Birthdate: {{ userData()?.birthdate | date }}</ion-text>
+            <ion-text *ngIf="!userData()?.birthdate">Birthdate</ion-text>
+            <ion-chip (click)="toogleEdit()" *ngIf="!userData()?.birthdate" color="warning" slot="end">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
@@ -171,14 +172,14 @@
             </ion-item>
           </div>
 
-          <div class="w-full my-5" *ngIf="!userData.email">
+          <div class="w-full my-5" *ngIf="!userData()?.email">
             <ion-item>
               <ion-input label="Email" type="text" name="email" formControlName="last_name"
                 class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Email"></ion-input>
             </ion-item>
           </div>
 
-          <div class="w-full mb-5" *ngIf="!userData.phone_number">
+          <div class="w-full mb-5" *ngIf="!userData()?.phone_number">
             <ion-item formGroupName="phone">
               <ion-select class="w-28 px-1 bg-white text-primary" formControlName="code" placeholder="Code">
                 <ng-container *ngFor="let country of countries$ | async">
@@ -223,21 +224,19 @@
           </ion-fab>
         </ion-card-subtitle>
       </ion-card-header>
-      <ion-card-content class="mt-12" *ngIf="userData">
+      <ion-card-content class="mt-12" *ngIf="userData()">
         <ion-list>
-          <ion-item-sliding class="mb-5 py-1" *ngFor="let address of userData.Address">
-            <ion-item detail="true">
-              <ion-text>
-                {{ address?.house }} {{ address?.street
-                }}, {{ address?.Country?.name }} {{
-                address?.State?.name }}, {{ address?.City?.name }}</ion-text>
-            </ion-item>
-            <ion-item-options>
-              <ion-item-option
-                (click)="openModal(createEditAddressComponent, { action: 'edit', address })">Edit</ion-item-option>
-              <ion-item-option color="danger">Delete</ion-item-option>
-            </ion-item-options>
-          </ion-item-sliding>
+          <ion-item class="mb-5 py-1" *ngFor="let address of userData()?.address">
+            <ion-icon name="location-outline" slot="start"></ion-icon>
+            <ion-text>
+              {{ address?.house }} {{ address?.street
+              }}, {{ address?.country?.name }} {{
+              address?.state?.name }}, {{ address?.city?.name }}</ion-text>
+
+            <ion-icon slot="end" (click)="openModal(createEditAddressComponent, { action: 'edit', address })"
+              name="create-outline"></ion-icon>
+            <ion-icon slot="end" name="trash-outline"></ion-icon>
+          </ion-item>
         </ion-list>
       </ion-card-content>
     </ion-card>

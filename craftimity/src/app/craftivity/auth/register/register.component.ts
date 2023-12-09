@@ -2,12 +2,13 @@ import { AlertService } from './../../../core/services/alert.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { Observable, finalize, map } from 'rxjs';
+import { TermsAndConditionsComponent } from 'src/app/components/terms-and-conditions/terms-and-conditions.component';
 import { ICity, ICountry, IState } from 'src/app/core/models/location';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
-import { CustomValidators } from 'src/app/core/utils/custom-validators';
 
 @Component({
   selector: 'craftivity-register',
@@ -20,14 +21,18 @@ export class RegisterComponent implements OnInit {
   showCPassword = false;
 
   countries$!: Observable<ICountry[]>;
-  states$!: Observable<IState[]>;
-  cities$!: Observable<ICity[]>;
+
+  phoneDigitLength = 10;
+  phoneDigitErrorText = 'ten (10)';
+  phoneDigitSamplePlaceholder = '8095687112';
+
   constructor(
     private authService: AuthService,
     private loaderService: LoaderService,
     private locationService: LocationService,
     private router: Router,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private modalController: ModalController
   ) {}
   get formData() {
     return this.form.value;
@@ -46,24 +51,28 @@ export class RegisterComponent implements OnInit {
 
   initForm() {
     this.form = new FormGroup({
-      first_name: new FormControl(null, [Validators.required]),
-      last_name: new FormControl(null, [Validators.required]),
+      first_name: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(3),
+      ]),
+      last_name: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(3),
+      ]),
       email: new FormControl(null, [Validators.required, Validators.email]),
-      password: new FormControl(null, [Validators.required]),
+      code: new FormControl(null, [Validators.required]),
+      number: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(this.phoneDigitLength),
+        Validators.maxLength(this.phoneDigitLength),
+      ]),
+      password: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(16),
+      ]),
       accept: new FormControl(null, [Validators.required]),
     });
-  }
-
-  onSelectCountry({ detail: { value } }: any) {
-    this.states$ = this.locationService
-      .getStates({ country: value })
-      .pipe(map((res) => res));
-  }
-
-  onSelectState({ detail: { value } }: any) {
-    this.cities$ = this.locationService
-      .getCities({ state: value })
-      .pipe(map((res) => res));
   }
 
   togglePassword() {
@@ -80,6 +89,11 @@ export class RegisterComponent implements OnInit {
 
   async onSubmit(payload: any) {
     const { accept, ...result } = payload;
+
+    payload = {
+      ...payload,
+      phone: `${result.code}${result.number}`,
+    };
 
     const loader = await this.loaderService.load();
     await loader.present();
@@ -100,5 +114,13 @@ export class RegisterComponent implements OnInit {
           await this.alertService.error(err);
         },
       });
+  }
+
+  async openTermsAndConditionModal() {
+    const modal = await this.modalController.create({
+      component: TermsAndConditionsComponent,
+    });
+
+    await modal.present();
   }
 }

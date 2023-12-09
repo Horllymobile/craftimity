@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
 import { finalize } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { ERole } from 'src/app/core/enums/role';
@@ -63,13 +62,13 @@ export class LoginComponent implements OnInit {
   async login(formPayload: any) {
     const payload: ISignIn = {
       type: 'email',
-      password: formPayload.password,
-      email: formPayload.email,
-      remember: formPayload.remember,
+      password: formPayload?.password,
+      email: formPayload?.email,
+      remember: formPayload?.remember,
     };
 
-    const loader = await this.loaderService.load();
-    await loader.present();
+    const loader = await this.loaderService?.load();
+    await loader?.present();
     this.authService
       .signin(payload)
       .pipe(
@@ -83,6 +82,7 @@ export class LoginComponent implements OnInit {
           if (res.metaData.role === ERole.USER) {
             this.validateLoggedInUser();
           } else {
+            this.userService.userData.update((value) => (value = res.metaData));
             localStorage.setItem(
               STORAGE_VARIABLES.USER,
               JSON.stringify(res.metaData)
@@ -101,6 +101,7 @@ export class LoginComponent implements OnInit {
           this.mixpanelService.track('craftman_login_sucessfull', res.metaData);
         },
         error: async (error) => {
+          console.log(error);
           this.showError = true;
           this.error = error;
           setTimeout(() => (this.showError = false), 5000);

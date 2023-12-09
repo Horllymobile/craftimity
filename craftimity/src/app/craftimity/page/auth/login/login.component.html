@@ -31,11 +31,17 @@
           class="text-sm text-[#12427A] mb-2 absolute top-3 right-3 cursor-pointer"
           [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
       </div>
-      <p class="text-[#12427A] underline" routerLink="/auth/forgot-password">Forgot Password?</p>
+    </div>
+
+    <div class="w-full flex gap-2 ">
+      <ion-checkbox formControlName="remember"></ion-checkbox>
+      <p class="text-xs text-[#12427A] mt-1">Remember me</p>
     </div>
 
     <ion-button expand="block" [disabled]="emailLoginForm.invalid" type="submit"
       class="button-custom mt-5">Continue</ion-button>
+
+    <p class="text-[#12427A] underline text-center" routerLink="/auth/forgot-password">Forgot Password?</p>
 
     <p class="text-[#12427A] text-center">Don't have an account? <span class="underline"
         routerLink="/craftimity/page/auth/register">Register</span></p>

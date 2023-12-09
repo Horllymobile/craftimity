@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Account</ion-title>
+    <ion-title>Account Information</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -107,7 +107,7 @@
           <ion-item class="py-3">
             <ion-text *ngIf="userData?.first_name">First Name: {{ userData.first_name}}</ion-text>
             <ion-text *ngIf="!userData?.first_name">First Name</ion-text>
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.first_name">
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData?.first_name">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
@@ -116,25 +116,25 @@
           <ion-item class="py-3">
             <ion-text *ngIf="userData?.last_name">Last Name: {{ userData.last_name}}</ion-text>
             <ion-text *ngIf="!userData?.last_name">Last Name</ion-text>
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.last_name">
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData?.last_name">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
           </ion-item>
 
           <ion-item class="py-3">
-            <ion-text *ngIf="userData.email">
+            <ion-text *ngIf="userData?.email">
               Email: {{ userData.email}}
             </ion-text>
-            <ion-text *ngIf="!userData.email">
+            <ion-text *ngIf="!userData?.email">
               Email
             </ion-text>
-            <ion-chip slot="end" color="warning" *ngIf="userData.email && !userData.email_verified">
+            <ion-chip slot="end" color="warning" *ngIf="userData?.email && !userData?.email_verified">
               <ion-icon name="alert-outline"></ion-icon>
               verify
             </ion-chip>
 
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.email">
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData?.email">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
@@ -143,11 +143,11 @@
           <ion-item class="py-3">
             <ion-text *ngIf="userData?.phone_number">Phone Number: {{ userData.phone_number}}</ion-text>
             <ion-text *ngIf="!userData?.phone_number">Phone Number</ion-text>
-            <ion-chip slot="end" color="warning" *ngIf="userData.phone_number && !userData.phone_verified">
+            <ion-chip slot="end" color="warning" *ngIf="userData?.phone_number && !userData?.phone_verified">
               <ion-icon name="alert-outline"></ion-icon>
               Verify
             </ion-chip>
-            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData.phone_number">
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData?.phone_number">
               required
               <ion-icon name="alert-circle-outline"></ion-icon>
             </ion-chip>
@@ -177,14 +177,14 @@
             </ion-item>
           </div>
 
-          <div class="w-full my-5" *ngIf="!userData.email">
+          <div class="w-full my-5" *ngIf="!userData?.email">
             <ion-item>
               <ion-input label="Email" type="text" name="email" formControlName="last_name"
                 class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Email"></ion-input>
             </ion-item>
           </div>
 
-          <div class="w-full mb-5" *ngIf="!userData.phone_number">
+          <div class="w-full mb-5" *ngIf="!userData?.phone_number">
             <ion-item formGroupName="phone">
               <ion-select class="w-28 px-1 bg-white text-primary" formControlName="code" placeholder="Code">
                 <ng-container *ngFor="let country of countries$ | async">
@@ -227,20 +227,20 @@
         </ion-card-subtitle>
       </ion-card-header>
       <ion-card-content class="mt-12" *ngIf="userData">
-        <ion-text class="text-center" *ngIf="userData && !userData.Address?.length">
+        <ion-text class="text-center" *ngIf="userData && !userData?.address?.length">
           No address, click the button to add one
         </ion-text>
-        <ion-fab-button class="text-center mx-auto" *ngIf="userData && !userData.Address?.length" size="small"
+        <ion-fab-button class="text-center mx-auto" *ngIf="userData && !userData?.address?.length" size="small"
           (click)="openModal(createEditAddressComponent, { action: 'add' })">
           <ion-icon name="add-outline"></ion-icon>
         </ion-fab-button>
-        <ion-list *ngIf="userData && userData.Address?.length">
-          <ion-item-sliding class="mb-5 py-1" *ngFor="let address of userData.Address">
+        <ion-list *ngIf="userData && userData?.address?.length">
+          <ion-item-sliding class="mb-5 py-1" *ngFor="let address of userData?.address">
             <ion-item detail="true">
               <ion-text>
                 {{ address?.house }} {{ address?.street
-                }}, {{ address?.Country?.name }} {{
-                address?.State?.name }}, {{ address?.City?.name }}</ion-text>
+                }}, {{ address?.country?.name }} {{
+                address?.state?.name }}, {{ address?.city?.name }}</ion-text>
             </ion-item>
             <ion-item-options>
               <ion-item-option
@@ -260,7 +260,7 @@
             <ion-label>Identity Info</ion-label>
           </ion-segment-button>
           <ion-segment-button value="artisan" class="p-1">
-            <ion-label>Artisan Info</ion-label>
+            <ion-label>artisan Info</ion-label>
           </ion-segment-button>
         </ion-segment>
       </ion-card>
@@ -279,13 +279,13 @@
               of both yourself and our customers.
             </ion-text>
 
-            <ion-button *ngIf="!userData.User_Identity?.live_image" (click)="takePicture()" expand="full"
+            <ion-button *ngIf="!userData?.identity?.live_image" (click)="takePicture()" expand="full"
               class="mx-auto mt-5 p-3">
               Take a Live Selfie of yourself
               <ion-icon size="large" slot="start" color="light" name="camera-outline"></ion-icon>
             </ion-button>
 
-            <div *ngIf="userData.User_Identity?.live_image" [ngSwitch]="userData.User_Identity?.live_image_approved">
+            <div *ngIf="userData?.identity?.live_image" [ngSwitch]="userData?.identity?.live_image_approved">
               <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
                 class="mt-5">
                 <ion-text>Image awaiting approval</ion-text>
@@ -306,7 +306,7 @@
             </div>
 
             <div class="mt-5">
-              <div *ngIf="!userData.User_Identity?.identity">
+              <div *ngIf="!userData?.identity?.identity">
                 <ion-item>
                   <ion-label>Select Identity Type</ion-label>
                   <ion-select label="Select Identity Type" name="identity_type" [(ngModel)]="identity_type">
@@ -331,7 +331,7 @@
                 </div>
               </div>
 
-              <div *ngIf="userData.User_Identity?.identity" [ngSwitch]="userData.User_Identity?.identity_approved">
+              <div *ngIf="userData?.identity?.identity" [ngSwitch]="userData?.identity?.identity_approved">
                 <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
                   class="mt-5">
                   <ion-text>Identity awaiting ppproval</ion-text>
@@ -355,7 +355,7 @@
             </div>
 
             <div class="mt-5">
-              <div *ngIf="!userData.User_Identity?.residential_address">
+              <div *ngIf="!userData?.identity?.residential_address">
                 <ion-button expand="block" (click)="openFile(fileAddress)" fill="outline" color="primary" class="mt-5">
                   <ion-text>Upload Residential Proof</ion-text>
                   <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
@@ -371,23 +371,23 @@
                 </ion-text>
               </div>
 
-              <div *ngIf="userData.User_Identity?.residential_address"
-                [ngSwitch]="userData.User_Identity?.residential_approved">
+              <div *ngIf="userData?.identity?.residential_address"
+                [ngSwitch]="userData?.identity?.residential_approved">
                 <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
                   class="mt-5">
-                  <ion-text>Address awaiting approval</ion-text>
+                  <ion-text>address awaiting approval</ion-text>
                   <ion-icon size="large" slot="start" name="reload-circle-outline"></ion-icon>
                 </ion-button>
 
                 <ion-button color="danger" *ngSwitchCase="ApprovalStatus.REJECTED" fill="outline" expand="block"
                   class="mt-5">
-                  <ion-text>Address rejected retry</ion-text>
+                  <ion-text>address rejected retry</ion-text>
                   <ion-icon size="large" slot="start" name="close-outline"></ion-icon>
                 </ion-button>
 
                 <ion-button color="success" *ngSwitchCase="ApprovalStatus.APPROVED" fill="outline" expand="block"
                   class="mt-5">
-                  <ion-text>Address approved</ion-text>
+                  <ion-text>address approved</ion-text>
                   <ion-icon size="large" slot="start" name="checkmark-circle-outline"></ion-icon>
                 </ion-button>
               </div>
@@ -401,25 +401,25 @@
               Artisan Skill Information & Verification
             </ion-card-title>
           </ion-card-header>
-          <ion-card-content *ngIf="userData.Artisan">
+          <ion-card-content *ngIf="userData?.artisan">
             <ion-list>
               <ion-item class="py-3">
-                <ion-text>{{ userData.Artisan.name }}</ion-text>
+                <ion-text>{{ userData?.artisan?.name }}</ion-text>
               </ion-item>
 
-              <ion-item class="py-3">
-                <ion-text>{{ userData.Artisan.business_name }}</ion-text>
+              <ion-item class="py-3" *ngIf="userData?.artisan?.business_name">
+                <ion-text>{{ userData?.artisan?.business_name }}</ion-text>
               </ion-item>
 
               <ion-item class="py-3">
                 <ion-thumbnail>
-                  <ion-img [src]="userData.Artisan.category?.icon"
-                    [alt]="'Service Category' + userData.Artisan.category?.name"></ion-img>
+                  <ion-img [src]="userData?.artisan?.category?.icon"
+                    [alt]="'Service Category' + userData?.artisan?.category?.name"></ion-img>
                 </ion-thumbnail>
-                <ion-text>{{ userData.Artisan.category?.name }}</ion-text>
+                <ion-text>{{ userData?.artisan?.category?.name }}</ion-text>
               </ion-item>
 
-              <div *ngIf="userData.Artisan.certificate" [ngSwitch]="userData.Artisan.certificate_approved">
+              <div *ngIf="userData?.artisan?.certificate" [ngSwitch]="userData?.artisan?.certificate_approved">
                 <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
                   class="mt-5">
                   <ion-text>Certificate awaiting approval</ion-text>
@@ -439,7 +439,7 @@
                 </ion-button>
               </div>
 
-              <div *ngIf="userData.Artisan.work_id" [ngSwitch]="userData.Artisan.work_id_approved">
+              <div *ngIf="userData?.artisan?.work_id" [ngSwitch]="userData?.artisan?.work_id_approved">
                 <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
                   class="mt-5">
                   <ion-text>Work ID awaiting approval</ion-text>
@@ -461,7 +461,7 @@
 
             </ion-list>
           </ion-card-content>
-          <ion-card-content *ngIf="!userData.Artisan">
+          <ion-card-content *ngIf="!userData?.artisan">
             <ion-text>
               To validate your artisan skills, we will need to collect either your Work ID or Certificate of Work, along
               with proof of your work address.
@@ -488,7 +488,7 @@
 
               <div>
                 <ion-button expand="block" fill="outline" (click)="openFile(fileCert)" color="primary" class="mt-5">
-                  <ion-text>Artisan Certificate.</ion-text>
+                  <ion-text>artisan Certificate.</ion-text>
                   <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
                 </ion-button>
                 <input type="text" formControlName="certificate" class="hidden">

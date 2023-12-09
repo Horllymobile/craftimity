@@ -1,3 +1,4 @@
+import { VerifyComponent } from './../../../../craftivity/auth/verify/verify.component';
 import { SupaBaseService } from 'src/app/core/services/supabase.service';
 import { AlertService } from './../../../../core/services/alert.service';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -40,7 +41,7 @@ export class AccountPage implements OnInit, OnDestroy {
   transform: ImageTransform = {};
 
   segment = 'user_info';
-  userData!: IUser | null;
+  userData = this.usersService.userData;
   edit = false;
   editImage = false;
   editLocation = false;
@@ -65,6 +66,7 @@ export class AccountPage implements OnInit, OnDestroy {
   @ViewChild('imageFile') imageFile!: HTMLInputElement;
 
   createEditAddressComponent = CreateEditAddressComponent;
+  verifyComponent = VerifyComponent;
   constructor(
     private usersService: UsersService,
     private locationService: LocationService,
@@ -73,9 +75,7 @@ export class AccountPage implements OnInit, OnDestroy {
     private loaderService: LoaderService,
     private supaBaseService: SupaBaseService,
     private modalController: ModalController
-  ) {
-    this.userData = this.usersService.getUser();
-  }
+  ) {}
 
   ngOnInit() {
     this.countries$ = this.locationService
@@ -148,12 +148,12 @@ export class AccountPage implements OnInit, OnDestroy {
 
   getUser() {
     this.usersService
-      .getUserById(this.userData?.id)
+      .getUserById(this.userData()?.id)
       .pipe(takeUntil(this.distroy$))
       .subscribe({
         next: async (res) => {
           localStorage.setItem(STORAGE_VARIABLES.USER, JSON.stringify(res));
-          this.userData = res;
+          this.userData.set(res);
         },
         error: (error) => {},
       });
@@ -170,7 +170,7 @@ export class AccountPage implements OnInit, OnDestroy {
     const loader = await this.loaderService.load();
     await loader.present();
     this.usersService
-      .updateUser(this.userData?.id, payload)
+      .updateUser(this.userData()?.id, payload)
       .pipe(
         takeUntil(this.distroy$),
         finalize(async () => await loader.dismiss())
@@ -196,7 +196,7 @@ export class AccountPage implements OnInit, OnDestroy {
             text: 'Yes',
             handler: (value) => {
               this.edit = !this.edit;
-              if (this.edit) this.initForm(this.userData);
+              if (this.edit) this.initForm(this.userData());
             },
           },
           {
@@ -206,7 +206,7 @@ export class AccountPage implements OnInit, OnDestroy {
       );
     } else {
       this.edit = !this.edit;
-      if (this.edit) this.initForm(this.userData);
+      if (this.edit) this.initForm(this.userData());
     }
   }
 
@@ -220,7 +220,7 @@ export class AccountPage implements OnInit, OnDestroy {
             text: 'Yes',
             handler: (value) => {
               this.editImage = !this.editImage;
-              if (this.editImage) this.initForm(this.userData);
+              if (this.editImage) this.initForm(this.userData());
             },
           },
           {
@@ -230,7 +230,7 @@ export class AccountPage implements OnInit, OnDestroy {
       );
     } else {
       this.editImage = !this.editImage;
-      if (this.editImage) this.initForm(this.userData);
+      if (this.editImage) this.initForm(this.userData());
     }
   }
 
@@ -287,7 +287,7 @@ export class AccountPage implements OnInit, OnDestroy {
     const load = await this.loaderService.load();
     await load.present();
     this.supaBaseService
-      .uploadFile(this.croppedImage, this.userData?.full_name)
+      .uploadFile(this.croppedImage, this.userData()?.full_name)
       .pipe(
         takeUntil(this.distroy$),
         map((event) => this.getProgress(event, this.croppedImage))
@@ -297,7 +297,7 @@ export class AccountPage implements OnInit, OnDestroy {
           this.imageForm.reset();
           if (value !== null) {
             this.usersService
-              .updateUser(this.userData?.id, { profile_image: value })
+              .updateUser(this.userData()?.id, { profile_image: value })
               .pipe(takeUntil(this.distroy$))
               .subscribe({
                 next: async (value) => {

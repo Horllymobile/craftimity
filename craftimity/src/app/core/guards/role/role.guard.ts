@@ -6,8 +6,8 @@ import { ERole } from '../../enums/role';
 export const RoleGuard: CanActivateFn = () => {
   const router = inject(Router);
   const usersService = inject(UsersService);
-  if (!(usersService.userProfile?.role === ERole.CRAFTMAN)) {
-    router.navigate(['/craftimity']);
+  if (!(usersService.userProfile()?.role === ERole.CRAFTMAN)) {
+    router.navigate(['/craftivity']);
     return false;
   }
   return true;

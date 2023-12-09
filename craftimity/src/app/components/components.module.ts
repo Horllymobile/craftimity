@@ -5,9 +5,18 @@ import { IonicModule } from '@ionic/angular';
 import { SharedModule } from '../core/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CreateEditAddressComponent } from './create-edit-address/create-edit-address.component';
+import { TermsAndConditionsComponent } from './terms-and-conditions/terms-and-conditions.component';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { CreateEditServiceComponent } from './create-edit-service/create-edit-service.component';
 
 @NgModule({
-  declarations: [OnboardingCraftsmanComponent, CreateEditAddressComponent],
+  declarations: [
+    OnboardingCraftsmanComponent,
+    CreateEditAddressComponent,
+    TermsAndConditionsComponent,
+    PrivacyPolicyComponent,
+    CreateEditServiceComponent,
+  ],
   imports: [
     CommonModule,
     IonicModule,

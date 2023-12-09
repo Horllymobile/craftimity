@@ -21,7 +21,7 @@ export class CreateEditAddressComponent implements OnInit {
 
   locationForm!: FormGroup;
 
-  userData!: IUser | null;
+  userData = this.usersService.userData;
 
   distroy$ = new Subject<void>();
 
@@ -41,7 +41,6 @@ export class CreateEditAddressComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userData = this.usersService.getUser();
     this.countries$ = this.locationService
       .getCountries()
       .pipe(map((res) => res));
@@ -69,9 +68,9 @@ export class CreateEditAddressComponent implements OnInit {
       floor: [address?.floor, []],
       house: [address?.house, Validators.required],
       street: [address?.street, Validators.required],
-      country: [address?.Country?.id, Validators.required],
-      state: [address?.State?.id, Validators.required],
-      city: [address?.City?.id, Validators.required],
+      country: [address?.country?.id, Validators.required],
+      state: [address?.state?.id, Validators.required],
+      city: [address?.city?.id, Validators.required],
     });
 
     this.locationForm.valueChanges.pipe(takeUntil(this.distroy$)).subscribe({
@@ -93,7 +92,7 @@ export class CreateEditAddressComponent implements OnInit {
     const loader = await this.loaderService.load();
     await loader.present();
     this.usersService
-      .createUserAddress(this.userData?.id, form)
+      .createUserAddress(this.userData()?.id, form)
       .pipe(
         takeUntil(this.distroy$),
         finalize(async () => await loader.dismiss())
@@ -114,7 +113,7 @@ export class CreateEditAddressComponent implements OnInit {
     const loader = await this.loaderService.load();
     await loader.present();
     form = {
-      user_id: this.userData?.id,
+      user_id: this.userData()?.id,
       ...form,
     };
     this.usersService

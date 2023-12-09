@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IUser } from '../../models/user';
@@ -20,6 +20,7 @@ import { STORAGE_VARIABLES } from '../../constants/storage';
 })
 export class AuthService {
   private baseUrl = environment.BASE_URL;
+  isAuth = signal(false);
   headers = new HttpHeaders();
   constructor(
     private http: HttpClient,
@@ -28,7 +29,10 @@ export class AuthService {
 
   isAuthenticated() {
     const token = localStorage.getItem(STORAGE_VARIABLES.TOKEN);
-    return token && !this.jwtHelperService.isTokenExpired(token);
+    if (token) {
+      this.isAuth.set(!this.jwtHelperService.isTokenExpired(token));
+    }
+    return this.isAuth();
   }
 
   isAuthenticatedT(token: string) {

@@ -9,9 +9,9 @@ export interface IUser {
   last_name: string;
   email: string;
   phone_number: string;
-  Address?: IAddress[];
-  Artisan?: IArtisan;
-  User_Identity?: IUserIdentity;
+  address?: IAddress[];
+  artisan?: IArtisan;
+  identity?: IUserIdentity;
   active: boolean;
   enabled: boolean;
   role: ERole;
@@ -32,9 +32,9 @@ export interface IAddress {
   floor?: number;
   house?: number;
   street?: string;
-  Country?: ICountry;
-  State?: IState;
-  City?: ICity;
+  country?: ICountry;
+  state?: IState;
+  city?: ICity;
   created_at?: string;
   updated_at?: string;
   updated_by?: string;

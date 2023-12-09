@@ -1,12 +1,15 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { STORAGE_VARIABLES } from '../constants/storage';
 import { inject } from '@angular/core';
+import { UsersService } from '../services/users/users.service';
+import { ERole } from '../enums/role';
 
 export const CraftiviyGuard: CanActivateFn = async () => {
   const router = inject(Router);
-  const app = localStorage.getItem(STORAGE_VARIABLES.APP);
-  if (app && app === STORAGE_VARIABLES.CRAFTIVITY) {
-    return router.navigate(['/', 'craftivity']);
+  const usersService = inject(UsersService);
+  if (usersService.userData()?.role === ERole.CRAFTMAN) {
+    localStorage.setItem(STORAGE_VARIABLES.APP, STORAGE_VARIABLES.CRAFTIVITY);
+    return true;
   }
-  return router.navigate(['/', 'select-app']);
+  return router.navigate(['/', 'craftimity']);
 };

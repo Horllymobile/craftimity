@@ -1,39 +1,36 @@
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { IAddress, IUser } from '../../models/user';
-import { BehaviorSubject, Observable, map } from 'rxjs';
 import { STORAGE_VARIABLES } from '../../constants/storage';
 import { IAPICallResponse, IAPIResponse } from '../../models/response';
 import { IUpdateUser } from '../../models/auth';
+import { Observable, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
   private baseUrl = environment.BASE_URL;
-  currentUser: BehaviorSubject<IUser | null>;
-  constructor(private http: HttpClient) {
-    this.currentUser = new BehaviorSubject(
-      JSON.parse(localStorage.getItem(STORAGE_VARIABLES.USER) || 'null')
-    );
-  }
+  userData = signal<IUser | undefined>(undefined);
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getUser() {
-    this.currentUser = new BehaviorSubject(
-      JSON.parse(localStorage.getItem(STORAGE_VARIABLES.USER) || 'null')
+    const user = JSON.parse(
+      localStorage.getItem(STORAGE_VARIABLES.USER) || 'null'
     );
-    return this.currentUser.value;
+    if (user) {
+      this.userData.update((value) => (value = user));
+    }
+    return this.userData();
   }
 
   signout() {
     localStorage.removeItem(STORAGE_VARIABLES.TOKEN);
     localStorage.removeItem(STORAGE_VARIABLES.USER);
-    this.currentUser?.next(null);
-  }
-
-  get userProfile() {
-    return this.currentUser?.value;
+    this.userData.update((value) => (value = undefined));
+    this.authService.isAuth.update((value) => (value = false));
   }
 
   getUserById(id?: string): Observable<IUser> {

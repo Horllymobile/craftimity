@@ -2,7 +2,13 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { ApprovalStatus } from './../../../../core/enums/approval-status';
 import { SupaBaseService } from 'src/app/core/services/supabase.service';
 import { AlertService } from './../../../../core/services/alert.service';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  WritableSignal,
+} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -51,7 +57,7 @@ export class AccountPage implements OnInit, OnDestroy {
 
   segment = 'user_info';
   identity_segment = 'identity';
-  userData!: IUser;
+  userData = this.usersService.getUser();
   edit = false;
   editImage = false;
   editLocation = false;
@@ -107,12 +113,7 @@ export class AccountPage implements OnInit, OnDestroy {
     private categothryService: CategoryService,
     private artisanService: ArtisanService,
     private activatedRoute: ActivatedRoute
-  ) {
-    const user = this.usersService.getUser();
-    if (user) {
-      this.userData = user;
-    }
-  }
+  ) {}
 
   get identityFormCtr() {
     return this.identityForm.controls;
@@ -184,7 +185,7 @@ export class AccountPage implements OnInit, OnDestroy {
     const loader = await this.loaderService.load();
     await loader.present();
     const payload: CreateArtisan = {
-      user_id: this.userData.id,
+      user_id: this.userData?.id,
       name: form.name,
       business_name: form.business_name,
       category: form.category,
@@ -213,13 +214,13 @@ export class AccountPage implements OnInit, OnDestroy {
     if (type === 'live_image') {
       const payload = {
         live_image: url,
-        id: this.userData.id,
+        id: this.userData?.id,
       };
       this.usersService
         .updateUserIdentity(payload)
         .pipe(
-          takeUntil(this.distroy$)
-          // finalize(async () => await loader.dismiss())
+          takeUntil(this.distroy$),
+          finalize(async () => await loader.dismiss())
         )
         .subscribe({
           next: () => {
@@ -232,7 +233,7 @@ export class AccountPage implements OnInit, OnDestroy {
     } else if (type === 'address') {
       const payload = {
         residential_address: url,
-        id: this.userData.id,
+        id: this.userData?.id,
       };
       this.usersService
         .updateUserIdentity(payload)
@@ -252,7 +253,7 @@ export class AccountPage implements OnInit, OnDestroy {
       const payload = {
         type: this.identity_type,
         identity: url,
-        id: this.userData.id,
+        id: this.userData?.id,
       };
       this.usersService
         .updateUserIdentity(payload)
@@ -345,7 +346,7 @@ export class AccountPage implements OnInit, OnDestroy {
       .getUserById(this.userData?.id)
       .pipe(
         takeUntil(this.distroy$),
-        finalize(() => refresherEvent.target.complete())
+        finalize(() => refresherEvent?.target?.complete())
       )
       .subscribe({
         next: async (res) => {
@@ -513,33 +514,34 @@ export class AccountPage implements OnInit, OnDestroy {
   }
 
   async takePicture() {
+    const loader = await this.loaderService.load();
     const image = await Camera.getPhoto({
       quality: 100,
       // allowEditing: true,
       resultType: CameraResultType.Base64,
     });
     var imageUrl = image;
-    if (imageUrl.base64String)
-      this.supaBaseService
-        .uploadVerificationFiles(
-          this.dataUrlToFile(
-            imageUrl,
-            `${this.userData?.first_name} - Live Image`
-          ),
+    if (imageUrl.base64String) await loader.present();
+    this.supaBaseService
+      .uploadVerificationFiles(
+        this.dataUrlToFile(
+          imageUrl,
           `${this.userData?.first_name} - Live Image`
-        )
+        ),
+        `${this.userData?.first_name} - Live Image`
+      )
 
-        .pipe(map((event) => this.getProgress(event, 'verification')))
-        .subscribe({
-          next: (value) => {
-            if (value) {
-              this.addIdentityVerificationData('live_image', value);
-            }
-          },
-          error: (err) => {
-            this.alertService.error(err);
-          },
-        });
+      .pipe(map((event) => this.getProgress(event, 'verification')))
+      .subscribe({
+        next: (value) => {
+          if (value) {
+            this.addIdentityVerificationData('live_image', value, loader);
+          }
+        },
+        error: (err) => {
+          this.alertService.error(err);
+        },
+      });
   }
 
   dataUrlToFile(dataUrl: Photo, filename?: string) {

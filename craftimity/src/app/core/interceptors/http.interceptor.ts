@@ -25,7 +25,7 @@ export class RequestInterceptor implements HttpInterceptor {
 
     const token = localStorage.getItem(STORAGE_VARIABLES.TOKEN);
 
-    const userData = this.userService.userProfile;
+    const userData = this.userService.getUser();
 
     const isBaseUrl = req.url.startsWith(environment.BASE_URL);
 

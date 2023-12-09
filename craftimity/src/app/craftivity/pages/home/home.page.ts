@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, WritableSignal } from '@angular/core';
 import { IUser } from 'src/app/core/models/user';
 import { UsersService } from 'src/app/core/services/users/users.service';
 
@@ -10,17 +10,12 @@ import { UsersService } from 'src/app/core/services/users/users.service';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  userData!: IUser;
+  userData = this.usersService.getUser();
   constructor(
     private usersService: UsersService,
     private toastController: ToastController,
     private router: Router
-  ) {
-    const user = this.usersService.getUser();
-    if (user) {
-      this.userData = user;
-    }
-  }
+  ) {}
 
   public toastButtons = [
     {
@@ -42,7 +37,7 @@ export class HomePage implements OnInit {
   ];
 
   async ngOnInit() {
-    if (!this.userData.User_Identity) {
+    if (!this.userData?.is_onboarded) {
       this.presentToast('top');
     }
   }
