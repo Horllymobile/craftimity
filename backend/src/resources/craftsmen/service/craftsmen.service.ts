@@ -14,6 +14,7 @@ import { SuperbaseService } from "src/core/services/superbase/superbase.service"
 import { UpdateCraft } from "src/resources/auth/dto/dto";
 import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { ERole } from "src/core/enums/Role";
+import { EApprovalStatus } from "src/core/enums/approval-status";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CraftsmenService implements ICraftsmanService {
@@ -45,26 +46,24 @@ export class CraftsmenService implements ICraftsmanService {
     let craftman = await this.findCraftsmanById(payload.user_id);
 
     if (!craftman) {
-      const res = await this.superBaseService.connect().from("Artisan").insert({
-        id: payload.user_id,
-        name: payload.name,
-        business_name: payload.business_name,
-        category: payload.category,
-        certificate: payload.certificate,
-        work_id: payload.work_id,
-      });
+      const res = await this.superBaseService
+        .connect()
+        .from("artisan")
+        .insert({
+          id: payload.user_id,
+          name: payload.name,
+          business_name: payload.business_name ?? null,
+          category: payload.category,
+          certificate: payload.certificate,
+          work_id: payload.work_id,
+        });
 
       if (res.error) {
         this.logger.error(res.error);
       }
     }
 
-    if (
-      craftman &&
-      craftman.approved &&
-      craftman.work_id_approved &&
-      craftman.certificate_approved
-    ) {
+    if (craftman && craftman.approved === EApprovalStatus.APPROVED) {
       throw new ConflictException({
         status: EResponseStatus.FAILED,
         message: "Artisan as been approved",
@@ -72,7 +71,7 @@ export class CraftsmenService implements ICraftsmanService {
     } else {
       const res = await this.superBaseService
         .connect()
-        .from("Artisan")
+        .from("artisan")
         .update({
           name: payload.name || craftman.name,
           business_name: payload.business_name || craftman.business_name,
@@ -99,11 +98,11 @@ export class CraftsmenService implements ICraftsmanService {
   async findCraftsmanById(id: string): Promise<ICraftsman> {
     let { data, error } = await this.superBaseService
       .connect()
-      .from("Artisan")
+      .from("artisan")
       .select(
         `id, name, business_name, 
         category(*), work_id, certificate, approved, work_id_approved, 
-        certificate_approved, created_at, updated_at`
+        certificate_approved, created_at, updated_at, user(*)`
       )
       .eq("id", id)
       .single();
@@ -116,7 +115,7 @@ export class CraftsmenService implements ICraftsmanService {
   async updateCraftsman(id: string, payload: UpdateCraft) {
     let user = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .select("*")
       .eq("id", id)
       .single();

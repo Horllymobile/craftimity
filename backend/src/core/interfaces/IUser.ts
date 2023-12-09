@@ -6,7 +6,8 @@ export interface IUser {
   email: string;
   phone_number: string;
   password?: string;
-  address?: IAddress;
+  address?: IAddress[];
+  artisan: any;
   active: boolean;
   enabled: boolean;
   phone_verified: boolean;

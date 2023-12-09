@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -56,6 +57,14 @@ export class RegisterDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @IsOptional()
+  @IsPhoneNumber("NG")
+  phone?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  is_artisan?: boolean;
 
   @IsString()
   @IsNotEmpty()

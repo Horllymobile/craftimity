@@ -28,22 +28,6 @@ import {
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post("/check")
-  async checkUser(
-    @Body() payload: UserCheckDto
-  ): Promise<IResponse<IUser | { message: string }>> {
-    const user = await this.authService.checkUser(payload);
-    return {
-      message: user
-        ? "User check success"
-        : `We sent a verification code to your ${
-            payload.type === "email" ? "email address" : "phone number"
-          }`,
-      data: user ?? null,
-      status: EResponseStatus.SUCCESS,
-    };
-  }
-
   @Post("/register")
   async loginOrSignUp(
     @Body() payload: RegisterDto

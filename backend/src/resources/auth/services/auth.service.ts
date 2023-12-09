@@ -34,26 +34,10 @@ export class AuthService {
     private elasticService: ElasticService
   ) {}
 
-  async checkUser(payload: UserCheckDto): Promise<any> {
-    let user: IUser;
-    if (payload.type === USERCHECKTYPE.EMAIL) {
-      user = await this.usersService.findUserByEmail(payload.email);
-      if (!user) {
-        await this.usersService.sendVerificationCodeToEmail(payload.email);
-      }
-      return user;
-    }
-    user = await this.usersService.findUserByPhone(payload.phone);
-    if (!user) {
-      await this.usersService.sendVerificationCodeToPhone(payload.phone);
-    }
-    return user;
-  }
-
   async signIn(
     payload: LoginDto
   ): Promise<{ data: IUser; access_token: string }> {
-    let user: IUser;
+    let user: any;
     if (payload.type === "email") {
       user = await this.usersService.findUserByEmailDecrypted(payload.email);
       if (!user) {
@@ -128,7 +112,11 @@ export class AuthService {
   }
 
   async registerUser(payload: RegisterDto) {
-    await this.usersService.createUser(payload);
+    if (payload.is_artisan) {
+      await this.usersService.createUser(payload, ERole.CRAFTMAN);
+    } else {
+      await this.usersService.createUser(payload);
+    }
   }
 
   async registerCraftman(payload: RegisterDto) {
@@ -136,7 +124,7 @@ export class AuthService {
   }
 
   async verifyOtpCode(payload: VerifyUserDto) {
-    let user: IUser;
+    let user: any;
     let { data, error } = await this.superbaseService
       .connect()
       .from("verification_code")
@@ -158,6 +146,7 @@ export class AuthService {
           email_verified: true,
           active: true,
           enabled: true,
+          updated_at: new Date().toISOString(),
         })
         .eq("email", payload.email);
 
@@ -170,13 +159,8 @@ export class AuthService {
       this.logger.error(error);
     }
 
-    // if (payload.type === "email") {
-    //   user = await this.updateEmail(payload);
-    // } else {
-    //   user = await this.updatePhone(payload);
-    // }
-
     user = await this.usersService.findUserByEmail(payload.email);
+
     await this.usersService.sendWelcomingEmail(user);
 
     await this.superbaseService
@@ -187,7 +171,7 @@ export class AuthService {
   }
 
   async verifyCraftmanOtpCode(payload: VerifyCraftmanDto) {
-    let user: IUser;
+    let user: any;
     let { data, error } = await this.superbaseService
       .connect()
       .from("verification_code")
@@ -209,6 +193,7 @@ export class AuthService {
           email_verified: true,
           active: true,
           enabled: true,
+          updated_at: new Date().toISOString(),
         })
         .eq("email", payload.email);
 
@@ -271,6 +256,7 @@ export class AuthService {
           phone_number: payload.phone,
           phone_verified: true,
           role: ERole.SUPER_ADMIN,
+          updated_at: new Date().toISOString(),
         })
         .eq("email", payload.email);
     } else {
@@ -281,6 +267,7 @@ export class AuthService {
           phone_number: payload.phone,
           phone_verified: true,
           role: ERole.USER,
+          updated_at: new Date().toISOString(),
         })
         .eq("email", payload.email);
     }
@@ -336,6 +323,7 @@ export class AuthService {
           email: payload.email,
           email_verified: true,
           role: ERole.SUPER_ADMIN,
+          updated_at: new Date().toISOString(),
         })
         .eq("phone_number", payload.phone);
     } else {
@@ -346,6 +334,7 @@ export class AuthService {
           email: payload.email,
           email_verified: true,
           role: ERole.USER,
+          updated_at: new Date().toISOString(),
         })
         .eq("phone_number", payload.phone);
     }
@@ -378,7 +367,7 @@ export class AuthService {
   }
 
   async verifyForgotPasswordOtpCode(payload: VerifyUserDto) {
-    let user: IUser;
+    let user: any;
     let { data, error } = await this.superbaseService
       .connect()
       .from("verification_code")
@@ -424,7 +413,7 @@ export class AuthService {
     phone?: string;
     type: "email" | "phone";
   }) {
-    let user: IUser;
+    let user: any;
     if (payload.type === USERCHECKTYPE.EMAIL) {
       user = await this.usersService.findUserByEmail(payload.email);
       console.log(user);
@@ -503,6 +492,7 @@ export class AuthService {
           .update({
             active: true,
             enabled: true,
+            updated_at: new Date().toISOString(),
           })
           .eq("phone_number", payload.phone);
       } else {
@@ -512,6 +502,7 @@ export class AuthService {
           .update({
             active: true,
             enabled: true,
+            updated_at: new Date().toISOString(),
           })
           .eq("email", payload.email);
       }

@@ -127,11 +127,11 @@ export class CategoryService implements ICategoryService {
 
     res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .update({
         name: payload.name,
         icon: payload.icon,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
         is_active: payload.is_active,
         updated_by: "",
       })
@@ -161,7 +161,10 @@ export class CategoryService implements ICategoryService {
     res = await this.superBaseService
       .connect()
       .from("category")
-      .update({ active: payload.activate })
+      .update({
+        active: payload.activate,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", id);
 
     if (res.error) {

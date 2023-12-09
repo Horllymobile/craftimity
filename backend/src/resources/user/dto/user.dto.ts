@@ -66,6 +66,10 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
+  @IsOptional()
+  @IsPhoneNumber("NG")
+  phone?: string;
+
   @IsString()
   @IsNotEmpty()
   password: string;

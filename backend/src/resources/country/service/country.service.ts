@@ -21,7 +21,7 @@ export class CountryService implements ICountryService {
   async createCountry(payload: CreateCountryDto): Promise<ICountry> {
     let res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("name", payload.name)
       .single();
@@ -34,7 +34,7 @@ export class CountryService implements ICountryService {
 
     res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("code", payload.code)
       .single();
@@ -47,7 +47,7 @@ export class CountryService implements ICountryService {
 
     res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("currency", payload.currency)
       .single();
@@ -60,7 +60,7 @@ export class CountryService implements ICountryService {
 
     res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("currency_code", payload.currencyCode)
       .single();
@@ -73,7 +73,7 @@ export class CountryService implements ICountryService {
 
     res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("phone_code", payload.phoneCode)
       .single();
@@ -86,7 +86,7 @@ export class CountryService implements ICountryService {
 
     res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("symbol", payload.currencySymbol)
       .single();
@@ -97,7 +97,7 @@ export class CountryService implements ICountryService {
         message: "Country already exist",
       });
 
-    res = await this.superBaseService.connect().from("Country").insert({
+    res = await this.superBaseService.connect().from("country").insert({
       name: payload.name,
       code: payload.code,
       phone_code: payload.phoneCode,
@@ -124,7 +124,7 @@ export class CountryService implements ICountryService {
       let { data, error }: { data: ICountry[]; error: any } =
         await this.superBaseService
           .connect()
-          .from("Country")
+          .from("country")
           .select(
             "id, name, code, currency, currency_code, phone_code, active, created_at, updated_at, symbol"
           )
@@ -142,7 +142,7 @@ export class CountryService implements ICountryService {
     let { data, error }: { data: ICountry[]; error: any } =
       await this.superBaseService
         .connect()
-        .from("Country")
+        .from("country")
         .select(
           "id, name, code, currency, currency_code, phone_code, active, created_at, updated_at, symbol"
         )
@@ -161,7 +161,7 @@ export class CountryService implements ICountryService {
     let { data, count }: { data: ICountry[]; count: number } =
       await this.superBaseService
         .connect()
-        .from("Country")
+        .from("country")
         .select("*", { count: "exact", head: true });
     return count;
   }
@@ -169,7 +169,7 @@ export class CountryService implements ICountryService {
   async findCountryById(id: number): Promise<ICountry> {
     let res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("id", id)
       .single();
@@ -188,7 +188,7 @@ export class CountryService implements ICountryService {
   ): Promise<ICountry> {
     let res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("id", id)
       .single();
@@ -200,7 +200,7 @@ export class CountryService implements ICountryService {
 
     res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .update({
         name: payload.name,
         code: payload.code,
@@ -208,7 +208,7 @@ export class CountryService implements ICountryService {
         currency: payload.currency,
         currency_code: payload.currencyCode,
         symbol: payload.currencySymbol,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -225,7 +225,7 @@ export class CountryService implements ICountryService {
   ): Promise<IResponse<ICountry>> {
     let res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("id", id)
       .single();
@@ -237,8 +237,11 @@ export class CountryService implements ICountryService {
 
     res = await this.superBaseService
       .connect()
-      .from("Country")
-      .update({ active: payload.activate })
+      .from("country")
+      .update({
+        active: payload.activate,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", id);
 
     if (res.error) {
@@ -251,7 +254,7 @@ export class CountryService implements ICountryService {
   async deleteCountry(id: number): Promise<ICountry> {
     let res = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .select("*")
       .eq("id", id)
       .single();
@@ -264,7 +267,7 @@ export class CountryService implements ICountryService {
 
     let { data, error } = await this.superBaseService
       .connect()
-      .from("Country")
+      .from("country")
       .delete()
       .eq("id", id);
     if (res.error) {

@@ -1,4 +1,4 @@
-export enum ApprovalStatus {
+export enum EApprovalStatus {
   PENDING = "pending",
   REJECTED = "rejected",
   APPROVED = "approved",

@@ -51,7 +51,7 @@ export class UserController {
   }
 
   @Get(":id")
-  async findUser(@Param("id") id: string): Promise<IResponse<IUser>> {
+  async findUser(@Param("id") id: string): Promise<IResponse<any>> {
     const user = await this.userService.findUserById(id);
     return {
       message: "",

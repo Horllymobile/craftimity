@@ -23,7 +23,7 @@ import {
   userDecryptedReturnString,
   userReturnString,
 } from "src/core/shared/data";
-import { ApprovalStatus } from "src/core/enums/approval-status";
+import { EApprovalStatus } from "src/core/enums/approval-status";
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService implements IUserService {
@@ -40,20 +40,20 @@ export class UserService implements IUserService {
     let { data, count }: { data: IUser[]; count: number } =
       await this.superBaseService
         .connect()
-        .from("User")
+        .from("user")
         .select("*", { count: "exact", head: true });
 
     return count;
   }
 
-  async findUsers(page: number, size: number, name?: string): Promise<IUser[]> {
+  async findUsers(page: number, size: number, name?: string): Promise<any[]> {
     page = page <= 1 ? 0 : page;
     let res: any;
 
     if (name) {
       res = await this.superBaseService
         .connect()
-        .from("User")
+        .from("user")
         .select(userReturnString)
         .ilike("idx_user_name", `%${name}%`)
         .limit(size)
@@ -63,7 +63,7 @@ export class UserService implements IUserService {
     } else {
       res = await this.superBaseService
         .connect()
-        .from("User")
+        .from("user")
         .select(userReturnString)
         .limit(size)
         .eq("active", true)
@@ -76,10 +76,10 @@ export class UserService implements IUserService {
     return res.data;
   }
 
-  async findUserById(id: string): Promise<IUser> {
+  async findUserById(id: string): Promise<any> {
     let { data, error } = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .select(userReturnString)
       .eq("id", id)
       .single();
@@ -91,13 +91,14 @@ export class UserService implements IUserService {
     return data;
   }
 
-  async findUserByEmail(email: string): Promise<IUser> {
+  async findUserByEmail(email: string): Promise<any> {
     let { data, error } = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .select(userReturnString)
       .eq("email", email)
       .single();
+
     if (error) {
       this.logger.error(error);
     }
@@ -105,7 +106,7 @@ export class UserService implements IUserService {
     return data;
   }
 
-  async findUserByEmailDecrypted(email: string): Promise<IUser> {
+  async findUserByEmailDecrypted(email: string): Promise<any> {
     let { data, error } = await this.superBaseService
       .connect()
       .from("decrypted_User")
@@ -119,10 +120,10 @@ export class UserService implements IUserService {
     return data;
   }
 
-  async findUserByPhone(phone: string): Promise<IUser> {
+  async findUserByPhone(phone: string): Promise<any> {
     let { data, error } = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .select(userReturnString)
       .eq("phone_number", phone)
       .single();
@@ -134,7 +135,7 @@ export class UserService implements IUserService {
     return data;
   }
 
-  async findUserByPhoneDecrypted(phone: string): Promise<IUser> {
+  async findUserByPhoneDecrypted(phone: string) {
     let { data, error } = await this.superBaseService
       .connect()
       .from("decrypted_User")
@@ -348,7 +349,7 @@ export class UserService implements IUserService {
   }
 
   async createUser(payload: CreateUserDto, role?: ERole) {
-    let user: IUser;
+    let user: any;
     let res: any;
 
     user = await this.findUserByEmail(payload.email);
@@ -362,37 +363,40 @@ export class UserService implements IUserService {
     if (payload.email === "horlamidex1@gmail.com") {
       res = await this.superBaseService
         .connect()
-        .from("User")
+        .from("user")
         .insert({
           first_name: payload.first_name,
           last_name: payload.last_name,
           full_name: this.setFullName(payload.first_name, payload.last_name),
           email: payload.email,
+          phone_number: payload.phone,
           password: payload.password,
           role: ERole.SUPER_ADMIN,
         });
     } else if (payload.email === "kogiboi@gmail.com") {
       res = await this.superBaseService
         .connect()
-        .from("User")
+        .from("user")
         .insert({
           first_name: payload.first_name,
           last_name: payload.last_name,
           full_name: this.setFullName(payload.first_name, payload.last_name),
           email: payload.email,
           password: payload.password,
+          phone_number: payload.phone,
           role: ERole.ADMIN,
         });
     } else {
       res = await this.superBaseService
         .connect()
-        .from("User")
+        .from("user")
         .insert({
           first_name: payload.first_name,
           last_name: payload.last_name,
           full_name: this.setFullName(payload.first_name, payload.last_name),
           email: payload.email,
           password: payload.password,
+          phone_number: payload.phone,
           role: role ? role : ERole.USER,
         });
     }
@@ -410,7 +414,7 @@ export class UserService implements IUserService {
   ): Promise<{ message: string }> {
     let res = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .select("*")
       .eq("id", id)
       .single();
@@ -423,7 +427,7 @@ export class UserService implements IUserService {
 
     res = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .update({
         first_name: payload.first_name ?? res.data.first_name,
         last_name: payload.last_name ?? res.data.last_name,
@@ -434,6 +438,7 @@ export class UserService implements IUserService {
         phone_number: payload.phone || payload.phone,
         profile_image: payload.profile_image || res.data.profile_image,
         is_onboarded: res.data.is_onboarded,
+        updated_at: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -459,7 +464,7 @@ export class UserService implements IUserService {
   ) {
     let res = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .select("*")
       .eq("id", user_id)
       .single();
@@ -472,7 +477,7 @@ export class UserService implements IUserService {
 
     await this.superBaseService
       .connect()
-      .from("Address")
+      .from("address")
       .insert({
         ...payload,
         user: user_id,
@@ -487,7 +492,7 @@ export class UserService implements IUserService {
   ) {
     let res = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .select("*")
       .eq("id", payload.user_id)
       .single();
@@ -500,7 +505,7 @@ export class UserService implements IUserService {
 
     res = await this.superBaseService
       .connect()
-      .from("Address")
+      .from("address")
       .select("*")
       .eq("id", address_id)
       .single();
@@ -513,7 +518,7 @@ export class UserService implements IUserService {
 
     res = await this.superBaseService
       .connect()
-      .from("Address")
+      .from("address")
       .update({
         floor: payload.floor || res.data.floor,
         user: payload.user_id,
@@ -535,7 +540,7 @@ export class UserService implements IUserService {
   async deleteUserLocation(address_id: string, user?: any) {
     let res = await this.superBaseService
       .connect()
-      .from("Address")
+      .from("address")
       .select("*")
       .eq("id", address_id)
       .single();
@@ -548,7 +553,7 @@ export class UserService implements IUserService {
 
     res = await this.superBaseService
       .connect()
-      .from("Address")
+      .from("address")
       .delete()
       .eq("id", address_id);
 
@@ -563,7 +568,7 @@ export class UserService implements IUserService {
   ): Promise<any> {
     let { data, error } = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .select("*")
       .eq("id", id)
       .single();
@@ -576,9 +581,10 @@ export class UserService implements IUserService {
 
     let res = await this.superBaseService
       .connect()
-      .from("User")
+      .from("user")
       .update({
         password: payload.password,
+        updated_at: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -596,7 +602,7 @@ export class UserService implements IUserService {
   async getUserIdentityInfo(user_id: string) {
     let { data, error } = await this.superBaseService
       .connect()
-      .from("User_Identity")
+      .from("identity")
       .select(`id, type, live_image, residential_address, identity`)
       .eq("id", user_id)
       .single();
@@ -619,7 +625,7 @@ export class UserService implements IUserService {
 
     let { data, error } = await this.superBaseService
       .connect()
-      .from("User_Identity")
+      .from("identity")
       .select(
         `id, type, live_image, residential_address,
         identity, live_image_approved, residential_approved, identity_approved`
@@ -634,7 +640,7 @@ export class UserService implements IUserService {
     if (!data) {
       const res = await this.superBaseService
         .connect()
-        .from("User_Identity")
+        .from("identity")
         .insert({
           id: payload.id,
           ...payload,
@@ -647,9 +653,9 @@ export class UserService implements IUserService {
 
     if (
       data &&
-      data.identity_approved === ApprovalStatus.APPROVED &&
-      data.residential_approved === ApprovalStatus.APPROVED &&
-      data.live_image_approved === ApprovalStatus.APPROVED
+      data.identity_approved === EApprovalStatus.APPROVED &&
+      data.residential_approved === EApprovalStatus.APPROVED &&
+      data.live_image_approved === EApprovalStatus.APPROVED
     ) {
       throw new ConflictException({
         status: EResponseStatus.FAILED,
@@ -658,7 +664,7 @@ export class UserService implements IUserService {
     } else {
       const res = await this.superBaseService
         .connect()
-        .from("User_Identity")
+        .from("identity")
         .update({
           ...payload,
           updated_at: new Date().toISOString(),

@@ -19,6 +19,7 @@ import { HttpModule } from "@nestjs/axios";
 import { MailModule } from "./mail/mail.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TasksService } from "./core/services/tasks.service";
+import { ServiceModule } from './resources/service/service.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -46,6 +47,7 @@ import { TasksService } from "./core/services/tasks.service";
     CategoryModule,
     CraftsmenModule,
     MailModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [

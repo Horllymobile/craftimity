@@ -22,7 +22,7 @@ export class StateService implements IStateService {
   async createState(payload: CreateStateDto): Promise<IState> {
     let res = await this.superBaseService
       .connect()
-      .from("State")
+      .from("state")
       .select("*")
       .eq("name", payload.name)
       .single();
@@ -33,7 +33,7 @@ export class StateService implements IStateService {
         message: "State already exist",
       });
 
-    res = await this.superBaseService.connect().from("State").insert({
+    res = await this.superBaseService.connect().from("state").insert({
       name: payload.name,
       country_id: payload.country_id,
     });
@@ -56,9 +56,9 @@ export class StateService implements IStateService {
     if (name && country_id) {
       res = await this.superBaseService
         .connect()
-        .from("State")
+        .from("state")
         .select(
-          "id, name, active, country_id, created_at, updated_at, Country(id, name, code)"
+          "id, name, active, country_id, created_at, updated_at, country(id, name, code)"
         )
         .ilike("name", `%${name}%`)
         .limit(size)
@@ -69,9 +69,9 @@ export class StateService implements IStateService {
     } else if (name) {
       res = await this.superBaseService
         .connect()
-        .from("State")
+        .from("state")
         .select(
-          "id, name, active, country_id, created_at, updated_at, Country(id, name, code)"
+          "id, name, active, country_id, created_at, updated_at, country(id, name, code)"
         )
         .ilike("name", `%${name}%`)
         .limit(size)
@@ -82,9 +82,9 @@ export class StateService implements IStateService {
     } else if (country_id) {
       res = await this.superBaseService
         .connect()
-        .from("State")
+        .from("state")
         .select(
-          "id, name, active, country_id, created_at, updated_at, Country(id, name, code)"
+          "id, name, active, country_id, created_at, updated_at, country(id, name, code)"
         )
         .eq("country_id", country_id)
         .limit(size)
@@ -94,9 +94,9 @@ export class StateService implements IStateService {
     } else {
       res = await this.superBaseService
         .connect()
-        .from("State")
+        .from("state")
         .select(
-          "id, name, active, country_id, created_at, updated_at, Country(id, name, code)"
+          "id, name, active, country_id, created_at, updated_at, country(id, name, code)"
         )
         .limit(size)
         .order("id", { ascending: true })
@@ -112,7 +112,7 @@ export class StateService implements IStateService {
   async findStateById(id: number): Promise<IState> {
     let res = await this.superBaseService
       .connect()
-      .from("State")
+      .from("state")
       .select("*")
       .eq("id", id)
       .single();
@@ -128,14 +128,14 @@ export class StateService implements IStateService {
     let { data, count }: { data: IState[]; count: number } =
       await this.superBaseService
         .connect()
-        .from("State")
+        .from("state")
         .select("*", { count: "exact", head: true });
     return count;
   }
   async updateState(id: number, payload: UpdateStateDto): Promise<IState> {
     let res = await this.superBaseService
       .connect()
-      .from("State")
+      .from("state")
       .select("*")
       .eq("id", id)
       .single();
@@ -148,10 +148,10 @@ export class StateService implements IStateService {
 
     res = await this.superBaseService
       .connect()
-      .from("State")
+      .from("state")
       .update({
         name: payload.name,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -166,7 +166,7 @@ export class StateService implements IStateService {
   ): Promise<IResponse<IState>> {
     let res = await this.superBaseService
       .connect()
-      .from("State")
+      .from("state")
       .select("*")
       .eq("id", id)
       .single();
@@ -178,8 +178,11 @@ export class StateService implements IStateService {
 
     res = await this.superBaseService
       .connect()
-      .from("State")
-      .update({ active: payload.activate })
+      .from("state")
+      .update({
+        active: payload.activate,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", id);
 
     if (res.error) {
@@ -191,7 +194,7 @@ export class StateService implements IStateService {
   async deleteState(id: number): Promise<IState> {
     let res = await this.superBaseService
       .connect()
-      .from("State")
+      .from("state")
       .select("*")
       .eq("id", id)
       .single();
@@ -204,7 +207,7 @@ export class StateService implements IStateService {
 
     let { data, error } = await this.superBaseService
       .connect()
-      .from("State")
+      .from("state")
       .delete()
       .eq("id", id);
     if (res.error) {
