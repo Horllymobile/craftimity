@@ -1,15 +1,19 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from 'src/app/core/guards/auth/auth.guard';
+import { SessionGuard } from './core/guards/session/session.guard';
 
 const routes: Routes = [
   {
-    path: 'home',
+    path: '',
     loadChildren: () =>
-      import('./home/home.module').then((m) => m.HomePageModule),
+      import('./pages/pages.module').then((m) => m.PagesPageModule),
+    canActivate: [AuthGuard],
   },
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
+    canActivate: [SessionGuard],
   },
   {
     path: '',

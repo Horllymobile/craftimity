@@ -15,7 +15,6 @@ import { ScreenTrackingService } from '@angular/fire/analytics';
 import { environment } from 'src/environments/environment';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { AngularFireModule } from '@angular/fire/compat';
-import { SelectAppComponent } from './select-app/select-app.component';
 import { RequestInterceptor } from './core/interceptors/http.interceptor';
 import { STORAGE_VARIABLES } from './core/constants/storage';
 
@@ -23,7 +22,7 @@ export async function tokenGetter() {
   return localStorage.getItem(STORAGE_VARIABLES.TOKEN);
 }
 @NgModule({
-  declarations: [AppComponent, SelectAppComponent],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     FormsModule,

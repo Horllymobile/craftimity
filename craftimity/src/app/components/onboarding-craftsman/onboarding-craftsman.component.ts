@@ -7,9 +7,11 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ModalController, NavParams } from '@ionic/angular';
+import { IonicModule, ModalController, NavParams } from '@ionic/angular';
 import {
   Dimensions,
   ImageCroppedEvent,
@@ -24,11 +26,21 @@ import { IUser } from 'src/app/core/models/user';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { Camera, CameraResultType } from '@capacitor/camera';
+import { CommonModule } from '@angular/common';
+import { SharedModule } from 'src/app/core/shared/shared.module';
 
 @Component({
   selector: 'app-onboarding-craftsman',
   templateUrl: './onboarding-craftsman.component.html',
   styleUrls: ['./onboarding-craftsman.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    IonicModule,
+    SharedModule,
+    ReactiveFormsModule,
+    FormsModule,
+  ],
 })
 export class OnboardingCraftsmanComponent implements OnInit, OnDestroy {
   imageChangedEvent: any = '';

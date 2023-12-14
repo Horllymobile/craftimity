@@ -1,3 +1,118 @@
-<p>
-  register works!
-</p>
+<ion-content>
+  <ion-card>
+    <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto my-3"></ion-img>
+    <ion-card-header>
+      <ion-title class="text-primary text-lg">Register</ion-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-text class="mx-auto text-primary text-sm">
+        Create an account and, start managing craftsmanship and your service business.
+      </ion-text>
+      <form class="mt-5" [formGroup]="form" (ngSubmit)="onSubmit(formData)">
+        <div>
+          <input type="text" placeholder="First Name" formControlName="first_name"
+            class="w-full p-3 bg-white text-primary placeholder:text-primary border border-primary rounded-lg">
+          <div *ngIf="formCtrl['email'].errors" class="text-xs">
+            <ion-text color="danger"
+              *ngIf="formCtrl['first_name'].dirty && formCtrl['first_name'].hasError('required')">
+              First name is required
+            </ion-text>
+            <ion-text color="danger"
+              *ngIf="formCtrl['first_name'].dirty && formCtrl['first_name'].hasError('minlength')">
+              Name is invalid
+            </ion-text>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <input type="text" placeholder="Last Name" formControlName="last_name"
+            class="w-full p-3 bg-white text-primary placeholder:text-primary border border-primary rounded-lg">
+          <div *ngIf="formCtrl['email'].errors" class="text-xs">
+            <ion-text color="danger" *ngIf="formCtrl['last_name'].dirty && formCtrl['last_name'].hasError('required')">
+              Last name is required
+            </ion-text>
+            <ion-text color="danger" *ngIf="formCtrl['last_name'].dirty && formCtrl['last_name'].hasError('minlength')">
+              Name is invalid
+            </ion-text>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <div class="flex">
+            <ion-select formControlName="code" label="Code"
+              class="w-24 px-1 bg-white text-primary border border-primary border-r-0 rounded-tl-lg rounded-bl-lg">
+              <ng-container *ngFor="let country of countries$ | async">
+                <ion-select-option [value]="country.phone_code">
+                  {{ country.phone_code}}
+                </ion-select-option>
+              </ng-container>
+            </ion-select>
+            <input [placeholder]="phoneDigitSamplePlaceholder" type="text" formControlName="number"
+              class="w-full p-3 bg-white text-primary border border-l-0 border-primary rounded-tr-lg rounded-br-lg">
+          </div>
+          <div class="mt-2 text-xs" *ngIf="formCtrl['number'].errors">
+            <ion-text color="danger" *ngIf="formCtrl['number'].dirty && formCtrl['number'].hasError('required')">
+              Phone number is required
+            </ion-text>
+            <ion-text color="danger"
+              *ngIf="formCtrl['number'].dirty && formCtrl['number'].hasError('minlength') || formCtrl['number'].hasError('maxlength')">
+              Phone digits must be {{ phoneDigitErrorText }}
+            </ion-text>
+          </div>
+          <p class="text-gray-500 lg:w-[85%] text-xs lg:text-sm">We'll call or text you to confirm your
+            number.
+            Standard message and
+            data rates
+            apply. <a href="/" class="underline">Privacy
+              Policy</a></p>
+        </div>
+
+        <div class="mt-5">
+          <input type="email" placeholder="Email" formControlName="email"
+            class="w-full p-3 bg-white text-primary placeholder:text-primary border border-primary rounded-lg">
+          <div *ngIf="formCtrl['email'].errors" class="text-xs mt-1">
+            <ion-text color="danger" *ngIf="formCtrl['email'].dirty && formCtrl['email'].hasError('required')">
+              Email address is required
+            </ion-text>
+            <ion-text color="danger" *ngIf="formCtrl['email'].dirty && formCtrl['email'].hasError('email')">
+              Invalid email address
+            </ion-text>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <div class="relative">
+            <input [type]="showPassword ? 'text' : 'password'" placeholder="Password" formControlName="password"
+              class="w-full p-3 bg-white text-primary placeholder:text-primary border border-primary rounded-lg">
+            <ion-icon (click)="togglePassword()" [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              class="text-2xl text-primary mb-2 absolute top-3 right-3 cursor-pointer"
+              [ngClass]="showPassword ? 'line-through' : 'underline'"></ion-icon>
+          </div>
+          <div *ngIf="formCtrl['password'].errors" class="text-xs mt-1">
+            <ion-text color="danger" *ngIf="formCtrl['password'].dirty && formCtrl['password'].hasError('required')">
+              Password is required
+            </ion-text>
+            <ion-text color="danger" *ngIf="formCtrl['password'].dirty && formCtrl['password'].hasError('minlength')
+          || formCtrl['password'].hasError('maxlength')">
+              Password length should be 8-16 characters long
+            </ion-text>
+          </div>
+        </div>
+
+        <div class="w-full flex gap-2 my-5">
+          <ion-checkbox formControlName="accept"></ion-checkbox>
+          <p class="text-xs mt-2">I agree to the <span class="text-primary">Terms and Conditions</span>. </p>
+        </div>
+
+        <ion-button expand="block" type="submit" [disabled]="!isFormValid(form)"
+          class="w-full p-1 mt-2 rounded-lg text-lg">Register</ion-button>
+
+        <p class="text-lg text-center font-medium">Already have an account? <span class="text-primary underline"
+            routerLink="/craftivity/auth/login">Login
+            here...</span></p>
+
+        <p class="text-[#12427A] underline text-center" routerLink="/select-app">Select App</p>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OnboardingCraftsmanComponent } from './onboarding-craftsman/onboarding-craftsman.component';
 import { IonicModule } from '@ionic/angular';
@@ -17,13 +17,14 @@ import { CreateEditServiceComponent } from './create-edit-service/create-edit-se
     PrivacyPolicyComponent,
     CreateEditServiceComponent,
   ],
-  imports: [
-    CommonModule,
-    IonicModule,
-    SharedModule,
-    ReactiveFormsModule,
-    FormsModule,
+  imports: [CommonModule, IonicModule, SharedModule, ReactiveFormsModule],
+  exports: [
+    // OnboardingCraftsmanComponent,
+    // CreateEditAddressComponent,
+    // TermsAndConditionsComponent,
+    // PrivacyPolicyComponent,
+    // CreateEditServiceComponent,
   ],
-  exports: [OnboardingCraftsmanComponent, CreateEditAddressComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ComponentsModule {}

@@ -2,14 +2,23 @@ import { LoaderService } from 'src/app/core/services/loader.service';
 import { ServicesService } from './../../core/services/services/services.service';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { Component, OnInit } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { IonicModule, ModalController, NavParams } from '@ionic/angular';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Subject, finalize, takeUntil } from 'rxjs';
 import { IUser } from 'src/app/core/models/user';
+import { CommonModule } from '@angular/common';
+import { SharedModule } from 'src/app/core/shared/shared.module';
 
 @Component({
   selector: 'app-create-edit-service',
   templateUrl: './create-edit-service.component.html',
+  standalone: true,
+  imports: [CommonModule, IonicModule, SharedModule, ReactiveFormsModule],
   styleUrls: ['./create-edit-service.component.scss'],
 })
 export class CreateEditServiceComponent implements OnInit {

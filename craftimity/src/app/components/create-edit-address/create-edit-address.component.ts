@@ -1,16 +1,25 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModalController, NavParams } from '@ionic/angular';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { IonicModule, ModalController, NavParams } from '@ionic/angular';
 import { Observable, Subject, finalize, map, takeUntil } from 'rxjs';
 import { ICountry, IState, ICity } from 'src/app/core/models/location';
-import { IAddress, IUser } from 'src/app/core/models/user';
+import { IAddress } from 'src/app/core/models/user';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
 import { UsersService } from 'src/app/core/services/users/users.service';
+import { SharedModule } from 'src/app/core/shared/shared.module';
 
 @Component({
   selector: 'app-create-edit-address',
+  standalone: true,
+  imports: [CommonModule, IonicModule, SharedModule, ReactiveFormsModule],
   templateUrl: './create-edit-address.component.html',
   styleUrls: ['./create-edit-address.component.scss'],
 })

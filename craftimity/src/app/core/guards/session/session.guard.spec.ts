@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { SessionGuard } from './session.guard';
 
 describe('SessionGuard', () => {
-  let guard: SessionGuard;
+  let guard: typeof SessionGuard;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});

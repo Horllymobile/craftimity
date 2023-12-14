@@ -42,7 +42,7 @@
             <div *ngIf="!imageChangedEvent" class="mt-5 flex justify-center">
               <label for="image" class="mx-auto">
                 <ion-icon name="add-circle-outline" class="text-[6em] mx-auto text-primary "></ion-icon>
-                <!-- <img src="assets/imgs/add-profile.svg" class="mx-auto cursor-pointer w-[80%]" alt=""> -->
+                <img src="assets/imgs/add-profile.svg" class="mx-auto cursor-pointer w-[80%]" alt="">
               </label>
               <input type="file" id="image" class="hidden" accept="image/*" formControlName="url"
                 (change)="uploadImage($event)">

@@ -1,3 +1,92 @@
-<p>
-  forgot works!
-</p>
+<ion-content>
+  <ion-card>
+    <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto mt-8 mb-8"></ion-img>
+    <ion-card-header>
+      <ion-title class="text-[#12427A] text-lg" *ngIf="step === 'forgot'">Forgot Password</ion-title>
+      <ion-title class="text-[#12427A] text-lg" *ngIf="step === 'verify'">Verify Email</ion-title>
+      <ion-title class="text-[#12427A] text-lg" *ngIf="step === 'change'">Change Password</ion-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form class="mt-5" [formGroup]="form" (ngSubmit)="onSubmit(form.value)" *ngIf="step === 'forgot'">
+        <div>
+          <ion-input placeholder="Email" formControlName="email"
+            class="border border-[#12427A] rounded p-3"></ion-input>
+        </div>
+
+        <ion-button type="submit" expand="full" class="my-5 rounded">Submit</ion-button>
+
+        <p class="text-lg text-center font-medium text-[#12427A] underline" routerLink="/craftivity/auth/login">
+          Login here...
+        </p>
+      </form>
+      <form class="mt-5" [formGroup]="verifyForm" (ngSubmit)="verifyOtp(verifyForm.value)" *ngIf="step === 'verify'">
+        <div>
+          <ion-input placeholder="----------------" formControlName="code"
+            class="w-full p-3 bg-white text-center text-[#12427A] border border-[#12427A] rounded-lg"></ion-input>
+
+          <div *ngIf="formCtrl['code'].errors" class="mt-1">
+            <ion-text color="danger" *ngIf="verifyFormCtrl['code'].dirty && verifyFormCtrl['code'].hasError('required')"
+              class="text-xs">Please
+              enter verification code to
+              procced</ion-text>
+            <ion-text color="danger" class="text-xs"
+              *ngIf="verifyFormCtrl['code'].dirty && (verifyFormCtrl['code'].hasError('maxlength') || verifyFormCtrl['code'].hasError('minlength'))">
+              Code must be 6 digit long
+            </ion-text>
+          </div>
+        </div>
+
+        <p class="text-[#12427A] underline self-center mt-2">
+          <span *ngIf="timer === 0" (click)="resendOTPCode()">Resend</span>
+          <span *ngIf="timer !== 0">Resend in {{ timer }}</span>
+        </p>
+
+        <ion-button type="submit" [disabled]="form.invalid" expand="full" type="submit"
+          class="my-5 rounded">Submit</ion-button>
+
+        <p class="text-lg text-center font-medium text-[#12427A]" routerLink="/craftivity/auth/login">
+          Login here...
+        </p>
+      </form>
+
+      <form [formGroup]="changePasswordForm" (ngSubmit)="updatePassword(changePasswordForm.value)"
+        *ngIf="step === 'change'">
+        <div class="w-full my-5">
+          <div class="relative mb-2">
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
+              class="w-full p-2 bg-white text-[#12427A] placeholder:text-[#12427A] border border-[#12427A] rounded-lg"
+              label="Select Country" placeholder="Password">
+            <span (click)="showPassword = !showPassword"
+              class="text-sm text-[#12427A] mb-2 absolute top-3 right-3 cursor-pointer"
+              [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
+          </div>
+        </div>
+
+        <div class="w-full my-3">
+          <div class="relative">
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="cmPassword"
+              class="w-full p-2 bg-white text-[#12427A] placeholder:text-[#12427A] border border-[#12427A] rounded-lg"
+              label="Select Country" placeholder="Confirm Password">
+            <span (click)="showPassword = !showPassword"
+              class="text-sm text-[#12427A] mb-2 absolute top-3 right-3 cursor-pointer"
+              [ngClass]="showPassword ? 'line-through' : 'underline'">Show</span>
+          </div>
+        </div>
+        <div>
+          <p class="text-red-500 text-xs"
+            *ngIf="changePasswordForm.get('cmPassword')?.dirty && changePasswordForm.hasError('notmatch')">
+            The password doesn't match!
+          </p>
+        </div>
+
+
+        <ion-button type="submit" [disabled]="changePasswordForm.invalid" expand="full" type="submit"
+          class="my-5 rounded">Submit</ion-button>
+
+        <p class="text-lg text-center font-medium text-[#12427A]" routerLink="/craftivity/auth/login">
+          Login here...
+        </p>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

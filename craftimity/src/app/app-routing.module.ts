@@ -1,35 +1,25 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { SelectAppComponent } from './select-app/select-app.component';
-import { CraftimiyGuard } from './core/guards/craftimity.guard';
-import { CraftiviyGuard } from './core/guards/craftivity.guard';
+import { AuthGuard } from './core/guards/auth/auth.guard';
+import { SessionGuard } from './core/guards/session/session.guard';
 
 const routes: Routes = [
   {
-    path: 'craftimity',
+    path: 'admin',
     loadChildren: () =>
-      import('./craftimity/craftimity.module').then((m) => m.CraftimityModule),
-    canActivate: [],
-  },
-  {
-    path: 'craftivity',
-    loadChildren: () =>
-      import('./craftivity/craftivity.module').then((m) => m.CraftivityModule),
-    canActivate: [],
-  },
-  {
-    path: 'select-app',
-    component: SelectAppComponent,
-  },
-  {
-    path: '',
-    redirectTo: 'select-app',
-    pathMatch: 'full',
+      import('./admin/admin.module').then((m) => m.AdminModule),
+    canActivate: [AuthGuard],
   },
   {
     path: 'pages',
     loadChildren: () =>
-      import('./craftivity/pages/pages.module').then((m) => m.PagesPageModule),
+      import('./page/page.module').then((m) => m.PagePageModule),
+    canActivate: [SessionGuard],
+  },
+  {
+    path: '',
+    redirectTo: 'pages',
+    pathMatch: 'full',
   },
 ];
 
