@@ -109,7 +109,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   goToVerify(email?: string) {
-    this.router.navigate(['/craftimity/page/auth/verify', email], {
+    this.router.navigate(['/page/auth/verify', email], {
       queryParams: {
         type: 'email',
       },

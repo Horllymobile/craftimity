@@ -19,11 +19,12 @@ import { Request } from "express";
 import { Roles } from "src/core/decorators/role.decorator";
 import { ERole } from "src/core/enums/Role";
 
-@UseGuards(AuthGuard)
+
 @Controller("api/v1/services")
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 
+  @UseGuards(AuthGuard)
   @Roles(ERole.ADMIN, ERole.SUPER_ADMIN, ERole.CRAFTMAN)
   @Post()
   async create(
@@ -38,7 +39,6 @@ export class ServiceController {
     };
   }
 
-  @Roles(ERole.ADMIN, ERole.SUPER_ADMIN, ERole.CRAFTMAN, ERole.USER)
   @Get()
   async findAll(
     page: number = 1,
@@ -67,7 +67,6 @@ export class ServiceController {
     };
   }
 
-  @Roles(ERole.ADMIN, ERole.SUPER_ADMIN, ERole.CRAFTMAN, ERole.USER)
   @Get(":id")
   async findOne(@Param("id") id: string) {
     const service = await this.serviceService.findById(+id);
@@ -78,6 +77,7 @@ export class ServiceController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Roles(ERole.ADMIN, ERole.SUPER_ADMIN, ERole.CRAFTMAN)
   @Put(":id")
   async update(@Param("id") id: string, @Body() payload: UpdateServiceDto) {
@@ -88,6 +88,7 @@ export class ServiceController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Roles(ERole.ADMIN, ERole.SUPER_ADMIN, ERole.CRAFTMAN)
   @Delete(":id")
   async remove(@Param("id") id: string) {

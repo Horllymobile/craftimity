@@ -1,86 +1,147 @@
-<app-navbar></app-navbar>
-<section class="flex lg:flex-row flex-col gap-16 justify-center p-5">
-  <div class="p-5 bg-[#7ba1e9] w-full lg:w-[400px] rounded-lg">
-    <span class="text-white text-lg font-bold">Seeking the most skilled and passionate artisans</span>
-    <p class="text-white text-sm mt-1">Investing in building strong relationships within your professional network can
-      significantly contribute to your
-      career success.</p>
-    <div class="flex gap-5">
-      <button class="rounded-full mt-1 mb-5 lg:mb-0 p-3 bg-primary text-white">Hire a Professional</button>
-      <button class="rounded-full mt-1 mb-5 lg:mb-0 p-3 outline-primary outline outline-2 text-white">Find
-        Work</button>
+<div *ngIf="!showIntro" class="page">
+  <app-navbar></app-navbar>
+  <section class="flex lg:flex-row flex-col gap-16 justify-center p-5">
+    <div class="p-5 bg-[#7ba1e9] w-full lg:w-[400px] rounded-lg">
+      <span class="text-white text-lg font-bold">Seeking the most skilled and passionate artisans</span>
+      <p class="text-white text-sm mt-1">Investing in building strong relationships within your professional network can
+        significantly contribute to your
+        career success.</p>
+      <div class="flex gap-5">
+        <button class="rounded-full mt-1 mb-5 lg:mb-0 p-3 bg-primary text-white">Hire a Professional</button>
+        <button class="rounded-full mt-1 mb-5 lg:mb-0 p-3 outline-primary outline outline-2 text-white">Find
+          Work</button>
+      </div>
     </div>
-  </div>
 
-  <div class="p-5 bg-primary w-full lg:w-[400px] rounded-lg">
-    <h3 class="text-white">Rate on Professional clients</h3>
-    <div class="flex gap-1">
-      <span class="flex gap-1">
-        <i class="fa-solid fa-star text-yellow-600"></i>
-        <i class="fa-solid fa-star text-yellow-600"></i>
-        <i class="fa-solid fa-star text-yellow-600"></i>
-        <i class="fa-solid fa-star text-yellow-600"></i>
-        <i class="fa-solid fa-star text-yellow-600"></i>
-      </span>
-      <p class="text-white">4.0/5</p>
-    </div>
-  </div>
-</section>
-
-<section class="flex lg:flex-row bg-[#d9e4f9] flex-col gap-5 justify-center mt-5 p-8">
-  <div class="p-5  w-full rounded-lg">
-    <h2 class="text-primary font-bold text-[2em]">Your next job starts right here.</h2>
-    <p class="text-black text-sm mt-8 w-[75%]">Set up a free profile to showcase your skills, experience and desire pay
-      rate to clients. Get the freedom over the payment rate to easily get paid
-      for your work.
-    </p>
-  </div>
-
-  <div class="p-5 bg-[#f87a06] w-full lg:w-[400px] rounded-lg">
-    <h3 class="text-orange-400">Want to learn how?</h3>
-    <div class="bg-white">
-      <p>Video</p>
-    </div>
-    <p class="text-black">Kick start the career here
-      where professionals works </p>
-  </div>
-</section>
-
-<section class="p-5 mt-8">
-  <h2>Popular Professional Services</h2>
-  <section class="flex lg:flex-row flex-col gap-5 justify-center mt-5">
-    <div class="">
-      <img src="assets/imgs/pr-service-1.png" class="w-full" alt="Automobile Engineers">
-      <p class="text-lg mt-2">Automobile Engineers</p>
-    </div>
-    <div class="">
-      <img src="assets/imgs/pr-service-2.png" class="w-full" alt="Automobile Engineers">
-      <p class="text-lg mt-2">Plumbing</p>
-    </div>
-    <div class="">
-      <img src="assets/imgs/pr-service-3.png" class="w-full" alt="Automobile Engineers">
-      <p class="text-lg mt-2">Fashion Designers</p>
-    </div>
-    <div class="">
-      <img src="assets/imgs/pr-service-4.png" class="w-full" alt="Automobile Engineers">
-      <p class="text-lg mt-2">Hair Stylist</p>
-    </div>
-    <div class="">
-      <img src="assets/imgs/pr-service-5.png" class="w-full" alt="Automobile Engineers">
-      <p class="text-lg mt-2">Art / Graphics Designs</p>
+    <div class="p-5 bg-primary w-full lg:w-[400px] rounded-lg">
+      <h3 class="text-white">Rate on Professional clients</h3>
+      <div class="flex gap-1">
+        <span class="flex gap-1">
+          <i class="fa-solid fa-star text-yellow-600"></i>
+          <i class="fa-solid fa-star text-yellow-600"></i>
+          <i class="fa-solid fa-star text-yellow-600"></i>
+          <i class="fa-solid fa-star text-yellow-600"></i>
+          <i class="fa-solid fa-star text-yellow-600"></i>
+        </span>
+        <p class="text-white">4.0/5</p>
+      </div>
     </div>
   </section>
-</section>
 
-<section class="p-5 mt-8">
-  <h2 class="text-center text-primary">Our Missions</h2>
-  <section class="flex lg:flex-row flex-col gap-16 p-8 justify-center align-middle mx-auto mt-5">
-    <p class="text-xl text-justify order-2 lg:order-1 w-[35%]">
-      At Craftiity, our mission is to redefine excellence in services, empowering individuals and organizations with
-      unparalleled support and innovative solutions. We are committed to delivering seamless, personalized, and
-      results-driven experiences, setting the standard for professionalism, integrity, and efficiency in the agent
-      service industry.
-    </p>
-    <img src="assets/imgs/mission.png" class="w-[380px] order-1 lg:order-2" alt="Our Missions">
+  <section class="flex lg:flex-row bg-[#d9e4f9] flex-col gap-5 justify-center mt-5 p-8">
+    <div class="p-5  w-full rounded-lg">
+      <h2 class="text-primary font-bold text-[2em]">Your next job starts right here.</h2>
+      <p class="text-black text-sm mt-8 w-[75%]">Set up a free profile to showcase your skills, experience and desire
+        pay
+        rate to clients. Get the freedom over the payment rate to easily get paid
+        for your work.
+      </p>
+    </div>
+
+    <div class="p-5 bg-[#f87a06] w-full lg:w-[400px] rounded-lg">
+      <h3 class="text-orange-400">Want to learn how?</h3>
+      <div class="bg-white">
+        <p>Video</p>
+      </div>
+      <p class="text-black">Kick start the career here
+        where professionals works </p>
+    </div>
   </section>
-</section>
+
+  <section class="p-5 mt-8">
+    <h2>Popular Professional Services</h2>
+    <section class="flex lg:flex-row flex-col gap-5 justify-center mt-5">
+      <div class="">
+        <img src="assets/imgs/pr-service-1.png" class="w-full" alt="Automobile Engineers">
+        <p class="text-lg mt-2">Automobile Engineers</p>
+      </div>
+      <div class="">
+        <img src="assets/imgs/pr-service-2.png" class="w-full" alt="Automobile Engineers">
+        <p class="text-lg mt-2">Plumbing</p>
+      </div>
+      <div class="">
+        <img src="assets/imgs/pr-service-3.png" class="w-full" alt="Automobile Engineers">
+        <p class="text-lg mt-2">Fashion Designers</p>
+      </div>
+      <div class="">
+        <img src="assets/imgs/pr-service-4.png" class="w-full" alt="Automobile Engineers">
+        <p class="text-lg mt-2">Hair Stylist</p>
+      </div>
+      <div class="">
+        <img src="assets/imgs/pr-service-5.png" class="w-full" alt="Automobile Engineers">
+        <p class="text-lg mt-2">Art / Graphics Designs</p>
+      </div>
+    </section>
+  </section>
+
+  <section class="p-5 mt-8">
+    <h2 class="text-center text-primary">Our Missions</h2>
+    <section class="flex lg:flex-row flex-col gap-16 p-8 justify-center align-middle mx-auto lg:mt-5">
+      <p class="lg:text-xl  text-gray-500 order-2 lg:order-1 lg:w-[35%]">
+        At Craftiity, our mission is to redefine excellence in services, empowering individuals and organizations with
+        unparalleled support and innovative solutions. We are committed to delivering seamless, personalized, and
+        results-driven experiences, setting the standard for professionalism, integrity, and efficiency in the agent
+        service industry.
+      </p>
+      <img src="assets/imgs/mission.png" class="w-[380px] order-1 lg:order-2" alt="Our Missions">
+    </section>
+  </section>
+
+  <section class="my-8">
+    <h1 class="text-center text-primary text-[4rem]">Why Choose Us</h1>
+    <section class="mx-auto flex flex-col lg:flex-row justify-center align-middle gap-8">
+      <div class="shadow-lg p-4 w-11/12 m-2 mx-auto lg:w-3/12">
+        <h3 class="text-[4rem] text-primary font-bold">Sourcing Artisan Talent</h3>
+        <p class="text-sm text-gray-600">We aid individuals and organizations in building a vibrant community of
+          external
+          talents, ensuring smooth integration into teams. Our goal is to eliminate barriers between internal and
+          external
+          talent, fostering collaboration and synergy for both individuals and organizations.</p>
+        <button class="rounded-full mt-5 mb-5 lg:mb-0 p-3 w-52 mx-auto outline-primary outline text-primary">Learn
+          More</button>
+      </div>
+
+      <div class="shadow-lg p-4 w-11/12 m-2 mx-auto lg:w-3/12">
+        <h3 class="text-[4rem] text-primary font-bold">Comprehensive Project Supervision</h3>
+        <p class="text-sm text-gray-600">We diligently oversee projects, ensuring thorough follow-up on both the artisan
+          and client sides. Our hands-on approach distinguishes us, standing by you every step of the way. Let us handle
+          it for a seamless project experience.</p>
+
+        <button class="rounded-full mt-5 mb-5 lg:mb-0 p-3 w-52 mx-auto outline-primary outline text-primary">Learn
+          More</button>
+      </div>
+
+      <div class="shadow-lg p-4 w-11/12 m-2 mx-auto lg:w-3/12">
+        <h3 class="text-[4rem] text-primary font-bold">Efficient Payment Management</h3>
+        <p class="text-sm text-gray-600">We meticulously oversee external talent projects using innovative digital
+          solutions, ensuring seamless execution. Committed to excellence, our dedication ensures the successful
+          completion of every project, meeting and exceeding expectations for a superior outcome.</p>
+
+        <button class="rounded-full mt-5 mb-5 lg:mb-0 p-3 w-52 mx-auto outline-primary outline text-primary">Learn
+          More</button>
+      </div>
+    </section>
+  </section>
+
+  <footer class="bg-blue-600 flex justify-between p-8">
+    <div class="w-full"></div>
+    <div class="w-full"></div>
+    <div class="">
+      <img src="assets/imgs/person.png" class="mx-auto" alt="Follow">
+      <div class="flex gap-3">
+        <a href="https://web.facebook.com/craftimity" target="_blank">
+          <img src="assets/imgs/facebook.png" alt="Facebook">
+        </a>
+        <a href="https://www.instagram.com/craftimity/" target="_blank">
+          <img src="assets/imgs/instagram.png" alt="Instagram">
+        </a>
+        <a href="https://x.com/craftimity_" target="_blank">
+          <img src="assets/imgs/x.png" alt="X">
+        </a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+
+<img src="assets/svgs/logo.svg" class="w-[15%] intro absolute mx-auto top-[50%] left-[40%]">

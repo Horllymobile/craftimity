@@ -213,10 +213,10 @@ export class LoginComponent implements OnInit {
   }
 
   goToHome() {
-    this.router.navigate(['/craftimity/admin/']);
+    this.router.navigate(['/admin/']);
   }
 
   goToOnboarding() {
-    this.router.navigate(['/craftimity/admin/more/account']);
+    this.router.navigate(['/admin/more/account']);
   }
 }

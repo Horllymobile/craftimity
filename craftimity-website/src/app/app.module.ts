@@ -9,6 +9,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SwiperDirective } from 'src/app/core/directives/swiper.directive';
 
 import { register } from 'swiper/element/bundle';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,6 +19,7 @@ import { register } from 'swiper/element/bundle';
     NavbarComponent,
     BrowserAnimationsModule,
     SwiperDirective,
+    MatButtonModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

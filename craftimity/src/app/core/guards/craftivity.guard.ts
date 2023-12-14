@@ -11,5 +11,5 @@ export const CraftiviyGuard: CanActivateFn = async () => {
     localStorage.setItem(STORAGE_VARIABLES.APP, STORAGE_VARIABLES.CRAFTIVITY);
     return true;
   }
-  return router.navigate(['/', 'craftimity']);
+  return router.navigate(['/', 'admin']);
 };

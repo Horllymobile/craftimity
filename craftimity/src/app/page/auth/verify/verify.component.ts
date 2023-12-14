@@ -78,7 +78,7 @@ export class VerifyComponent implements OnInit, OnDestroy {
       .subscribe({
         next: async (res) => {
           localStorage.removeItem(STORAGE_VARIABLES.SIGNUP_DATA);
-          this.route.navigate(['/craftimity/page/auth/login']);
+          this.route.navigate(['/page/auth/login']);
         },
         error: async (err) => {
           await this.alertService.error(err);

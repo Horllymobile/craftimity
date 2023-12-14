@@ -39,7 +39,9 @@
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "animejs/lib/anime.es.js"
+            ]
           },
           "configurations": {
             "production": {
