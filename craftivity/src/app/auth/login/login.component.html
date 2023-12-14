@@ -1,0 +1,64 @@
+<ion-content class="background">
+  <ion-card>
+    <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto mt-8 mb-3"></ion-img>
+    <ion-card-header>
+      <ion-title class="text-[#12427A] text-lg">Login</ion-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-text class="text-[#12427A] text-sm">Let's Login to Your
+        Account First</ion-text>
+      <form class="mt-5" [formGroup]="form" (ngSubmit)="login(formData)">
+        <div>
+          <input type="email" placeholder="Email" autocomplete="email" formControlName="email"
+            class="w-full p-3 bg-white text-[#12427A] placeholder:text-[#12427A] border border-[#12427A] rounded-lg">
+          <div *ngIf="formControl['email'].errors">
+            <ion-text color="danger"
+              *ngIf="formControl['email'].dirty && formControl['email'].hasError('required')">Email address is
+              required</ion-text>
+            <ion-text color="danger"
+              *ngIf="formControl['email'].dirty && formControl['email'].hasError('email')">Invalide email
+              address</ion-text>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <div class="relative">
+            <input [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="Password"
+              formControlName="password"
+              class="w-full p-3 bg-white text-[#12427A] placeholder:text-[#12427A] border border-[#12427A] rounded-lg">
+            <ion-icon (click)="togglePassword()" [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              class="text-2xl text-[#12427A] mb-2 absolute top-3 right-3 cursor-pointer"
+              [ngClass]="showPassword ? 'line-through' : 'underline'"></ion-icon>
+          </div>
+          <div *ngIf="formControl['password'].errors">
+            <ion-text color="danger"
+              *ngIf="formControl['password'].dirty && formControl['password'].hasError('required')">Password is
+              required</ion-text>
+          </div>
+        </div>
+
+        <div class="w-full mt-5 flex justify-between">
+          <div class="w-full flex gap-2 ">
+            <ion-checkbox formControlName="remember"></ion-checkbox>
+            <p class="text-xs text-[#12427A] mt-2">Remember me</p>
+          </div>
+
+          <div class="w-full">
+            <p class="text-right text-[#12427A] underline" routerLink="/craftivity/auth/forgot-password">
+              Forgot Password?
+            </p>
+          </div>
+        </div>
+
+        <ion-button color="primary" type="submit" expand="full" class="my-5 rounded"
+          [disabled]="form.invalid">Login</ion-button>
+
+        <p class="text-lg text-center font-medium">Don't have an account? <span class="text-[#12427A] underline"
+            routerLink="/craftivity/auth/register">Register
+            here...</span></p>
+        <p class="text-[#12427A] underline text-center" routerLink="/select-app">Select App</p>
+      </form>
+    </ion-card-content>
+  </ion-card>
+  <ion-toast color="danger" [message]="error" [isOpen]="showError" [duration]="5000"></ion-toast>
+</ion-content>

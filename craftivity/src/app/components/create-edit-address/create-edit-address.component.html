@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ this.data.action | titlecase }} Address</ion-title>
+    <ion-buttons>
+      <ion-button (click)="closeModal('close')">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="locationForm" (ngSubmit)="onSubmit(locationForm.value)">
+
+    <div class="w-full my-5">
+      <ion-item>
+        <ion-input label="House number" type="number" formControlName="house"
+          class="w-full bg-white text-primary placeholder:text-primary" placeholder="House number"></ion-input>
+      </ion-item>
+    </div>
+
+    <div class="w-full my-5">
+      <ion-item>
+        <ion-input label="Floor number" type="number" formControlName="floor"
+          class="w-full bg-white text-primary placeholder:text-primary" placeholder="Floor number"></ion-input>
+      </ion-item>
+    </div>
+
+    <div class="w-full my-5">
+      <ion-item>
+        <ion-input label="Street name" type="text" formControlName="street"
+          class="w-full bg-white text-primary placeholder:text-primary" placeholder="Street name"></ion-input>
+      </ion-item>
+    </div>
+
+    <ion-item class="w-full my-5">
+      <ion-select label="Select country" id="country" formControlName="country"
+        class="w-full px-1 bg-white text-primary" label="Select Country" placeholder="Select country"
+        (ionChange)="onSelectCountry($event)">
+        <ng-container *ngFor="let country of countries$ | async">
+          <ion-select-option [value]="country.id">{{ country.name }}</ion-select-option>
+        </ng-container>
+      </ion-select>
+    </ion-item>
+
+    <ion-item class="w-full my-5">
+      <ion-select label="Select state" id="state" formControlName="state" class="w-full px-1 bg-white text-primary"
+        label="Select State" placeholder="Select country" (ionChange)="onSelectState($event)">
+        <ng-container *ngFor="let state of states$ | async">
+          <ion-select-option [value]="state.id">{{ state.name }}</ion-select-option>
+        </ng-container>
+      </ion-select>
+    </ion-item>
+
+    <ion-item class="w-full my-5">
+      <ion-select label="Select city" id="city" formControlName="city" class="w-full px-1 bg-white text-primary"
+        label="Select City" placeholder="Select country">
+        <ng-container *ngFor="let city of cities$ | async">
+          <ion-select-option [value]="city.id">{{ city.name }}</ion-select-option>
+        </ng-container>
+      </ion-select>
+    </ion-item>
+
+    <ion-button color="primary" type="submit" [disabled]="locationForm.invalid" expand="block" class="my-5 rounded">
+      Save
+    </ion-button>
+  </form>
+</ion-content>

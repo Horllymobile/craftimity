@@ -1,0 +1,10 @@
+<craft-navbar></craft-navbar>
+<craft-search *ngIf="layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.XSmall)) 
+|| layoutService.checkScreenSize(layoutService.displayNameMap.get(Breakpoints.Small))"></craft-search>
+<mat-tab-group class="mt-5">
+    <mat-tab label="Overview">
+        <craft-profile></craft-profile>
+    </mat-tab>
+    <mat-tab label="Address"> Content 2 </mat-tab>
+    <mat-tab label="History"> Content 3 </mat-tab>
+</mat-tab-group>

@@ -17,6 +17,9 @@ import { jwtConstants } from "./resources/auth/constants/constants";
 import { CraftsmenModule } from "./resources/craftsmen/craftsmen.module";
 import { HttpModule } from "@nestjs/axios";
 import { MailModule } from "./mail/mail.module";
+import { ScheduleModule } from "@nestjs/schedule";
+import { TasksService } from "./core/services/tasks.service";
+import { ServiceModule } from './resources/service/service.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -33,8 +36,9 @@ import { MailModule } from "./mail/mail.module";
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: "60m" },
+      signOptions: { expiresIn: jwtConstants.expiresIn },
     }),
+    ScheduleModule.forRoot(),
     CityModule,
     StateModule,
     CountryModule,
@@ -43,11 +47,13 @@ import { MailModule } from "./mail/mail.module";
     CategoryModule,
     CraftsmenModule,
     MailModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     SuperbaseService,
+    TasksService,
     // {
     //   provide: APP_GUARD,
     //   useClass: AuthGuard,

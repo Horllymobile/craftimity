@@ -1,4 +1,3 @@
 export const API_URL = {
-  telesign:
-    "https://telesign-telesign-send-sms-verification-code-v1.p.rapidapi.com/sms-verification-code",
+  elastic_api: "https://api.elasticemail.com/v4/",
 };

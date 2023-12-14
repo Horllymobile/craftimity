@@ -10,6 +10,7 @@ import { PhoneVerificationComponent } from "./phone-verification/phone-verificat
 import { EmailVerificationComponent } from "./email-verification/email-verification.component";
 import { ToastrService } from "ngx-toastr";
 import { OnboardingComponent } from "./onboarding/onboarding.component";
+import { RegisterComponent } from "./register/register.component";
 
 const routes: Routes = [
   {
@@ -29,6 +30,10 @@ const routes: Routes = [
     component: LoginPageComponent,
   },
   {
+    path: "register",
+    component: RegisterComponent,
+  },
+  {
     path: "",
     redirectTo: "login",
     pathMatch: "full",
@@ -41,6 +46,7 @@ const routes: Routes = [
     PhoneVerificationComponent,
     EmailVerificationComponent,
     OnboardingComponent,
+    RegisterComponent,
   ],
   imports: [
     CommonModule,

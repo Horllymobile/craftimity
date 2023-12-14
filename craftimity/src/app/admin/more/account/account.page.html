@@ -1,0 +1,245 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Account</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Account Information</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-segment value="user_info" class="p-3" [(ngModel)]="segment">
+    <ion-segment-button value="user_info" class="p-1">
+      <ion-label>User Info</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="location_info" class="p-1">
+      <ion-label>Location Info</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ng-container [ngSwitch]="segment">
+    <ion-card *ngSwitchCase="'user_info'">
+      <ion-card-header>
+        <ion-card-title>
+          User Information
+        </ion-card-title>
+        <ion-card-subtitle class="flex justify-end">
+          <ion-fab>
+            <ion-fab-button size="small" *ngIf="!edit" (click)="toogleEdit()">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button size="small" *ngIf="edit" color="danger" (click)="toogleEdit()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content *ngIf="userData()">
+        <div class="w-28 grid mx-auto" *ngIf="!editImage">
+          <ion-avatar class="mx-auto w-28 h-28 mt-5">
+            <ion-img *ngIf="userData()?.profile_image" [src]="userData()?.profile_image"></ion-img>
+            <ion-img *ngIf="!userData()?.profile_image"
+              src="https://ionicframework.com/docs/img/demos/avatar.svg"></ion-img>
+          </ion-avatar>
+          <ion-fab>
+            <ion-fab-button size="small" *ngIf="!editImage" (click)="toogleEditImage()">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </div>
+
+        <form [formGroup]="imageForm" *ngIf="editImage">
+          <div>
+            <div *ngIf="imageChangedEvent">
+
+              <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                [containWithinAspectRatio]="containWithinAspectRatio" [aspectRatio]="1 / 1" [resizeToWidth]="256"
+                [cropperMinWidth]="100" [onlyScaleDown]="true" [roundCropper]="true" [canvasRotation]="canvasRotation"
+                [transform]="transform" [alignImage]="'left'" [style.display]="showCropper ? null : 'none'" format="png"
+                (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()"
+                (cropperReady)="cropperReady($event)" (loadImageFailed)="loadImageFail()"></image-cropper>
+
+
+              <div>
+                <ion-button size="medium" color="danger" (click)="deleteImage()">
+                  <ion-icon slot="start" name="trash-outline"></ion-icon>
+                  Delete
+                </ion-button>
+                <ion-button size="medium" color="success" (click)="submitImage()">
+                  <ion-icon (click)="deleteImage()" slot="start" name="cloud-upload-outline"></ion-icon>
+                  Upload
+                </ion-button>
+              </div>
+            </div>
+
+            <div *ngIf="!imageChangedEvent" class="mt-5 flex justify-center">
+              <div class="w-28 grid mx-auto">
+                <ion-avatar class="mx-auto w-28 h-28 mt-5">
+                  <ion-img *ngIf="userData()?.profile_image" [src]="userData()?.profile_image"></ion-img>
+                  <ion-img *ngIf="!userData()?.profile_image"
+                    src="https://ionicframework.com/docs/img/demos/avatar.svg"></ion-img>
+                </ion-avatar>
+                <ion-fab>
+                  <ion-fab-button size="small" (click)="openImage(imageFile)" *ngIf="editImage">
+                    <ion-icon name="image-outline"></ion-icon>
+                  </ion-fab-button>
+                  <ion-fab-button size="small" color="danger" (click)="toogleEditImage()" *ngIf="editImage">
+                    <ion-icon name="close-outline"></ion-icon>
+                  </ion-fab-button>
+                </ion-fab>
+              </div>
+              <ion-input type="file" #imageFile id="image" class="hidden" accept="image/*" formControlName="url"
+                (change)="uploadImage($event)"></ion-input>
+            </div>
+          </div>
+        </form>
+
+        <ion-list *ngIf="!edit">
+          <ion-item class="py-3">
+            <ion-text *ngIf="userData()?.first_name">First Name: {{ userData()?.first_name}}</ion-text>
+            <ion-text *ngIf="!userData()?.first_name">First Name</ion-text>
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData()?.first_name">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
+
+          <ion-item class="py-3">
+            <ion-text *ngIf="userData()?.last_name">Last Name: {{ userData()?.last_name}}</ion-text>
+            <ion-text *ngIf="!userData()?.last_name">Last Name</ion-text>
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData()?.last_name">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
+
+          <ion-item class="py-3">
+            <ion-text *ngIf="userData()?.email">
+              Email: {{ userData()?.email}}
+            </ion-text>
+            <ion-text *ngIf="!userData()?.email">
+              Email
+            </ion-text>
+            <ion-chip slot="end" color="warning" *ngIf="userData()?.email && !userData()?.email_verified">
+              <ion-icon name="alert-outline"></ion-icon>
+              verify
+            </ion-chip>
+
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData()?.email">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
+
+          <ion-item class="py-3">
+            <ion-text *ngIf="userData()?.phone_number">Phone Number: {{ userData()?.phone_number}}</ion-text>
+            <ion-text *ngIf="!userData()?.phone_number">Phone Number</ion-text>
+            <ion-chip (click)="openModal(verifyComponent, { user: userData() })" slot="end" color="warning"
+              *ngIf="userData()?.phone_number && !userData()?.phone_verified">
+              <ion-icon name="alert-outline"></ion-icon>
+              Verify
+            </ion-chip>
+            <ion-chip (click)="toogleEdit()" color="warning" slot="end" *ngIf="!userData()?.phone_number">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
+
+          <ion-item class="py-3" lines="none">
+            <ion-text *ngIf="userData()?.birthdate">Birthdate: {{ userData()?.birthdate | date }}</ion-text>
+            <ion-text *ngIf="!userData()?.birthdate">Birthdate</ion-text>
+            <ion-chip (click)="toogleEdit()" *ngIf="!userData()?.birthdate" color="warning" slot="end">
+              required
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </ion-chip>
+          </ion-item>
+        </ion-list>
+        <form *ngIf="edit" [formGroup]="form" (ngSubmit)="onSubmitUserInfo(form.value)">
+          <div class="w-full my-5">
+            <ion-item>
+              <ion-input label="First Name" type="text" name="first_name" formControlName="first_name"
+                class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="First Name"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="w-full my-5">
+            <ion-item>
+              <ion-input label="Last Name" type="text" name="last_name" formControlName="last_name"
+                class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Last Name"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="w-full my-5" *ngIf="!userData()?.email">
+            <ion-item>
+              <ion-input label="Email" type="text" name="email" formControlName="last_name"
+                class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Email"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="w-full mb-5" *ngIf="!userData()?.phone_number">
+            <ion-item formGroupName="phone">
+              <ion-select class="w-28 px-1 bg-white text-primary" formControlName="code" placeholder="Code">
+                <ng-container *ngFor="let country of countries$ | async">
+                  <ion-select-option [value]="country.phone_code">
+                    {{ country.name }} - {{ country.phone_code }}
+                  </ion-select-option>
+                </ng-container>
+              </ion-select>
+              <ion-input type="text" placeholder="Phone number ({{ phoneDigitSamplePlaceholder }})"
+                formControlName="number" class="w-full p-3 bg-white text-primary placeholder:text-xs">
+              </ion-input>
+            </ion-item>
+          </div>
+
+          <div class="w-full my-5">
+            <ion-item>
+              <ion-input label="Birthdate" type="date" name="birthdate" formControlName="birthdate"
+                class="w-full p-2 bg-white text-primary placeholder:text-primary" placeholder="Birthdate"></ion-input>
+            </ion-item>
+          </div>
+
+          <ion-button color="primary" type="submit" expand="full" class="my-5 rounded">
+            Save
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngSwitchCase="'location_info'">
+      <ion-card-header>
+        <ion-card-title>
+          Addresses
+        </ion-card-title>
+        <ion-card-subtitle class="flex justify-end">
+          <ion-fab>
+            <ion-fab-button size="small" (click)="openModal(createEditAddressComponent, { action: 'add' })">
+              <ion-icon name="add-outline"></ion-icon>
+            </ion-fab-button>
+            <!-- <ion-fab-button size="small" *ngIf="edit" color="danger" (click)="toogleLocationEdit()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-fab-button> -->
+          </ion-fab>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content class="mt-12" *ngIf="userData()">
+        <ion-list>
+          <ion-item class="mb-5 py-1" *ngFor="let address of userData()?.address">
+            <ion-icon name="location-outline" slot="start"></ion-icon>
+            <ion-text>
+              {{ address?.house }} {{ address?.street
+              }}, {{ address?.country?.name }} {{
+              address?.state?.name }}, {{ address?.city?.name }}</ion-text>
+
+            <ion-icon slot="end" (click)="openModal(createEditAddressComponent, { action: 'edit', address })"
+              name="create-outline"></ion-icon>
+            <ion-icon slot="end" name="trash-outline"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+
+</ion-content>

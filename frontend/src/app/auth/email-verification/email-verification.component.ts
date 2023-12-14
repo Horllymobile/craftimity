@@ -2,7 +2,7 @@ import { Component, OnDestroy } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ToastrService } from "ngx-toastr";
-import { Observable, Subscription, finalize, map } from "rxjs";
+import { Observable, Subscription, finalize, interval, map } from "rxjs";
 import { EContactType } from "src/app/core/enums/auth";
 import { IVerifyOtp } from "src/app/core/models/auth";
 import { AuthService } from "src/app/core/services/auth/auth.service";
@@ -13,12 +13,16 @@ import { AuthService } from "src/app/core/services/auth/auth.service";
   styleUrls: ["./email-verification.component.scss"],
 })
 export class EmailVerificationComponent implements OnDestroy {
+  timer = 30;
+  resetSub$!: Subscription;
   form!: FormGroup;
   email$!: Observable<string | null>;
   email = "";
   paramSub$!: Subscription;
   verifySub$!: Subscription;
   isLoading = false;
+  isResending = false;
+  intervalSub$!: Subscription;
   constructor(
     private fb: FormBuilder,
     private router: ActivatedRoute,
@@ -28,6 +32,7 @@ export class EmailVerificationComponent implements OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.startTimer();
     this.form = this.fb.group({
       code: [null, [Validators.required]],
     });
@@ -58,19 +63,49 @@ export class EmailVerificationComponent implements OnDestroy {
       )
       .subscribe({
         next: (res) => {
-          localStorage.setItem("USER", JSON.stringify(res.data));
           this.toastrService.success(res.message);
-          this.route.navigate(["/auth/onboarding"], {
-            queryParams: {
-              email: payload.email,
-              type: payload.type,
-            },
-          });
+          this.route.navigate(["/auth/login"]);
         },
         error: (err) => {
-          console.log(err);
-          this.toastrService.success(err.message);
+          this.toastrService.success(err);
         },
+      });
+  }
+
+  async resendOTPCode() {
+    this.isResending = true;
+    let payload = {
+      type: EContactType.EMAIL,
+      email: this.email,
+    };
+    this.resetSub$ = this.authService
+      .resendOTPCode(payload)
+      .pipe(
+        finalize(async () => {
+          this.startTimer();
+          this.isResending = false;
+        })
+      )
+      .subscribe({
+        next: async (res) => {
+          this.toastrService.success(res);
+        },
+        error: async (err) => {
+          this.toastrService.success(err);
+        },
+      });
+  }
+
+  startTimer() {
+    if (this.timer < 1) this.timer = 30;
+    this.intervalSub$ = interval(1000)
+      .pipe()
+      .subscribe((res) => {
+        this.timer -= 1;
+        if (this.timer <= 0) {
+          this.intervalSub$.unsubscribe();
+          this.timer = 0;
+        }
       });
   }
 

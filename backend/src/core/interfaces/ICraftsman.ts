@@ -1,13 +1,16 @@
-import { ICategory } from "./ICategory";
-import { IUser } from "./IUser";
+import { EApprovalStatus } from "../enums/approval-status";
 
 export interface ICraftsman {
   id?: string;
   name: string;
   business_name: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  user?: IUser;
-  category?: ICategory;
+  category?: any;
+  approved?: EApprovalStatus;
+  certificate: string;
+  work_id: string;
+  work_id_approved?: EApprovalStatus;
+  certificate_approved?: EApprovalStatus;
+  created_at?: string;
+  updated_at?: string;
+  user?: any;
 }

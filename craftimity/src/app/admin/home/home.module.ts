@@ -7,11 +7,17 @@ import { IonicModule } from '@ionic/angular';
 import { HomePageRoutingModule } from './home-routing.module';
 
 import { HomePage } from './home.page';
-import { SwipperDirective } from 'src/app/core/directives/fm-swipper.directive';
+import { SharedModule } from 'src/app/core/shared/shared.module';
 
 @NgModule({
-  declarations: [HomePage, SwipperDirective],
-  imports: [CommonModule, FormsModule, IonicModule, HomePageRoutingModule],
+  declarations: [HomePage],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SharedModule,
+    IonicModule,
+    HomePageRoutingModule,
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class HomePageModule {}

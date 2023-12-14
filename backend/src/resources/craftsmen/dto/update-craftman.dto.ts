@@ -1,15 +1,15 @@
 import { IsOptional, IsNotEmpty, IsString, IsNumber } from "class-validator";
 
-export class UpdateCrafmanDto {
+export class UpdateCraft {
+  @IsString()
   @IsNotEmpty()
-  @IsString()
-  name?: string;
+  service_name: string;
 
-  @IsOptional()
   @IsString()
+  @IsNotEmpty()
   business_name: string;
 
-  @IsNotEmpty()
   @IsNumber()
-  category: number;
+  @IsNotEmpty()
+  service_category: number;
 }

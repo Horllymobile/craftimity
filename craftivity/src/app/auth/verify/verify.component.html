@@ -1,0 +1,42 @@
+<ion-content>
+  <ion-card>
+    <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto mt-8 mb-8"></ion-img>
+    <ion-card-header>
+      <ion-title class="text-[#12427A] text-lg">Verify Email</ion-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-text class="mx-auto text-[#12427A]">
+        A verification email has been sent to {{ email }}
+      </ion-text>
+      <form class="mt-5" [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+        <div>
+          <ion-input placeholder="----------------" formControlName="code"
+            class="w-full p-3 bg-white text-center text-[#12427A] border border-[#12427A] rounded-lg"></ion-input>
+
+          <div *ngIf="formCtrl['code'].errors" class="mt-1">
+            <ion-text color="danger" *ngIf="formCtrl['code'].dirty && formCtrl['code'].hasError('required')"
+              class="text-xs">Please
+              enter verification code to
+              procced</ion-text>
+            <ion-text color="danger" class="text-xs"
+              *ngIf="formCtrl['code'].dirty && (formCtrl['code'].hasError('maxlength') || formCtrl['code'].hasError('minlength'))">
+              Code must be 6 digit long
+            </ion-text>
+          </div>
+        </div>
+
+        <p class="text-[#12427A] underline self-center mt-2">
+          <span *ngIf="timer === 0" (click)="resendOTPCode()">Resend</span>
+          <span *ngIf="timer !== 0">Resend in {{ timer }}</span>
+        </p>
+
+        <ion-button type="submit" [disabled]="form.invalid" expand="full" type="submit"
+          class="my-5 rounded">Submit</ion-button>
+
+        <p class="text-lg text-center font-medium text-[#12427A]" routerLink="/craftivity/auth/login">
+          Login here...
+        </p>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

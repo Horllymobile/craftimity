@@ -6,8 +6,12 @@ import { environment } from './environments/environment';
 
 import { register } from 'swiper/element/bundle';
 
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+defineCustomElements(window);
+
 if (environment.production) {
   enableProdMode();
+  // console.log = () => {};
 }
 
 register();

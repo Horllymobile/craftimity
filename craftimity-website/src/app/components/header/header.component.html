@@ -1,0 +1,31 @@
+<section class="w-full p-3 bg-[#edf8fd] shadow">
+  <div class="lg:w-[90%] mx-auto flex justify-between align-middle">
+    <img src="assets/svgs/logo.svg" class="lg:w-[5%] xl:w-[5%] w-[15%]">
+    <div class="gap-5 mt-5 text-primary nav-menu">
+      <div class="flex gap-5">
+        <a href="" class="">Home</a>
+        <a href="">About Us</a>
+        <a href="">Contact Us</a>
+        <!-- <a href="">About</a> -->
+      </div>
+    </div>
+    <button [matMenuTriggerFor]="menu"
+      class="p-1 w-16 text-2xl nav-btn text-primary rounded outline outline-[0.5px] outline-primary"><i
+        class="fa-solid fa-bars"></i></button>
+
+    <mat-menu #menu>
+      <mat-list>
+        <mat-list-item>
+          <a href="" class="">Home</a>
+        </mat-list-item>
+        <mat-list-item>
+          <a href="" class="">About Us</a>
+        </mat-list-item>
+        <mat-list-item>
+          <a href="" class="">Contact Us</a>
+        </mat-list-item>
+      </mat-list>
+    </mat-menu>
+  </div>
+
+</section>

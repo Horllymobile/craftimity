@@ -9,32 +9,39 @@ import { OnboardingComponent } from './onboarding/onboarding.component';
 import { SharedModule } from 'src/app/core/shared/shared.module';
 import { SessionGuard } from 'src/app/core/guards/session/session.guard';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
+import { RegisterComponent } from './register/register.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'auth/login',
     pathMatch: 'full',
   },
   {
     path: 'login',
     component: LoginComponent,
-    canActivate: [SessionGuard],
+    // canActivate: [SessionGuard],
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    // canActivate: [SessionGuard],
   },
   {
     path: 'verify/:data',
     component: VerifyComponent,
-    canActivate: [SessionGuard],
+    // canActivate: [SessionGuard],
   },
   {
     path: 'onboarding',
     component: OnboardingComponent,
-    canActivate: [SessionGuard],
+    // canActivate: [SessionGuard],
   },
   {
     path: 'forgot-password',
     component: ForgotPasswordComponent,
-    canActivate: [SessionGuard],
+    // canActivate: [SessionGuard],
   },
 ];
 
@@ -44,6 +51,7 @@ const routes: Routes = [
     VerifyComponent,
     OnboardingComponent,
     ForgotPasswordComponent,
+    RegisterComponent,
   ],
   imports: [
     CommonModule,
@@ -52,5 +60,6 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     SharedModule,
   ],
+  providers: [AngularFireAnalytics],
 })
 export class AuthModule {}

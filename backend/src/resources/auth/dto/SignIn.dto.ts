@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -28,4 +29,8 @@ export class LoginDto {
   @IsString()
   @IsNotEmpty()
   type: "email" | "phone";
+
+  @IsBoolean()
+  @IsOptional()
+  remember?: boolean;
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "536537889848",
+    "project_id": "craftimity",
+    "storage_bucket": "craftimity.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536537889848:android:9b570e9120660af8dafacd",
+        "android_client_info": {
+          "package_name": "com.craftimity.craftimity"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBR_CMFLWFefT3XuIMTiJrJ_y0Gll0_A0A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

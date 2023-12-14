@@ -21,7 +21,7 @@ export class CityService implements ICityService {
   async createCity(payload: CreateCityDto): Promise<ICity> {
     let res = await this.superBaseService
       .connect()
-      .from("City")
+      .from("city")
       .select("id, name, created_at, updated_at, state_id, active")
       .eq("name", payload.name)
       .single();
@@ -32,7 +32,7 @@ export class CityService implements ICityService {
         message: "City already exist",
       });
 
-    res = await this.superBaseService.connect().from("City").insert({
+    res = await this.superBaseService.connect().from("city").insert({
       name: payload.name,
       state_id: payload.state_id,
     });
@@ -56,9 +56,9 @@ export class CityService implements ICityService {
     if (name && state_id) {
       res = await this.superBaseService
         .connect()
-        .from("City")
+        .from("city")
         .select(
-          "id, name, active, created_at, updated_at, State(id, name, active)"
+          "id, name, active, created_at, updated_at, state(id, name, active)"
         )
         .ilike("name", `%${name}%`)
         .limit(size)
@@ -69,9 +69,9 @@ export class CityService implements ICityService {
     } else if (name) {
       res = await this.superBaseService
         .connect()
-        .from("City")
+        .from("city")
         .select(
-          "id, name, active, created_at, updated_at, State(id, name, active)"
+          "id, name, active, created_at, updated_at, state(id, name, active)"
         )
         .ilike("name", `%${name}%`)
         .limit(size)
@@ -82,9 +82,9 @@ export class CityService implements ICityService {
     } else if (state_id) {
       res = await this.superBaseService
         .connect()
-        .from("City")
+        .from("city")
         .select(
-          "id, name, active, created_at, updated_at, State(id, name, active)"
+          "id, name, active, created_at, updated_at, state(id, name, active)"
         )
         .eq("state_id", state_id)
         .eq("active", status ?? true)
@@ -94,9 +94,9 @@ export class CityService implements ICityService {
     } else {
       res = await this.superBaseService
         .connect()
-        .from("City")
+        .from("city")
         .select(
-          "id, name, active, created_at, updated_at, State(id, name, active)"
+          "id, name, active, created_at, updated_at, state(id, name, active)"
         )
         .limit(size)
         .eq("active", status ?? true)
@@ -112,7 +112,7 @@ export class CityService implements ICityService {
   async findCityById(id: number): Promise<ICity> {
     let res = await this.superBaseService
       .connect()
-      .from("City")
+      .from("city")
       .select("*")
       .eq("id", id)
       .single();
@@ -128,14 +128,14 @@ export class CityService implements ICityService {
     let { data, count }: { data: ICity[]; count: number } =
       await this.superBaseService
         .connect()
-        .from("City")
+        .from("city")
         .select("*", { count: "exact", head: true });
     return count;
   }
   async updateCity(id: number, payload: UpdateCityDto): Promise<ICity> {
     let res = await this.superBaseService
       .connect()
-      .from("City")
+      .from("city")
       .select("*")
       .eq("id", id)
       .single();
@@ -148,10 +148,10 @@ export class CityService implements ICityService {
 
     res = await this.superBaseService
       .connect()
-      .from("City")
+      .from("city")
       .update({
         name: payload.name,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -166,7 +166,7 @@ export class CityService implements ICityService {
   ): Promise<IResponse<ICity>> {
     let res = await this.superBaseService
       .connect()
-      .from("City")
+      .from("city")
       .select("*")
       .eq("id", id)
       .single();
@@ -177,8 +177,11 @@ export class CityService implements ICityService {
       });
     res = await this.superBaseService
       .connect()
-      .from("City")
-      .update({ active: payload.activate })
+      .from("city")
+      .update({
+        active: payload.activate,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", id);
 
     if (res.error) {
@@ -190,7 +193,7 @@ export class CityService implements ICityService {
   async deleteCity(id: number): Promise<ICity> {
     let res = await this.superBaseService
       .connect()
-      .from("City")
+      .from("city")
       .select("*")
       .eq("id", id)
       .single();
@@ -203,7 +206,7 @@ export class CityService implements ICityService {
 
     let { data, error } = await this.superBaseService
       .connect()
-      .from("City")
+      .from("city")
       .delete()
       .eq("id", id);
     if (res.error) {

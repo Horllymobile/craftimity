@@ -1,0 +1,20 @@
+ion-content {
+  --background: #12427A;
+}
+
+ion-card {
+  margin-top: 15em;
+}
+ion-input {
+  --placeholder-color: #12427A;
+}
+
+ion-checkbox {
+  --size: 18px;
+  --checkbox-background-checked: #12427A;
+}
+
+ion-checkbox::part(container) {
+  border-radius: 6px;
+  border: 2px solid #12427A;
+}

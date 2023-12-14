@@ -8,6 +8,12 @@
 // regular style toast
 @import 'ngx-toastr/toastr';
 
+.auth-bg {
+  background-image: url('assets/imgs/auth-background.png');
+  background-size: 100% cover;
+  background-repeat: no-repeat;
+}
+
 // body {
 //     font-family: 'Noto Sans', sans-serif;
 //     margin: 0;
@@ -38,7 +44,7 @@
   }
   @media screen and (min-width: 1900px) {
     body {
-        width: 50%;
+        width: 100%;
         margin: 0 auto;
     }
   }

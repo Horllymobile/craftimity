@@ -1,7 +1,8 @@
+import { LoaderService } from 'src/app/core/services/loader.service';
+import { UsersService } from 'src/app/core/services/users/users.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController, NavController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription, finalize, map } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { IForgotPassword, IVerifyOtp } from 'src/app/core/models/auth';
@@ -12,7 +13,7 @@ import { LocationService } from 'src/app/core/services/location/location.service
 import { CustomValidators } from 'src/app/core/utils/custom-validators';
 
 @Component({
-  selector: 'app-forgot-password',
+  selector: 'craftimity-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
 })
@@ -41,11 +42,10 @@ export class ForgotPasswordComponent implements OnInit {
     private fb: FormBuilder,
     private locationService: LocationService,
     private authService: AuthService,
-    private loadingCtrl: LoadingController,
+    private usersService: UsersService,
+    private loaderService: LoaderService,
     private alertService: AlertService,
-    private navCtrl: NavController,
-    private route: ActivatedRoute,
-    private router: Router
+    private route: ActivatedRoute
   ) {}
 
   get emailLoginFormData() {
@@ -89,13 +89,7 @@ export class ForgotPasswordComponent implements OnInit {
   }
 
   async onSubmitForgotPassword(formPayload: any) {
-    const loader = await this.loadingCtrl.create({
-      message: '',
-      animated: true,
-      duration: 5000,
-      spinner: 'lines-small',
-      cssClass: 'loader',
-    });
+    const loader = await this.loaderService.load();
 
     const payload: IForgotPassword = {
       type: formPayload.type,
@@ -127,13 +121,7 @@ export class ForgotPasswordComponent implements OnInit {
   }
 
   async verifyOtp(formPayload: any) {
-    const loader = await this.loadingCtrl.create({
-      message: '',
-      animated: true,
-      duration: 5000,
-      spinner: 'lines-small',
-      cssClass: 'loader',
-    });
+    const loader = await this.loaderService.load();
 
     const stored = localStorage.getItem(STORAGE_VARIABLES.FORGOT_PASSWORD_DATA);
     let data: any;
@@ -157,7 +145,7 @@ export class ForgotPasswordComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (res) => {
+        next: async (res) => {
           this.step = 'change';
           localStorage.removeItem(STORAGE_VARIABLES.FORGOT_PASSWORD_DATA);
           localStorage.setItem(
@@ -182,13 +170,7 @@ export class ForgotPasswordComponent implements OnInit {
   }
 
   async updatePassword(formPayload: any) {
-    const loader = await this.loadingCtrl.create({
-      message: '',
-      animated: true,
-      duration: 5000,
-      spinner: 'lines-small',
-      cssClass: 'loader',
-    });
+    const loader = await this.loaderService.load();
 
     const stored = localStorage.getItem(STORAGE_VARIABLES.USER);
     let data: any;
@@ -201,7 +183,7 @@ export class ForgotPasswordComponent implements OnInit {
     };
 
     await loader.present();
-    this.verifySub$ = this.authService
+    this.verifySub$ = this.usersService
       .updatePassword(data.id, payload)
       .pipe(
         finalize(async () => {
@@ -245,12 +227,13 @@ export class ForgotPasswordComponent implements OnInit {
       ],
     });
 
-    this.changePasswordForm = this.fb.group(
-      {
-        password: ['', [Validators.required, Validators.minLength(8)]],
-        cmPassword: ['', [Validators.required, Validators.minLength(8)]],
-      },
-      { validator: CustomValidators.MatchingPasswords }
+    this.changePasswordForm = this.fb.group({
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      cmPassword: ['', [Validators.required, Validators.minLength(8)]],
+    });
+
+    this.changePasswordFormControl['cmPassword'].addValidators(
+      CustomValidators.matchingPasswords()
     );
   }
 }

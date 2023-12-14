@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { AlertController } from '@ionic/angular';
-import { isPlatform } from '@ionic/angular';
+import { isPlatform, Platform } from '@ionic/angular';
 import {
   NativeSettings,
   AndroidSettings,
   IOSSettings,
 } from 'capacitor-native-settings';
+import { getPlaform } from './core/utils/functions';
+import { MixpanelService } from './core/services/mixpanel.service';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +16,22 @@ import {
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  constructor(private alertCtrl: AlertController) {}
+  constructor(
+    private alertCtrl: AlertController,
+    private platform: Platform,
+    private analytics: AngularFireAnalytics,
+    private mixpanelService: MixpanelService
+  ) {
+    this.mixpanelService.init();
+  }
 
   async ngOnInit() {
+    this.platform.ready().then(() => {
+      this.analytics.logEvent('app_lunch', {
+        app: 'Client',
+        platform: getPlaform(),
+      });
+    });
     const alert = await this.alertCtrl.create({
       header: 'Network Status',
       message: 'Seems your internet connection is down!',

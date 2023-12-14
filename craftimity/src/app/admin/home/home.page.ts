@@ -1,31 +1,19 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { ICategory } from 'src/app/core/models/category';
 import { IUser } from 'src/app/core/models/user';
 import { CategoryService } from 'src/app/core/services/category/category.service';
 import { UsersService } from 'src/app/core/services/users/users.service';
 import { SwiperOptions } from 'swiper/types';
-import {
-  Navigation,
-  Pagination,
-  Mousewheel,
-  A11y,
-  Controller,
-} from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 
 @Component({
-  selector: 'app-home',
+  selector: 'craftimity-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  userData!: IUser;
+  userData = this.usersService.userData;
   categories$!: Observable<ICategory[]>;
   selectedCategory!: ICategory;
   page = 1;
@@ -59,8 +47,6 @@ export class HomePage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.userData = this.usersService.userProfile;
-
     this.categories$ = this.categothryService
       .getCategories({
         page: this.page,

@@ -1,0 +1,14 @@
+// mat-menu .mat-mdc-menu-content {
+//     width: 800px;
+// }
+
+::ng-deep .mat-mdc-menu-panel {
+  width: 425px;
+  max-width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  ::ng-deep .mat-mdc-menu-panel {
+    width: 425px;
+  }
+}
