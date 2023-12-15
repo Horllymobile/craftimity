@@ -19,7 +19,6 @@ import { Request } from "express";
 import { Roles } from "src/core/decorators/role.decorator";
 import { ERole } from "src/core/enums/Role";
 
-
 @Controller("api/v1/services")
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
