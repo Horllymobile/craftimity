@@ -22,7 +22,7 @@ export class HomePage implements OnInit {
       text: 'Complete',
       role: 'info',
       handler: () => {
-        this.router.navigate(['/craftivity/pages/more/account'], {
+        this.router.navigate(['/pages/more/account'], {
           queryParams: { segment: 'identity_info' },
         });
       },

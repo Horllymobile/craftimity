@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   Put,
+  Query,
 } from "@nestjs/common";
 import { ServiceService } from "../service/service.service";
 import { CreateServiceDto } from "../dto/create-service.dto";
@@ -40,15 +41,17 @@ export class ServiceController {
 
   @Get()
   async findAll(
-    page: number = 1,
-    size: number = 20,
-    status: "active" | "inactive" = "active",
-    country?: number,
-    name?: string
+    @Query("page") page: number = 1,
+    @Query("size") size: number = 20,
+    @Query("category") category: number,
+    @Query("status") status: "active" | "inactive" = "active",
+    @Query("country") country?: number,
+    @Query("name") name?: string
   ) {
     const services = await this.serviceService.findAll({
       page,
       size,
+      category,
       country,
       status,
       name,
