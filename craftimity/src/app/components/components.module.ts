@@ -10,14 +10,13 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
 import { CreateEditServiceComponent } from './create-edit-service/create-edit-service.component';
 
 @NgModule({
-  declarations: [
-    OnboardingCraftsmanComponent,
-    CreateEditAddressComponent,
+  imports: [
+    CommonModule,
+    IonicModule,
+    SharedModule,
+    ReactiveFormsModule,
     TermsAndConditionsComponent,
-    PrivacyPolicyComponent,
-    CreateEditServiceComponent,
   ],
-  imports: [CommonModule, IonicModule, SharedModule, ReactiveFormsModule],
   exports: [
     // OnboardingCraftsmanComponent,
     // CreateEditAddressComponent,

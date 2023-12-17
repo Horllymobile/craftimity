@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { Observable, finalize, map } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { ERole } from 'src/app/core/enums/role';
@@ -49,7 +49,8 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private analytics: AngularFireAnalytics,
-    private mixpanelService: MixpanelService
+    private mixpanelService: MixpanelService,
+    private toastController: ToastController
   ) {}
 
   get emailLoginFormData() {
@@ -164,44 +165,29 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  validateLoggedInUser(res: ILoginResponse) {
-    this.alertService.success(
-      `We've noticed you're a craftsman. Would you like to explore Craftivity or Craftimity?`,
-      undefined,
-      [
+  async validateLoggedInUser(res: ILoginResponse) {
+    const toast = await this.toastController.create({
+      message: `Download the Craftsmen App or Create Your Client Account Today!`,
+      color: 'warning',
+      cssClass: 'toast-message',
+      buttons: [
         {
-          text: 'Craftivity',
-          handler: (value) => {
-            localStorage.setItem(
-              STORAGE_VARIABLES.APP,
-              STORAGE_VARIABLES.CRAFTIVITY
-            );
-            // this.userService.signout();
-            this.goTo('/craftivity');
-            localStorage.setItem(
-              STORAGE_VARIABLES.USER,
-              JSON.stringify(res.metaData)
-            );
-            localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
+          text: 'Register',
+          handler: () => {
+            this.router.navigate(['/auth/register']);
           },
         },
         {
-          text: 'Contniue',
-          handler: (value) => {
-            if (this.returnUrl !== '/') {
-              this.goToReturnUrl(this.returnUrl);
-            } else {
-              this.goToHome();
-            }
-            localStorage.setItem(
-              STORAGE_VARIABLES.USER,
-              JSON.stringify(res.metaData)
-            );
-            localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
+          text: 'Download',
+          handler: () => {
+            window.open('https://www.craftimity.com', '_blank');
           },
         },
-      ]
-    );
+      ],
+      duration: 5000,
+    });
+
+    await toast.present();
   }
 
   goTo(url: string) {

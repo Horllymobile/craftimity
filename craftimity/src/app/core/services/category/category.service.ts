@@ -13,8 +13,8 @@ export class CategoryService {
   constructor(private http: HttpClient) {}
 
   getCategories(params?: {
-    page: number;
-    size: number;
+    page?: number;
+    size?: number;
   }): Observable<ICategory[]> {
     return this.http
       .get<IAPICallResponse<IPaginationResponse<ICategory>>>(
