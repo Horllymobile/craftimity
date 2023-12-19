@@ -41,7 +41,7 @@ export class ForgotComponent implements OnInit {
   }
 
   get formCtrl() {
-    return this.verifyForm.controls;
+    return this.form.controls;
   }
 
   get changePasswordFormCtrl() {
@@ -163,7 +163,7 @@ export class ForgotComponent implements OnInit {
       .subscribe({
         next: async (res) => {
           localStorage.removeItem(STORAGE_VARIABLES.FORGOT_PASSWORD_TOKEN);
-          await this.alertService.success(res, '/craftivity/auth/login');
+          await this.alertService.success(res, '/auth/login');
         },
         error: async (err) => {
           await this.alertService.error(err?.message);

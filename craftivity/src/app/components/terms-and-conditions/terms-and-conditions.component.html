@@ -9,10 +9,10 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large" class="text-xl">Terms and Condition</ion-title>
+      <ion-title size="large" class="text-xl">Terms and Conditions</ion-title>
       <ion-buttons slot="end">
         <ion-button>
           <ion-icon name="close-outline" color="dark"></ion-icon>
@@ -20,4 +20,80 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
+
+  <ion-text>
+    Welcome to Craftimity! By accessing or using our platform,
+    you agree to comply with and be bound by the following
+    Terms and Conditions:
+  </ion-text>
+
+  <div class="mt-5">
+    <h3 class="font-bold">1. Acceptance of Terms</h3>
+    <ion-text class="mt-5">
+      By using Craftimity, you acknowledge that you have read, understood,
+      and agreed to be bound by these Terms and
+      Conditions.
+    </ion-text>
+  </div>
+
+  <div class="mt-5">
+    <h3 class="font-bold">2. User Responsibilities</h3>
+    <ion-text class="mb-5">
+      Accurate Information: Users are responsible for providing accurate and up-to-date information during the
+      registration process and while using our platform.
+    </ion-text>
+    <ion-text>
+      Compliance: Users agree to comply with all applicable laws and regulations while using Craftimity.
+    </ion-text>
+  </div>
+
+  <div class="mt-5">
+    <h3 class="font-bold">3. Artisan Policies</h3>
+    <p class="mb-5">
+      Autonomy with Guidelines: Artisans can define their service exchange policies within the Craftimity application
+      and web platform, within the guidelines set by Craftimity.
+    </p>
+    <p>
+      Policy Enforcement: While artisans can articulate their exchange policies, Craftimity reserves the right to
+      enforce platform-wide policies for the benefit of the entire community.
+    </p>
+    <p>Refund Process: Craftimity conducts a quality assessment before processing refunds. No payment will be
+      made to
+      the artisan until the user confirms the satisfactory completion of the work.
+    </p>
+  </div>
+
+  <div class="mt-5">
+    <h3 class="font-bold">4. Prohibited Activities</h3>
+    <p class="mb-5">
+      Users are prohibited from engaging in activities that violate our policies, including but not limited to
+      fraudulent behavior, harassment, or any illegal activities.
+    </p>
+  </div>
+
+  <div class="mt-5">
+    <h3 class="font-bold">5. Termination</h3>
+    <p class="mb-5">
+      Craftimity reserves the right to terminate or suspend user accounts at our discretion, especially in cases of
+      policy violations or fraudulent activities.
+    </p>
+  </div>
+
+  <div class="mt-5">
+    <h3 class="font-bold">6. Updates to Terms and Conditions</h3>
+    <p class="mb-5">
+      Craftimity may update these Terms and Conditions periodically. Users will be notified of any changes, and
+      continued use of the platform constitutes acceptance of the updated terms.
+    </p>
+  </div>
+
+  <div class="mt-5">
+    <h3 class="font-bold">7. Contact Information</h3>
+    <p class="mb-5">
+      For questions or concerns about our Terms and Conditions, please contact us at
+      [<a class="text-primary" href="mailto:info@craftimity.com">info@craftimity.com</a>/<a class="text-primary"
+        href="tel:+2348136186847">{{ '+234-813-618-6847' }}</a>].
+    </p>
+  </div>
+  <ion-button expand="full" (click)="close()" size="large">Accept</ion-button>
 </ion-content>

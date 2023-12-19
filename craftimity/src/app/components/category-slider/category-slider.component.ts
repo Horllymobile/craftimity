@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ICategory } from 'src/app/core/models/category';
@@ -13,6 +20,7 @@ import { SwiperOptions } from 'swiper/types';
   styleUrls: ['./category-slider.component.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule, SharedModule, ReactiveFormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CategorySliderComponent implements OnInit {
   @Input() categories!: ICategory[];
@@ -40,7 +48,7 @@ export class CategorySliderComponent implements OnInit {
     //   },
     // },
   };
-  @Output() selectCategory = new EventEmitter<ICategory>();
+  @Output() selectCategory = new EventEmitter();
   constructor() {}
 
   ngOnInit() {}
@@ -48,5 +56,10 @@ export class CategorySliderComponent implements OnInit {
   getCategory(category: ICategory) {
     this.selectedCategory = category;
     this.selectCategory.emit(category);
+  }
+
+  getAll() {
+    this.selectedCategory = null;
+    this.selectCategory.emit();
   }
 }

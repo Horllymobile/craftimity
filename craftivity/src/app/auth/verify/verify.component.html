@@ -1,6 +1,6 @@
 <ion-content>
   <ion-card>
-    <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto mt-8 mb-8"></ion-img>
+    <!-- <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto mt-8 mb-8"></ion-img> -->
     <ion-card-header>
       <ion-title class="text-[#12427A] text-lg">Verify Email</ion-title>
     </ion-card-header>
@@ -13,7 +13,7 @@
           <ion-input placeholder="----------------" formControlName="code"
             class="w-full p-3 bg-white text-center text-[#12427A] border border-[#12427A] rounded-lg"></ion-input>
 
-          <div *ngIf="formCtrl['code'].errors" class="mt-1">
+          <div *ngIf="formCtrl['code'].errors" class="mt-1 mb-5">
             <ion-text color="danger" *ngIf="formCtrl['code'].dirty && formCtrl['code'].hasError('required')"
               class="text-xs">Please
               enter verification code to
@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <p class="text-[#12427A] underline self-center mt-2">
+        <p class="text-[#12427A] underline self-center mt-5">
           <span *ngIf="timer === 0" (click)="resendOTPCode()">Resend</span>
           <span *ngIf="timer !== 0">Resend in {{ timer }}</span>
         </p>
@@ -33,7 +33,7 @@
         <ion-button type="submit" [disabled]="form.invalid" expand="full" type="submit"
           class="my-5 rounded">Submit</ion-button>
 
-        <p class="text-lg text-center font-medium text-[#12427A]" routerLink="/craftivity/auth/login">
+        <p class="text-lg text-center font-medium text-[#12427A]" routerLink="/auth/login">
           Login here...
         </p>
       </form>

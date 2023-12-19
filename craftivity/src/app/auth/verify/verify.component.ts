@@ -77,7 +77,7 @@ export class VerifyComponent implements OnInit {
       )
       .subscribe({
         next: (res) => {
-          this.router.navigate(['/craftivity/auth/login']);
+          this.router.navigate(['/auth/login']);
         },
         error: async (err) => {
           await this.alertService.error(err);

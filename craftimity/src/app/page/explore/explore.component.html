@@ -11,14 +11,14 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-searchbar placeholder="Search for craftimity"></ion-searchbar>
+  <ion-searchbar placeholder="Search for craftimity" [formControl]="search"></ion-searchbar>
 
 
   <ng-container *ngIf="categories$ | async as categories">
     <app-category-slider [categories]="categories" (selectCategory)="selectCategory($event)"></app-category-slider>
   </ng-container>
 
-  <ion-list *ngIf="services && !isGettingServices" class="px-2">
+  <ion-list *ngIf="services && !isGettingServices">
     <ion-card *ngFor="let service of services">
       <ion-item lines="none">
         <ion-thumbnail slot="start">

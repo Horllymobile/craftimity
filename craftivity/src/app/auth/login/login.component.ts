@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit {
     const payload: ISignIn = {
       type: 'email',
       password: formPayload?.password,
-      email: formPayload?.email,
+      email: formPayload?.email?.toLocaleLowerCase(),
       remember: formPayload?.remember,
     };
 
@@ -81,6 +81,7 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: async (res) => {
           if (res.metaData.role === ERole.USER) {
+            await this.validateLoggedInUser(res);
           } else {
             this.sucess = 'Login successfully';
             this.userService.userData.update((value) => (value = res.metaData));
@@ -90,33 +91,40 @@ export class LoginComponent implements OnInit {
             );
             localStorage.setItem(STORAGE_VARIABLES.TOKEN, res.access_token);
             this.goToHome();
-
             this.form.reset();
-            this.analytics.logEvent('craftman_login_sucessfull', {
-              ...(payload.email && { email: payload.email }),
-              ...(payload.phone && { phone: payload.phone }),
-              platform: getPlaform(),
-              ...(res.metaData.full_name && { name: res.metaData.full_name }),
-            });
+
             this.mixpanelService.identify(res.metaData.id);
-            this.mixpanelService.track(
-              'craftman_login_sucessfull',
-              res.metaData
-            );
+
+            this.analytics.logEvent('login_sucessfull', {
+              ...(res.metaData.email && { email: res.metaData.email }),
+              ...(res.metaData.phone_number && {
+                phone: res.metaData.phone_number,
+              }),
+              platform: getPlaform(),
+              role: res.metaData.role,
+            });
+
+            this.mixpanelService.track('login_sucessfull', {
+              ...(res.metaData.email && { email: res.metaData.email }),
+              ...(res.metaData.phone_number && {
+                phone: res.metaData.phone_number,
+              }),
+              platform: getPlaform(),
+              role: res.metaData.role,
+            });
           }
         },
         error: async (error) => {
-          console.log(error);
           this.showError = true;
           this.error = error;
           setTimeout(() => (this.showError = false), 5000);
-          // await this.alertService.error(error);
-          // this.mixpanelService.track('Login Error', error);
-          // this.analytics.logEvent('login_failed', {
-          //   ...(payload.email && { email: payload.email }),
-          //   ...(payload.phone && { phone: payload.phone }),
-          //   platform: getPlaform(),
-          // });
+          await this.alertService.error(error);
+          this.mixpanelService.track('Login Error', error);
+          this.analytics.logEvent('login_failed', {
+            ...(payload.email && { email: payload.email }),
+            ...(payload.phone && { phone: payload.phone }),
+            platform: getPlaform(),
+          });
         },
       });
   }

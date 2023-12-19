@@ -1,11 +1,22 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { Observable, Subject, finalize, map, takeUntil } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  debounce,
+  debounceTime,
+  distinctUntilChanged,
+  distinctUntilKeyChanged,
+  finalize,
+  map,
+  take,
+  takeUntil,
+} from 'rxjs';
 import { ICategory } from 'src/app/core/models/category';
 import { IService } from 'src/app/core/models/service';
 import { CategoryService } from 'src/app/core/services/category/category.service';
 import { ServicesService } from 'src/app/core/services/services/services.service';
-import { UsersService } from 'src/app/core/services/users/users.service';
 import { Navigation } from 'swiper/modules';
 import { SwiperOptions } from 'swiper/types';
 
@@ -25,6 +36,8 @@ export class ExploreComponent implements OnInit {
   segment = '';
 
   selectedCategory!: ICategory;
+
+  search = new FormControl();
 
   config: SwiperOptions = {
     modules: [
@@ -57,13 +70,36 @@ export class ExploreComponent implements OnInit {
   ) {}
 
   selectCategory(category: ICategory) {
-    this.selectedCategory = category;
-    this.getServices({ category: category.id });
+    if (!category) {
+      this.getServices();
+    } else {
+      this.selectedCategory = category;
+      if (this.search.value) {
+        this.getServices({ category: category.id, name: this.search.value });
+      } else {
+        this.getServices({ category: category.id });
+      }
+    }
   }
 
   ngOnInit() {
     this.getCategory();
     this.getServices({ page: this.page, size: this.size });
+
+    this.search.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        map((value: string) => value.trim()),
+        takeUntil(this.distroy$)
+      )
+      .subscribe({
+        next: (value) => {
+          if (value) {
+            this.getServices({ name: value });
+          }
+        },
+      });
   }
 
   getCategory(params?: { page?: number; size?: number }) {
@@ -75,7 +111,12 @@ export class ExploreComponent implements OnInit {
     );
   }
 
-  getServices(params?: { page?: number; size?: number; category?: number }) {
+  getServices(params?: {
+    page?: number;
+    size?: number;
+    category?: number;
+    name?: string;
+  }) {
     this.isGettingServices = true;
     this.servicesService
       .getServices(params)
@@ -86,7 +127,6 @@ export class ExploreComponent implements OnInit {
       .subscribe({
         next: (value) => {
           this.services = value.data.data;
-          console.log(this.services);
         },
       });
   }

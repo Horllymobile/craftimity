@@ -1,6 +1,6 @@
 <ion-content>
   <ion-card>
-    <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto mt-8 mb-8"></ion-img>
+    <!-- <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto mt-8 mb-8"></ion-img> -->
     <ion-card-header>
       <ion-title class="text-[#12427A] text-lg" *ngIf="step === 'forgot'">Forgot Password</ion-title>
       <ion-title class="text-[#12427A] text-lg" *ngIf="step === 'verify'">Verify Email</ion-title>
@@ -9,13 +9,21 @@
     <ion-card-content>
       <form class="mt-5" [formGroup]="form" (ngSubmit)="onSubmit(form.value)" *ngIf="step === 'forgot'">
         <div>
-          <ion-input placeholder="Email" formControlName="email"
-            class="border border-[#12427A] rounded p-3"></ion-input>
+          <input type="email" placeholder="Email" autocomplete="email" formControlName="email"
+            class="w-full p-3 bg-white text-[#12427A] placeholder:text-[#12427A] border border-[#12427A] rounded-lg">
+          <div *ngIf="formCtrl['email'].errors">
+            <ion-text color="danger" *ngIf="formCtrl['email'].dirty && formCtrl['email'].hasError('required')">Email
+              address is
+              required</ion-text>
+            <ion-text color="danger" *ngIf="formCtrl['email'].dirty && formCtrl['email'].hasError('email')">Invalide
+              email
+              address</ion-text>
+          </div>
         </div>
 
         <ion-button type="submit" expand="full" class="my-5 rounded">Submit</ion-button>
 
-        <p class="text-lg text-center font-medium text-[#12427A] underline" routerLink="/craftivity/auth/login">
+        <p class="text-lg text-center font-medium text-[#12427A] underline" routerLink="/auth/login">
           Login here...
         </p>
       </form>
@@ -24,7 +32,7 @@
           <ion-input placeholder="----------------" formControlName="code"
             class="w-full p-3 bg-white text-center text-[#12427A] border border-[#12427A] rounded-lg"></ion-input>
 
-          <div *ngIf="formCtrl['code'].errors" class="mt-1">
+          <div *ngIf="verifyFormCtrl['code'].errors" class="mt-1">
             <ion-text color="danger" *ngIf="verifyFormCtrl['code'].dirty && verifyFormCtrl['code'].hasError('required')"
               class="text-xs">Please
               enter verification code to
@@ -83,7 +91,7 @@
         <ion-button type="submit" [disabled]="changePasswordForm.invalid" expand="full" type="submit"
           class="my-5 rounded">Submit</ion-button>
 
-        <p class="text-lg text-center font-medium text-[#12427A]" routerLink="/craftivity/auth/login">
+        <p class="text-lg text-center font-medium text-[#12427A]" routerLink="/auth/login">
           Login here...
         </p>
       </form>

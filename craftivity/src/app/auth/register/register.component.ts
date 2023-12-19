@@ -93,6 +93,7 @@ export class RegisterComponent implements OnInit {
     payload = {
       ...payload,
       phone: `${result.code}${result.number}`,
+      email: payload.email.toLocaleLowerCase(),
     };
 
     const loader = await this.loaderService.load();
@@ -106,7 +107,7 @@ export class RegisterComponent implements OnInit {
       )
       .subscribe({
         next: (value) => {
-          this.router.navigate(['/craftivity/auth/verify'], {
+          this.router.navigate(['/auth/verify'], {
             queryParams: { email: payload.email },
           });
         },

@@ -260,7 +260,7 @@
             <ion-label>Identity Info</ion-label>
           </ion-segment-button>
           <ion-segment-button value="artisan" class="p-1">
-            <ion-label>artisan Info</ion-label>
+            <ion-label>Artisan Info</ion-label>
           </ion-segment-button>
         </ion-segment>
       </ion-card>
@@ -306,30 +306,6 @@
             </div>
 
             <div class="mt-5">
-              <div *ngIf="!userData?.identity?.identity">
-                <ion-item>
-                  <ion-label>Select Identity Type</ion-label>
-                  <ion-select label="Select Identity Type" name="identity_type" [(ngModel)]="identity_type">
-                    <ion-select-option value="National ID"> National ID </ion-select-option>
-                    <ion-select-option value="Drivers License"> Drivers License </ion-select-option>
-                    <ion-select-option value="Passport"> Passport </ion-select-option>
-                  </ion-select>
-                </ion-item>
-
-                <div *ngIf="identity_type">
-                  <ion-button expand="block" (click)="openFile(fileId)" fill="outline" color="primary" class="mt-5">
-                    <ion-text>Upload your {{ identity_type }}</ion-text>
-                    <ion-icon size="large" slot="start" name="document-outline"></ion-icon>
-                  </ion-button>
-
-                  <input type="file" (change)="uploadFile($event, identity_type, 'identity')" #fileId id="id_upload"
-                    class="hidden" accept=".pdf, image/png, image/jpeg">
-                  <ion-text class="text-xs" color="primary">
-                    <ion-icon name="information-circle-outline"></ion-icon>
-                    Please ensure that your file is in .pdf, .jpg, or .png format, and its size does not exceed 5MB.
-                  </ion-text>
-                </div>
-              </div>
 
               <div *ngIf="userData?.identity?.identity" [ngSwitch]="userData?.identity?.identity_approved">
                 <ion-button *ngSwitchCase="ApprovalStatus.PENDING" fill="outline" expand="block" color="warning"
@@ -479,8 +455,8 @@
               </div>
 
               <ion-item class="mt-5">
-                <ion-label>Select Service Category</ion-label>
-                <ion-select formControlName="category" label="Select Service Category">
+                <ion-label>Service Category</ion-label>
+                <ion-select formControlName="category" label="Service Category">
                   <ion-select-option [value]="category.id" *ngFor="let category of categories$ | async">{{ category.name
                     }}</ion-select-option>
                 </ion-select>

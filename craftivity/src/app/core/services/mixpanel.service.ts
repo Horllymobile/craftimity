@@ -7,7 +7,16 @@ import { constant } from '../constants/constant';
 })
 export class MixpanelService {
   init() {
-    mixpanel.init(constant.MIXPANEL_TOKEN, { debug: true });
+    mixpanel.init(constant.MIXPANEL_TOKEN, {
+      debug: true,
+      loaded: (mixpanel) => {
+        const distinct_id = mixpanel.get_distinct_id();
+      },
+    });
+  }
+
+  hasOwnProperty() {
+    return mixpanel.get_property('get_distinct_id');
   }
 
   track(event: string, data: any) {

@@ -1,6 +1,6 @@
 <ion-content>
   <ion-card>
-    <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto my-3"></ion-img>
+    <!-- <ion-img src="assets/svg/craftivity-blue.svg" class="w-24 mx-auto my-3"></ion-img> -->
     <ion-card-header>
       <ion-title class="text-primary text-lg">Register</ion-title>
     </ion-card-header>
@@ -101,17 +101,16 @@
 
         <div class="w-full flex gap-2 my-5">
           <ion-checkbox formControlName="accept"></ion-checkbox>
-          <p class="text-xs mt-2">I agree to the <span class="text-primary">Terms and Conditions</span>. </p>
+          <p class="text-xs mt-2">I agree to the <span class="text-primary" (click)="openTermsAndConditionModal()">Terms
+              and Conditions</span>. </p>
         </div>
 
         <ion-button expand="block" type="submit" [disabled]="!isFormValid(form)"
           class="w-full p-1 mt-2 rounded-lg text-lg">Register</ion-button>
 
         <p class="text-lg text-center font-medium">Already have an account? <span class="text-primary underline"
-            routerLink="/craftivity/auth/login">Login
+            routerLink="/auth/login">Login
             here...</span></p>
-
-        <p class="text-[#12427A] underline text-center" routerLink="/select-app">Select App</p>
       </form>
     </ion-card-content>
   </ion-card>
