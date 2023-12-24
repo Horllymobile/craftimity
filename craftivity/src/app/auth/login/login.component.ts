@@ -15,7 +15,7 @@ import { UsersService } from 'src/app/core/services/users/users.service';
 import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
-  selector: 'craftivity-login',
+  selector: 'craft-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })

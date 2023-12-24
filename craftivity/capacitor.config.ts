@@ -1,12 +1,12 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.craftimity.craftivity',
-  appName: 'Craftivity',
+  appId: 'io.ionic.starter',
+  appName: 'craftivity',
   webDir: 'www',
   server: {
-    androidScheme: 'https',
-  },
+    androidScheme: 'https'
+  }
 };
 
 export default config;
