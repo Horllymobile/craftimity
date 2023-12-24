@@ -19,6 +19,6 @@ export class MorePage implements OnInit {
 
   logout() {
     this.usersService.signout();
-    this.router.navigateByUrl('/page/auth/login');
+    this.router.navigateByUrl('/pages/login');
   }
 }

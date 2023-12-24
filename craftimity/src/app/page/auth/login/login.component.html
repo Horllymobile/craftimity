@@ -1,6 +1,6 @@
 <ion-content>
   <section class="container mb-8 mt-36">
-    <ion-img src="assets/svg/craftimity-blue.svg" class="w-16 mx-auto my-8"></ion-img>
+    <!-- <ion-img src="assets/svg/craftimity-blue.svg" class="w-16 mx-auto my-8"></ion-img> -->
     <section class="border border-[#12427A] w-[90%] rounded-2xl mx-auto">
       <div class="p-8 border-b border-[#12427A]">
         <h1 class="text-[#12427A] text-center">Log in</h1>
@@ -39,12 +39,12 @@
     </div>
 
     <ion-button expand="block" [disabled]="emailLoginForm.invalid" type="submit"
-      class="button-custom mt-5">Continue</ion-button>
+      class="button-custom mt-5">Login</ion-button>
 
-    <p class="text-[#12427A] underline text-center" routerLink="/auth/forgot-password">Forgot Password?</p>
+    <p class="text-[#12427A] underline my-5 text-center" routerLink="/pages/forgot-password">Forgot Password?</p>
 
     <p class="text-[#12427A] text-center">Don't have an account? <span class="underline"
-        routerLink="/craftimity/page/auth/register">Register</span></p>
+        routerLink="/pages/register">Register</span></p>
     <!-- <div class="flex gap-4 justify-between align-middle relative">
       <span class="border-b w-full border-[#12427A]"></span>
       <p class="text-[#12427A]">or</p>

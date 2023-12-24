@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NavController, ToastController } from '@ionic/angular';
-import { Observable, finalize, map } from 'rxjs';
+import { ToastController } from '@ionic/angular';
+import { Observable, Subject, finalize, map, takeUntil } from 'rxjs';
 import { STORAGE_VARIABLES } from 'src/app/core/constants/storage';
 import { ERole } from 'src/app/core/enums/role';
 import { ILoginResponse, ISignIn } from 'src/app/core/models/auth';
@@ -13,7 +13,6 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { LocationService } from 'src/app/core/services/location/location.service';
 import { MixpanelService } from 'src/app/core/services/mixpanel.service';
-import { UsersService } from 'src/app/core/services/users/users.service';
 import { getPlaform } from 'src/app/core/utils/functions';
 
 @Component({
@@ -22,7 +21,7 @@ import { getPlaform } from 'src/app/core/utils/functions';
   styleUrls: ['./login.component.scss'],
   providers: [AngularFireAnalytics],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginType: 'email' | 'phone' = 'phone';
 
   emailLoginForm!: FormGroup;
@@ -38,14 +37,14 @@ export class LoginComponent implements OnInit {
 
   returnUrl = '';
 
+  destroy$ = new Subject<void>();
+
   constructor(
     private fb: FormBuilder,
     private locationService: LocationService,
     private authService: AuthService,
-    private userService: UsersService,
     private loaderService: LoaderService,
     private alertService: AlertService,
-    private navCtrl: NavController,
     private route: ActivatedRoute,
     private router: Router,
     private analytics: AngularFireAnalytics,
@@ -81,37 +80,18 @@ export class LoginComponent implements OnInit {
     this.emailLoginForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
       password: [null, [Validators.required]],
-      remember: [null, [Validators.required]],
+      remember: [null],
       type: ['email'],
     });
-
-    // this.phoneLoginForm = this.fb.group({
-    //   code: [null, [Validators.required]],
-    //   password: [null, [Validators.required]],
-    //   phone: [
-    //     null,
-    //     [
-    //       Validators.required,
-    //       Validators.minLength(10),
-    //       Validators.maxLength(10),
-    //     ],
-    //   ],
-    //   type: ['phone'],
-    // });
   }
 
   async login(formPayload: any) {
     const load = await this.loaderService.load();
     const payload: ISignIn = {
-      type: formPayload.type,
+      type: formPayload.type ?? 'email',
       password: formPayload.password,
-      remember: formPayload.remember,
-      email: formPayload.email,
-      // ...(formPayload.email && { email: formPayload.email }),
-      // ...(formPayload.phone && {
-      //   phone: `${formPayload.code}${formPayload.phone}`,
-      // }),
-      // remember: formPayload.remember,
+      remember: formPayload.remember ?? false,
+      email: formPayload.email.toLocaleLowerCase(),
     };
 
     await load.present();
@@ -120,12 +100,13 @@ export class LoginComponent implements OnInit {
       .pipe(
         finalize(async () => {
           await load.dismiss();
-        })
+        }),
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: async (res) => {
           if (res.metaData.role === ERole.CRAFTMAN) {
-            this.validateLoggedInUser(res);
+            await this.validateLoggedInUser(res);
           } else {
             localStorage.setItem(
               STORAGE_VARIABLES.USER,
@@ -141,15 +122,22 @@ export class LoginComponent implements OnInit {
 
           this.emailLoginForm.reset();
           this.analytics.logEvent('login_sucessfull', {
-            ...(payload.email && { email: payload.email }),
-            ...(payload.phone && { phone: payload.phone }),
+            ...(res.metaData.email && { email: res.metaData.email }),
+            ...(res.metaData.phone_number && {
+              phone: res.metaData.phone_number,
+            }),
             platform: getPlaform(),
-            ...(res.metaData.full_name && { name: res.metaData.full_name }),
+            role: res.metaData.role,
           });
+
           this.mixpanelService.identify(res.metaData.id);
           this.mixpanelService.track('Login', {
-            ...(payload.email && { email: payload.email }),
-            ...(res.metaData.full_name && { name: res.metaData.full_name }),
+            ...(res.metaData.email && { email: res.metaData.email }),
+            ...(res.metaData.phone_number && {
+              phone: res.metaData.phone_number,
+            }),
+            platform: getPlaform(),
+            role: res.metaData.role,
           });
         },
         error: async (error) => {
@@ -204,5 +192,10 @@ export class LoginComponent implements OnInit {
 
   goToOnboarding() {
     this.router.navigate(['/admin/more/account']);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.complete();
+    this.destroy$.unsubscribe();
   }
 }
