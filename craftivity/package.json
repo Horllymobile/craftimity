@@ -1,8 +1,8 @@
 {
   "name": "craftivity",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "craftimity developers",
+  "homepage": "https://www.craftivity.com/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

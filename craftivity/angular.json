@@ -19,6 +19,12 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "websocket",
+              "mixpanel-browser",
+              "@supabase/node-fetch"
+            ],
             "assets": [
               {
                 "glob": "**/*",
