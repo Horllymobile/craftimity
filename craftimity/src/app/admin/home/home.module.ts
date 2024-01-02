@@ -8,6 +8,7 @@ import { HomePageRoutingModule } from './home-routing.module';
 
 import { HomePage } from './home.page';
 import { SharedModule } from 'src/app/core/shared/shared.module';
+import { CategorySliderComponent } from 'src/app/components/category-slider/category-slider.component';
 
 @NgModule({
   declarations: [HomePage],
@@ -17,6 +18,7 @@ import { SharedModule } from 'src/app/core/shared/shared.module';
     SharedModule,
     IonicModule,
     HomePageRoutingModule,
+    CategorySliderComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

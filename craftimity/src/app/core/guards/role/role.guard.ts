@@ -9,7 +9,7 @@ export const RoleGuard: CanActivateFn = () => {
   const router = inject(Router);
   const usersService = inject(UsersService);
   const alertService = inject(AlertService);
-  if (!(usersService.userData()?.role === ERole.CRAFTMAN)) {
+  if (usersService.userData()?.role === ERole.CRAFTMAN) {
     localStorage.removeItem(STORAGE_VARIABLES.USER);
     localStorage.removeItem(STORAGE_VARIABLES.TOKEN);
     localStorage.removeItem(STORAGE_VARIABLES.REGISTERATION_TOKEN);

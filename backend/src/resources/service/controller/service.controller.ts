@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   Put,
+  Query,
 } from "@nestjs/common";
 import { ServiceService } from "../service/service.service";
 import { CreateServiceDto } from "../dto/create-service.dto";
@@ -18,7 +19,6 @@ import { EResponseStatus } from "src/core/enums/ResponseStatus";
 import { Request } from "express";
 import { Roles } from "src/core/decorators/role.decorator";
 import { ERole } from "src/core/enums/Role";
-
 
 @Controller("api/v1/services")
 export class ServiceController {
@@ -41,15 +41,17 @@ export class ServiceController {
 
   @Get()
   async findAll(
-    page: number = 1,
-    size: number = 20,
-    status: "active" | "inactive" = "active",
-    country?: number,
-    name?: string
+    @Query("page") page: number = 1,
+    @Query("size") size: number = 20,
+    @Query("category") category: number,
+    @Query("status") status: "active" | "inactive" = "active",
+    @Query("country") country?: number,
+    @Query("name") name?: string
   ) {
     const services = await this.serviceService.findAll({
       page,
       size,
+      category,
       country,
       status,
       name,

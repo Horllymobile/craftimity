@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -7,6 +7,9 @@ import { ExploreComponent } from './explore/explore.component';
 import { WishlistsComponent } from './wishlists/wishlists.component';
 import { AuthModule } from './auth/auth.module';
 import { RouterModule, Routes } from '@angular/router';
+import { SwipperDirective } from '../core/directives/fm-swipper.directive';
+import { SharedModule } from '../core/shared/shared.module';
+import { CategorySliderComponent } from '../components/category-slider/category-slider.component';
 
 const routes: Routes = [
   {
@@ -31,8 +34,11 @@ const routes: Routes = [
     IonicModule,
     ReactiveFormsModule,
     AuthModule,
+    SharedModule,
     RouterModule.forChild(routes),
+    CategorySliderComponent,
   ],
   declarations: [PagePage, ExploreComponent, WishlistsComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PagePageModule {}

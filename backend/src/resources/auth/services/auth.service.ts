@@ -113,14 +113,23 @@ export class AuthService {
 
   async registerUser(payload: RegisterDto) {
     if (payload.is_artisan) {
-      await this.usersService.createUser(payload, ERole.CRAFTMAN);
+      await this.usersService.createUser(
+        { ...payload, email: payload.email.toLocaleLowerCase() },
+        ERole.CRAFTMAN
+      );
     } else {
-      await this.usersService.createUser(payload);
+      await this.usersService.createUser({
+        ...payload,
+        email: payload.email.toLocaleLowerCase(),
+      });
     }
   }
 
   async registerCraftman(payload: RegisterDto) {
-    await this.usersService.createUser(payload, ERole.CRAFTMAN);
+    await this.usersService.createUser(
+      { ...payload, email: payload.email.toLocaleLowerCase() },
+      ERole.CRAFTMAN
+    );
   }
 
   async verifyOtpCode(payload: VerifyUserDto) {
@@ -209,7 +218,6 @@ export class AuthService {
       .eq("code", payload.code);
 
     user = await this.usersService.findUserByEmail(payload.email);
-    console.log(user);
     const jwtPayload = {
       sub: user.id,
       ...(user.email && { email: user.email }),
@@ -416,7 +424,6 @@ export class AuthService {
     let user: any;
     if (payload.type === USERCHECKTYPE.EMAIL) {
       user = await this.usersService.findUserByEmail(payload.email);
-      console.log(user);
       if (!user)
         throw new NotFoundException({
           message: "User not found",
@@ -426,7 +433,6 @@ export class AuthService {
         const sent = await this.usersService.sendForgotPasswordCodeToEmail(
           payload.email
         );
-        console.log(sent);
       }
       return user;
     }
@@ -611,7 +617,9 @@ export class AuthService {
       .eq("phone_number", payload.phone)
       .single();
 
-    console.log(res);
+    if (res.error) {
+      this.logger.error(res.error);
+    }
 
     user = res.data;
     return user;

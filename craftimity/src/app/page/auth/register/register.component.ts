@@ -71,7 +71,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         [
           Validators.required,
           Validators.minLength(8),
-          Validators.minLength(16),
+          Validators.maxLength(16),
         ],
       ],
       accept: [null, Validators.required],
@@ -83,10 +83,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   async register(formPayload: any) {
+    ''.toLocaleLowerCase();
     const payload: IRegister = {
       first_name: formPayload.first_name,
       last_name: formPayload.last_name,
-      email: formPayload.email,
+      email: formPayload.email?.toLocaleLowerCase(),
       phone: `${formPayload.code}${formPayload.number}`,
       password: formPayload.password,
     };
@@ -109,7 +110,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   goToVerify(email?: string) {
-    this.router.navigate(['/page/auth/verify', email], {
+    this.router.navigate(['/pages/verify', email], {
       queryParams: {
         type: 'email',
       },
@@ -119,6 +120,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   async openTermsAndConditionModal() {
     const modal = await this.modalController.create({
       component: TermsAndConditionsComponent,
+      initialBreakpoint: 1,
     });
 
     await modal.present();

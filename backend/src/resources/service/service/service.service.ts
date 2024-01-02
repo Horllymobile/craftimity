@@ -31,13 +31,14 @@ export class ServiceService {
     status: string;
     page?: number;
     size?: number;
+    category: number;
     name?: string;
     country?: number;
   }) {
     payload.page = payload.page <= 1 ? 0 : payload.page;
     let res: any;
 
-    if (payload.name) {
+    if (payload.name && !payload.category) {
       res = await this.superBaseService
         .connect()
         .from("services")
@@ -47,19 +48,59 @@ export class ServiceService {
         .order("id", { ascending: true })
         .eq("is_active", payload.status)
         .range(payload.page, payload.size);
-    } else {
+      if (res.error) {
+        this.logger.error(res.error);
+      }
+      return res.data;
+    }
+
+    if (payload.name && payload.category) {
+      res = await this.superBaseService
+        .connect()
+        .from("services")
+        .select(serviceReturnString)
+        .ilike("name", `%${payload.name}%`)
+        .limit(payload.size)
+        .order("id", { ascending: true })
+        .eq("is_active", payload.status)
+        .eq("category", payload.category)
+        .range(payload.page, payload.size);
+      if (res.error) {
+        this.logger.error(res.error);
+      }
+      return res.data;
+    }
+
+    if (!payload.name && payload.category) {
+      console.log(payload);
       res = await this.superBaseService
         .connect()
         .from("services")
         .select(serviceReturnString)
         .limit(payload.size)
-        .eq("is_active", payload.status)
+        .order("id", { ascending: true })
+        // .eq("is_active", payload.status)
+        .eq("category", payload.category)
         .range(payload.page, payload.size);
+      console.log(res.data);
+      if (res.error) {
+        this.logger.error(res.error);
+      }
+      return res.data;
     }
+
+    res = await this.superBaseService
+      .connect()
+      .from("services")
+      .select(serviceReturnString)
+      .limit(payload.size)
+      .eq("is_active", payload.status)
+      .range(payload.page, payload.size);
 
     if (res.error) {
       this.logger.error(res.error);
     }
+
     return res.data;
   }
 

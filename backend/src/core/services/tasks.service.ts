@@ -10,8 +10,8 @@ export class TasksService {
   @Cron(CronExpression.EVERY_30_MINUTES, { name: "delete-code" })
   async deletedVerificationCode() {
     this.logger.log("verification_code delete job called");
-    var twoHoursBefore = new Date();
-    var d = new Date(twoHoursBefore.setHours(twoHoursBefore.getMinutes() - 30));
+    var date = new Date();
+    var d = new Date(date.setHours(date.getMinutes() - 30));
     const res = await this.superbaseService
       .connect()
       .from("verification_code")

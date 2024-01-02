@@ -30,7 +30,12 @@ export class ServicesService {
       .pipe(map((res) => res.message));
   }
 
-  getServices(params?: { page: number; size: number }) {
+  getServices(params?: {
+    page?: number;
+    size?: number;
+    category?: number;
+    name?: string;
+  }) {
     return this.http
       .get<IAPICallResponse<IPaginationResponse<any>>>(
         `${this.baseUrl}/services`,

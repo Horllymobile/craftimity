@@ -1,9 +1,9 @@
 ion-input.custom {
   // --background: #373737;
-  border: #12427A 0.1em solid;
+  border: #12427a 0.1em solid;
   border-radius: 1em;
-  --color: #12427A;
-  --placeholder-color: #12427A;
+  --color: #12427a;
+  --placeholder-color: #12427a;
   --placeholder-opacity: 0.8;
 
   --padding-bottom: 5px;
@@ -13,30 +13,34 @@ ion-input.custom {
 }
 
 ion-select.custom {
-  border: #12427A 0.1em solid;
+  border: #12427a 0.1em solid;
   border-radius: 1em;
-  --color: #12427A;
-  --placeholder-color: #12427A;
+  --color: #12427a;
+  --placeholder-color: #12427a;
   --placeholder-opacity: 0.8;
 }
 
 ion-input.custom .helper-text,
 ion-input.custom .counter {
-  color: var(--ion-color-step-700, #12427A);
+  color: var(--ion-color-step-700, #12427a);
 }
 
 ion-button.button-custom {
-  --background: #12427A;
+  --background: #12427a;
 }
 
 ion-button.button-custom-2 {
   --background: #fff;
-  --color: #12427A;
-  --border-color: #12427A;
+  --color: #12427a;
+  --border-color: #12427a;
   --border-style: solid;
   --border-width: 0.2px;
 }
 
 .phone-input {
   border-width: 0.2px;
+}
+
+.toast-message {
+  font-size: 10px;
 }

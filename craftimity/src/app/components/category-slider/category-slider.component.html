@@ -1,0 +1,17 @@
+<div class="flex justify-between align-middle">
+  <ion-icon size="large" color="dark" class="absolute bg-fixed mt-3" slot="start"
+    name="chevron-back-outline"></ion-icon>
+  <swiper-container fmSwipper [config]="config" init="false" class="w-full px-5 mt-1">
+    <swiper-slide (click)="getAll()" [ngClass]="!selectedCategory ? 'border-b-2 border-black' : ''">
+      <p class="text-lg text-center">All</p>
+    </swiper-slide>
+    <swiper-slide (click)="getCategory(category)" *ngFor="let category of categories"
+      class="flex flex-col justify-center align-middle"
+      [ngClass]="category?.name === selectedCategory?.name ? 'border-b-2 border-black' : ''">
+      <ion-img [src]="category.icon" class="w-8 mx-auto"></ion-img>
+      <p class="text-[0.60em] text-center">{{ category?.name }}</p>
+    </swiper-slide>
+  </swiper-container>
+  <ion-icon class="absolute bg-fixed right-0 mt-3" size="large" color="dark" slot="start"
+    name="chevron-forward-outline"></ion-icon>
+</div>

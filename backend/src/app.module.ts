@@ -12,14 +12,12 @@ import { AuthModule } from "./resources/auth/auth.module";
 import { CategoryModule } from "./resources/category/category.module";
 import { JwtModule } from "@nestjs/jwt";
 import { jwtConstants } from "./resources/auth/constants/constants";
-// import { APP_GUARD } from "@nestjs/core";
-// import { AuthGuard } from "./core/guards/auth.guard";
 import { CraftsmenModule } from "./resources/craftsmen/craftsmen.module";
 import { HttpModule } from "@nestjs/axios";
 import { MailModule } from "./mail/mail.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TasksService } from "./core/services/tasks.service";
-import { ServiceModule } from './resources/service/service.module';
+import { ServiceModule } from "./resources/service/service.module";
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),

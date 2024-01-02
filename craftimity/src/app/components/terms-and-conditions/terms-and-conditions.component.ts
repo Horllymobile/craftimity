@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { SharedModule } from 'src/app/core/shared/shared.module';
 
 @Component({
@@ -12,7 +12,11 @@ import { SharedModule } from 'src/app/core/shared/shared.module';
   imports: [CommonModule, IonicModule, SharedModule, ReactiveFormsModule],
 })
 export class TermsAndConditionsComponent implements OnInit {
-  constructor() {}
+  constructor(private modalController: ModalController) {}
 
   ngOnInit() {}
+
+  async close() {
+    await this.modalController.dismiss();
+  }
 }

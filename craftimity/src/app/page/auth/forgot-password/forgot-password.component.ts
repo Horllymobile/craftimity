@@ -18,7 +18,7 @@ import { CustomValidators } from 'src/app/core/utils/custom-validators';
   styleUrls: ['./forgot-password.component.scss'],
 })
 export class ForgotPasswordComponent implements OnInit {
-  type: 'email' | 'phone' = 'phone';
+  type: 'email' | 'phone' = 'email';
 
   emailLoginForm!: FormGroup;
   phoneLoginForm!: FormGroup;
@@ -193,7 +193,7 @@ export class ForgotPasswordComponent implements OnInit {
       .subscribe({
         next: async (res) => {
           localStorage.removeItem(STORAGE_VARIABLES.FORGOT_PASSWORD_TOKEN);
-          await this.alertService.success(res, '/auth/login');
+          await this.alertService.success(res, '/pages/login');
         },
         error: async (err) => {
           await this.alertService.error(err?.message);

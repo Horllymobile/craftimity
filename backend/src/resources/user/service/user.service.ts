@@ -109,7 +109,7 @@ export class UserService implements IUserService {
   async findUserByEmailDecrypted(email: string): Promise<any> {
     let { data, error } = await this.superBaseService
       .connect()
-      .from("decrypted_User")
+      .from("decrypted_user")
       .select(userDecryptedReturnString)
       .eq("email", email)
       .single();
@@ -138,7 +138,7 @@ export class UserService implements IUserService {
   async findUserByPhoneDecrypted(phone: string) {
     let { data, error } = await this.superBaseService
       .connect()
-      .from("decrypted_User")
+      .from("decrypted_user")
       .select(userDecryptedReturnString)
       .eq("phone_number", phone)
       .single();
