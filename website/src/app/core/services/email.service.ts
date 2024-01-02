@@ -9,17 +9,16 @@ export class EmailService {
   private apiKey = environment.ELASTICT_EMAIL_API_KEY;
   constructor(private readonly httpService: HttpClient) {}
 
-  async addContact(payload: IAddContact) {
-    return await this.httpService
-      .post(`${this.url}contacts`, payload, {
-        params: {
-          apikey: this.apiKey,
-        },
-        headers: {
-          'Content-Type': 'application/json',
-          'Request-Body-Schema': 'application/json',
-        },
-      })
-      .toPromise();
+  addContact(payload: IAddContact) {
+    return this.httpService.post<any>(`${this.url}/contacts`, payload, {
+      params: {
+        apikey: this.apiKey,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'Request-Body-Schema': 'application/json',
+        'Access-Control-Allow-Headers': '*',
+      },
+    });
   }
 }

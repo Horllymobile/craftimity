@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { EmailService } from '../core/services/email.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-contact',
@@ -39,8 +40,9 @@ export class ContactComponent {
     message: string;
   }) {
     this.isLoading = true;
-    try {
-      const sent = await this.emailService.addContact({
+
+    const sent = await this.emailService
+      .addContact({
         FirstName: payload.first_name,
         LastName: payload.last_name,
         Email: payload.email,
@@ -49,13 +51,15 @@ export class ContactComponent {
           message: payload.message,
           phone: payload.phone,
         },
+      })
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+        },
+        error: (err) => {
+          console.log(err);
+        },
       });
-      if (sent) {
-        this.isLoading = false;
-      }
-    } catch (error) {
-      this.isLoading = false;
-      console.log(error);
-    }
   }
 }
