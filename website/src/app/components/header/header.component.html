@@ -1,0 +1,31 @@
+<section class="w-full p-3 bg-[#edf8fd] shadow">
+  <div class="lg:w-[90%] mx-auto flex justify-between align-middle">
+    <span routerLink="/" class="w-[117px] h-[96px]"><img src="assets/svgs/logo.svg"></span>
+    <div class="gap-5 mt-5 text-primary nav-menu">
+      <div class="flex gap-5">
+        <a routerLink="/" class="text-xl font-semibold">Home</a>
+        <a routerLink="/about" class="text-xl font-semibold">About Us</a>
+        <a routerLink="/contact" class="text-xl font-semibold">Contact Us</a>
+        <!-- <a href="">About</a> -->
+      </div>
+    </div>
+    <button [matMenuTriggerFor]="menu"
+      class="p-1 w-16 text-2xl nav-btn text-primary rounded outline outline-[0.5px] outline-primary"><i
+        class="fa-solid fa-bars"></i></button>
+
+    <mat-menu #menu>
+      <mat-list>
+        <mat-list-item>
+          <a routerLink="/" class="">Home</a>
+        </mat-list-item>
+        <mat-list-item>
+          <a routerLink="/about" class="">About Us</a>
+        </mat-list-item>
+        <mat-list-item>
+          <a routerLink="/contact" class="">Contact Us</a>
+        </mat-list-item>
+      </mat-list>
+    </mat-menu>
+  </div>
+
+</section>
